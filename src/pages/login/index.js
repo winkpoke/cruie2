@@ -14,10 +14,7 @@ class Index extends Component {
     static displayName='Login';
     constructor(props) {
         super(props);
-        const { register, handleSubmit, watch, errors } = this.getVanlidateObj();
-        this.handleSubmit = handleSubmit;
-        this.register = register;
-        this.errors = errors;
+
     }
     state = { redirectToReferrer: authCheck.isAuthenticated };
     /*handleSubmit =   e => {
@@ -36,15 +33,11 @@ class Index extends Component {
         });
     };*/
     componentDidMount() {
-        const { register, handleSubmit, watch, errors } = useForm();
-        this.handleSubmit = handleSubmit;
+
     }
-    getVanlidateObj(){
-        const { register, handleSubmit, watch, errors } = useForm();
-    }
+
     render() {
 
-        const onSubmit = data => { console.log(data) };
         return (
             <div className="wrapper" style={{height: "auto",minHeight: "100%"}}>
                 <header className="main-header">
@@ -53,16 +46,16 @@ class Index extends Component {
                 </header>
                 <div className="w3layouts">
                     <div className="signin-agile">
-                        <form id="loginForm"  onSubmit={ this.handleSubmit(onSubmit)}>
+                        <form id="loginForm"  >
                             <ul>
                                 <li style={{fontWeight: 'bold'}}>
                                     Sign In CURIE
                                 </li>
                                 <li>
-                                    <input type="text" name="username" style={{width: "91%"}} className="name" placeholder="UserName" ref={this.register({ required: true })} />
+                                    <input type="text" name="username" style={{width: "91%"}} className="name" placeholder="UserName" />
                                 </li>
                                 <li>
-                                    <input type="password" name="password" style={{width:"91%"}} className="password" placeholder="password" ref={this.register({ required: true })} />
+                                    <input type="password" name="password" style={{width:"91%"}} className="password" placeholder="password" />
                                 </li>
                                 <li>
                                     <input type="checkbox" name="remember" id="brand1" value=""/> Remember me
