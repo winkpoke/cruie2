@@ -1,27 +1,8 @@
 import axios from 'axios';
 
-export async function accountLogin(params) {
-    return axios('/api/login', {
-        method: 'POST',
-        data: params,
-    });
-}
-
-export async function fakeRegister(params) {
-    return axios('/api/register', {
-        method: 'POST',
-        data: params,
-    });
-}
-
-export async function getFakeCaptcha(mobile) {
-    return axios(`/api/captcha?mobile=${mobile}`);
-}
-
-export async function query() {
-  return axios('/api/users');
-}
-
-export async function queryCurrent() {
-  return axios('/api/currentUser');
-}
+export const accountLogin = (params) => axios.post(`${window.reqPrefix}/user/login`,params);
+export const logout = () => axios.post(`${window.reqPrefix}/user/logout`);
+export const fakeRegister = params => axios.post(`${window.reqPrefix}/user/sign`,params);
+export const getFakeCaptcha = mobile => axios.get(`${window.reqPrefix}/captcha?mobile=${mobile}`);
+export const query = axios.get(`${window.reqPrefix}/users`);
+export const queryCurrent = axios.get(`${window.reqPrefix}/currentUser`);

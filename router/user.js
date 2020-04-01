@@ -4,7 +4,8 @@ const express = require('express');
 const router = express.Router();
 var User = require('../model/User');
 var jwt = require('express-jwt');
-import config from '../config'
+const config = require('../config');
+
 /*用户注册*/
 router.post('/sign',function (req,res) {
     console.log('==========================req.body',req.body);
@@ -75,6 +76,10 @@ router.post('/login', function(req, res) {
             }
         }
     });
+});
+
+router.post('/logout',function () {
+
 });
 
 router.get('/protected',

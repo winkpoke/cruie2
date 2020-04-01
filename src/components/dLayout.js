@@ -12,12 +12,19 @@ import notFound from "@/pages/notFound";
 import AllComponents from '../pages/index'
 
 import routeConfig from '../routes/config'
+import {logout} from "@/services/user";
+import {getRes} from "@/utils";
 
 const onClick = ({ key }) => {
-    axios.post(`/api/logout`).then(res=>{
-        sessionStorage.clear();
-        history.push('/login')
-    })
+    sessionStorage.clear();
+    history.push('/login')
+
+    /*logout().then(res=>{
+        getRes(res,data=>{
+            sessionStorage.clear();
+            history.push('/login')
+        })
+    })*/
 };
 
 const menu = (
@@ -85,7 +92,7 @@ class dLayout extends Component {
 
                             <Dropdown overlay={menu}>
                                 <a className="ant-dropdown-link">
-                                    {this.props.user.currentAuthority} <Icon type="down" />
+                                    {this.props.user.currentAuthority} 退出 <Icon type="down" />
                                 </a>
                             </Dropdown>
                         </Header>
