@@ -11,9 +11,7 @@ import CRouter from './routes/index'
 
 //按需加载组件
 const Login = asyncComponent(()=>import('./pages/login/index'));
-const Cat = asyncComponent(()=>import('./pages/aa-auto/cat'));
-const PageC = asyncComponent(()=>import('./pages/aa-auto/pageC'));
-const PageCDetail = asyncComponent(()=>import('./pages/aa-auto/pageC/detail'));
+
 
 //404页面
 import notFound from './pages/notFound'
@@ -23,11 +21,7 @@ const App = (props) => {
             <Router>
                 <Switch>
                         <Route path="/login" exact component={Login} />
-                       {/* <Route path="/cat" exact component={Cat} />
-                        <Route path="/pageConfigList" exact component={PageC} />
-                        <Route path="/pageC/add" exact component={PageCDetail} />
-                        <Route path="/pageC/:id" exact component={PageCDetail} />*/}
-                        <PrivateRoute path="/admin" component={CRouter} />
+                        <PrivateRoute path="/" component={CRouter} />
                         <Route component={notFound} />
                 </Switch>
             </Router>

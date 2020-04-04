@@ -8,8 +8,9 @@
     "dll": "webpack --config ./build/webpack.react.js",
     "build": "webpack --config ./build/webpack.prod.js",
     "watch": "webpack --watch",
-    "start": "webpack-dev-server --open --config ./build/webpack.dev.js",
-    "serve": "node ./server/server.js"
+    "start": "webpack-dev-server --open --config ./build/webpack.base.js",
+    "serve": "node ./server/server.js",
+    "wasm": "webpack-dev-server --open --config ./build/webpack.wasm.js"
   },
   "author": "",
   "license": "ISC",
@@ -52,7 +53,9 @@
     "webpack-dev-middleware": "^3.6.2",
     "webpack-dev-server": "^3.3.1",
     "webpack-merge": "^4.2.1",
-    "xml-loader": "^1.2.1"
+    "xml-loader": "^1.2.1",
+    "hello-wasm-pack": "^0.1.0",
+    "kepler": "file:./pkg"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.4.4",

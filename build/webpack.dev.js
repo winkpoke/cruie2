@@ -1,9 +1,8 @@
 const {smart} = require('webpack-merge');
-const base = require('./webpack.base.js');
+const base = require('./webpack.wasm.js');
 const path = require('path');
 const Webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 module.exports = smart(base,{
     mode:'development',
     devtool:'source-map',
@@ -19,7 +18,6 @@ module.exports = smart(base,{
                  pathRewrite:{'/api':'/api'}//可以过滤api前缀
              }
         },
-        quiet: true,
     },
     optimization: {
         splitChunks: {
@@ -54,7 +52,7 @@ module.exports = smart(base,{
             inject: true,
             comments: false,
             chunksSortMode: 'dependency',
-            chunks: ['app','common','vendor'] // 引入的代码块
+            chunks: ['app','bootstrap','print','common','vendor'] // 引入的代码块
         }),
         new Webpack.NamedModulesPlugin(),//打印更新的模块路径
         new Webpack.HotModuleReplacementPlugin(),//热更新插件

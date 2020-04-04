@@ -7,9 +7,7 @@ import helper from "../utils/helper";
 class PrivateRoute extends React.Component{
     state={isAuthenticated:false}
     componentWillMount(){
-        console.log(authCheck)
         const  isAuthenticated =  authCheck.isAuthenticated  ;
-        console.log(isAuthenticated)
         this.setState({isAuthenticated})
          if(!isAuthenticated){
             const {history} = this.props;

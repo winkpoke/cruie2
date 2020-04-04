@@ -484,3 +484,11 @@ a.book.popup-with-zoom-anim.button-isi.zoomIn.animated:hover{
 	border-radius: 0;
 	/*background-color: #3c8dbc;*/
 }
+
+#mycanvas {
+	border: 1px solid rgb(75, 75, 75);
+}
+
+.slider {
+	width: 500px;
+}

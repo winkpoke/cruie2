@@ -79,7 +79,7 @@ class Index extends Component {
     };
     componentDidMount() {
         if(this.state.isAuthenticated){
-            history.push('/admin/dash')
+            history.push('/admin')
         }
 
         const socket = io('http://localhost:3000');

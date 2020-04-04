@@ -5,7 +5,7 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 const bodyParser = require('body-parser');
 let webpack = require('webpack');
 let middle = require('webpack-dev-middleware');
-let config =  require('../build/webpack.dev')  ;
+let config =  require('../build/webpack.wasm')  ;
 let compiler = webpack(config);
 var jwt = require('jsonwebtoken');
 app.use(middle(compiler));
