@@ -7,6 +7,7 @@ export const authCheck = {
         setTimeout(cb, 100); // fake async
     },
     signout(cb) {
+        helper.delCookie('token');
         this.isAuthenticated = false;
         setTimeout(cb, 100);
     }

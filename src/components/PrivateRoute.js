@@ -1,12 +1,17 @@
 import React, { Component } from "react";
 import {Route, Link, Redirect, withRouter} from "react-router-dom";
+import {authCheck} from "@/utils/authCheck";
+import helper from "../utils/helper";
 
 //私有路由，只有登录的用户才能访问
 class PrivateRoute extends React.Component{
+    state={isAuthenticated:false}
     componentWillMount(){
-        let  isAuthenticated =  sessionStorage.getItem("user") ? true :false;
-        this.setState({isAuthenticated:isAuthenticated})
-        if(!isAuthenticated){
+        console.log(authCheck)
+        const  isAuthenticated =  authCheck.isAuthenticated  ;
+        console.log(isAuthenticated)
+        this.setState({isAuthenticated})
+         if(!isAuthenticated){
             const {history} = this.props;
             setTimeout(() => {
                 history.replace("/login");

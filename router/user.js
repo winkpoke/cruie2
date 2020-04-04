@@ -35,7 +35,10 @@ router.post('/sign',function (req,res) {
         if (data) {
             //返回 注册成功之后种cookie 并登录
             var token = utils.signtoken(({username: data.username}));
-            res.cookie('token', token, config.jwtExpire, true);
+            var date = new Date();
+            date.setDate(new Date().getDate() + 1);
+
+            res.cookie('token', token, {expires:date});
             res.json(response.succ('注册成功'));
         }
         //返回
@@ -53,7 +56,7 @@ router.post('/sign',function (req,res) {
 router.post('/login', function(req, res) {
     var username = req.body.username
     var password = req.body.password
-
+    var remember = req.body.remember;
     //是否合法的参数
     if (username == null || username.trim() == '' || password == null || password.trim() == '') {
         res.json(response.err("用户名或密码不能为空"))
@@ -71,7 +74,10 @@ router.post('/login', function(req, res) {
                 res.json(response.err('用户密码错误'));
             } else {
                 var token = utils.signtoken({username:user.username});
-                res.cookie('token', token, config.jwtExpire, true);
+                var date = new Date();
+                date.setDate(new Date().getDate() + (remember ? 10: 1));
+
+                res.cookie('token', token, {expires:date});
                 res.json(response.succ(token));
             }
         }

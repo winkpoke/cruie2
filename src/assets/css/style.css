@@ -138,8 +138,8 @@ form a {
 	font-size: 14px;
 
 }
-
-input[type="submit"]{
+.error{color:#cc0000;font-size: 12px;position: absolute}
+input[type="submit"],.submit-btn{
 	background:#2D6D4B;
 	padding:13px 0;
 	font-size:16px;

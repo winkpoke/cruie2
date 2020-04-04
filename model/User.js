@@ -4,8 +4,8 @@ const fileName = path.basename(__filename).split('.')[0];
 
 var mongoose = require('../db.js'), Schema = mongoose.Schema;
 var Sch = new Schema({
-    username : { type: String }, //用户账号
-    password: {type: String}, //密码
+    username : { type: String , required:true }, //用户账号
+    password: {type: String, required:true}, //密码
     clinic:{type:String},
     role:{type:String},
     memo:{type:String},

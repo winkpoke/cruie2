@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
 });
 
 
-/*app.use(function(req, res, next){
+ app.use(function(req, res, next){
     // 获取请求头中的Authorization认证字符
     //let authorization = req.get('Authorization');
     console.log('=================我是cookie:',req.cookies);
@@ -53,7 +53,6 @@ io.on('connection', (socket) => {
      if(req.path === `${prefix}/user/login`){
         next()
     }else{
-
         let secretOrPrivateKey= "This is perfect projects.";
          jwt.verify(authorization, secretOrPrivateKey, function (err, decode) {
             if (err) {  //  认证出错
@@ -63,7 +62,7 @@ io.on('connection', (socket) => {
             }
         })
     }
-})*/
+})
 
 const userRouter = require('../router/user');
 const pageCRouter = require('../router/pageC');
@@ -79,7 +78,9 @@ app.use('/cat', categoryRouter);
 app.use('/attr', attrRouter);*/
 
 app.get('/api/user',(req,res)=>{
-    //res.cookie('rememberme', '1', { expires: new Date(Date.now() + 900000), httpOnly: true });
+    var date = new Date();
+    var tomorrow = date.setDate(new Date().getDate() + 10);
+    res.cookie('rememberme', '1', { expires: date});
     res.json({name:'珠峰架构'})
 });
 
