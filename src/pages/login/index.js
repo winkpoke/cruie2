@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Alert, Form, Input, Button,  Row, Col, message, Modal, Icon, Tabs,Checkbox} from 'antd';
 import { Redirect } from "react-router-dom";
 import {connect} from 'react-redux';
+import io from 'socket.io-client';
 
 import history from '@/utils/history'
 //检查是否登陆
@@ -33,7 +34,27 @@ class Index extends Component {
         });
     };*/
     componentDidMount() {
+        const socket = io('http://localhost:3000');
+        socket.emit('chat message', '你好..');
 
+        socket.emit('say to someone', '你好 say..');
+
+        socket.on('chat message', function(msg){
+             console.log('我收到管理员的回复了:'+msg);
+        });
+        socket.on('hi', function(msg){
+            console.log('我收到管理员的回复了hi:'+msg);
+        });
+
+        socket.on('connect', function(){
+            console.log('connect');
+            //客户端关闭
+            setTimeout(() => socket.close(), 5000);
+        });
+        socket.on('event', function(data){});
+        socket.on('disconnect', function(){
+            console.log('dis connect')
+        });
     }
 
     render() {
