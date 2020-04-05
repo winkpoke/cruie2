@@ -27,6 +27,7 @@ module.exports = {
         app: './src/main.js',
         //bootstrap:"./bootstrap.js"
     },
+    devtool: 'cheap-module-eval-source-map',
     output: {
             filename: `${publicAssetPath}/js/[name]-[hash:8].bundle.js`,
             path: path.resolve(__dirname, '../dist'),//路径必须是一个绝对路径
@@ -174,6 +175,9 @@ module.exports = {
             chunksSortMode: 'dependency',
             chunks: ['app','bootstrap','common','vendor'] // 引入的代码块
         }),
-        new CopyWebpackPlugin(['index.html'])
+        new CopyWebpackPlugin(['index.html']),
+        new CopyWebpackPlugin([
+            { from: resolve('static'), to: resolve('dist/static') }
+        ]),
     ],
 };

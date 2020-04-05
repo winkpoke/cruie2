@@ -492,3 +492,5 @@ a.book.popup-with-zoom-anim.button-isi.zoomIn.animated:hover{
 .slider {
 	width: 500px;
 }
+.kelper .slide{width:600px;display: flex}
+.kelper .slide span{width:100px;font-size:12px;}
