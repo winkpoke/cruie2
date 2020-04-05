@@ -25,7 +25,6 @@ app.all('*', function(req, res, next) {
     next();
 });
 
-
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 io.on('connection', (socket) => {
@@ -44,13 +43,14 @@ io.on('connection', (socket) => {
 });
 
 
-/* app.use(function(req, res, next){
+app.use(function(req, res, next){
     // 获取请求头中的Authorization认证字符
     //let authorization = req.get('Authorization');
-    console.log('=================我是cookie:',req.cookies);
+    console.log('=================我是path:',req.path);
+    console.log('=================我是cookie:',req.cookie);
     let authorization = req.cookies.token;
     // 排除不需要授权的路由
-     if(req.path === `${prefix}/user/login` || req.path.indexOf('static')>0){
+     if(req.path === `${prefix}/user/login` || req.path.indexOf('static') > 0){
         next()
     }else{
         let secretOrPrivateKey= "This is perfect projects.";
@@ -62,7 +62,7 @@ io.on('connection', (socket) => {
             }
         })
     }
-})*/
+})
 
 const userRouter = require('../router/user');
 const pageCRouter = require('../router/pageC');

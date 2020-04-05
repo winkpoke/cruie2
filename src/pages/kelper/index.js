@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
 //import * as wasm from "hello-wasm-pack";
 import { start, GlCanvas, ViewType } from "kepler";
+import Toast from '@/components/toast'
 //wasm.greet('ss');
-
+import {get, post} from '@/utils/request'
 class Kelper extends Component {
     static displayName = "Kelper";
     constructor(props, context) {
         super(props, context);
         this.glcanvas = null;
     }
-
     state={
         slider_window:"18500",
         slider_level:"12000",
@@ -54,15 +54,10 @@ class Kelper extends Component {
         this.glcanvas.render();
         this.setState(obj);
     }
-    getGlCanvas(){
-        let canvas = document.getElementById("mycanvas");
-        let w = canvas.clientWidth;
-        let h = canvas.clientHeight;
-        this.glcanvas = GlCanvas.new("mycanvas", w, h, 360, 12000, 15000);
-        this.glcanvas.load_shaders();
-        return this.glcanvas;
-    }
     async getFile(){
+       setTimeout(()=>{
+           window.ToastLoding = Toast.loading();
+        })
         let response = await fetch('http://localhost:3000/static/headneck_360_1024.raw');
         console.log(response)
         let data = await response.blob();
@@ -75,6 +70,7 @@ class Kelper extends Component {
         this.glcanvas.set_level(15000);
         this.glcanvas.setup_geometry();
         this.glcanvas.render();
+        setTimeout(window.ToastLoding,3000)
     }
     componentDidMount(){
         let canvas = document.getElementById("mycanvas");
@@ -85,112 +81,12 @@ class Kelper extends Component {
         console.log(ViewType.SAGITTAL);
         console.log('window:',this.glcanvas.window);
         this.getFile();
-
-
-        /*var image_file = document.getElementById('read_image');
-        image_file.addEventListener('change', function (e) {
-            console.log(glcanvas.window);
-            let file_name = image_file.files[0];
-            // wasm.read_texture_file(file_name);
-            glcanvas.load_volume_from_file(file_name, 1024, 1024, 360);
-            glcanvas.set_window(12000);
-            glcanvas.set_level(15000);
-            glcanvas.setup_geometry();
-            glcanvas.render();
-        });*/
-
-       /* slider_window.addEventListener('input', function(evt) {
-            console.log(slider_window.value);
-            let win = slider_window.value;
-            glcanvas.set_window(win);
-            glcanvas.render();
-            // update_scene(context, win, lev, z, scale);
-        }, false)
-
-        slider_level.addEventListener('input', function(evt) {
-            console.log(slider_level.value);
-            let lev = slider_level.value;
-            glcanvas.set_level(lev);
-            glcanvas.render();
-        }, false)
-
-        slider_scale.addEventListener('input', function(evt) {
-            console.log(slider_scale.value);
-            let scale = slider_scale.value;
-            if (radio_transverse.checked) {
-                glcanvas.set_scale_transverse(scale);
-            } else if (radio_sagittal.checked) {
-                glcanvas.set_scale_sagittal(scale);
-            } else if (radio_coronal.checked) {
-                glcanvas.set_scale_coronal(scale);
-            }
-            glcanvas.render();
-        }, false)
-        slider_pan_x.addEventListener('input', function(evt) {
-            console.log(slider_pan_x.value);
-            let x = slider_pan_x.value;
-            if (radio_transverse.checked) {
-                glcanvas.set_pan_transverse_x(x);
-            } else if (radio_sagittal.checked) {
-                glcanvas.set_pan_sagittal_x(x);
-            } else if (radio_coronal.checked) {
-                glcanvas.set_pan_coronal_x(x);
-            }
-            glcanvas.render();
-        }, false)
-        slider_pan_y.addEventListener('input', function(evt) {
-            console.log(slider_pan_y.value);
-            let y = slider_pan_y.value;
-            if (radio_transverse.checked) {
-                glcanvas.set_pan_transverse_y(y);
-            } else if (radio_sagittal.checked) {
-                glcanvas.set_pan_sagittal_y(y);
-            } else if (radio_coronal.checked) {
-                glcanvas.set_pan_coronal_y(y);
-            }
-            glcanvas.render();
-        }, false)
-        slider_slice.addEventListener('input', function(evt) {
-            console.log(slider_slice.value);
-            let slice = slider_slice.value;
-            if (radio_transverse.checked) {
-                glcanvas.set_slice_transverse(slice);
-            } else if (radio_sagittal.checked) {
-                glcanvas.set_slice_sagittal(slice);
-            } else if (radio_coronal.checked) {
-                glcanvas.set_slice_coronal(slice);
-            }
-            glcanvas.render();
-        }, false)*/
     }
-    onGetFile = (e) => {
-        console.log(e.target.files)
-        const file = e.target.files[0];
-
-        let file_name = e.target.files[0];
-        console.log(file_name)
-        // wasm.read_texture_file(file_name);
-        this.glcanvas.load_volume_from_file(file_name, 1024, 1024, 360);
-        this.glcanvas.set_window(12000);
-        this.glcanvas.set_level(15000);
-        this.glcanvas.setup_geometry();
-        this.glcanvas.render();
-
-        const fr = new FileReader();
-        fr.readAsDataURL(file);
-        let fileContent = null;
-        fr.onload = () => {
-            fileContent = fr.result;
-        };
-        setTimeout(() => {
-            console.log('fileContent', fileContent);
-        }, 100);
-    };
     render() {
         const {slider_window,slider_level,pan,slider_scale,slider_pan_x,slider_pan_y,slider_slice} = this.state;
         return (
              <div className="kelper page">
-                 <input type="file" id="read_image" onChange={this.onGetFile.bind(this)} multiple="multiple" /><br /><br />
+                {/* <input type="file" id="read_image" onChange={this.onGetFile.bind(this)} multiple="multiple" /><br /><br />*/}
                  <canvas id="mycanvas" width="750" height="500"></canvas>
                  {/*slider_window*/}
                  <div className="slide">
