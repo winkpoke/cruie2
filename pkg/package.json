@@ -1,0 +1,15 @@
+{
+  "name": "kepler",
+  "collaborators": [
+    "Phil Chen <winkpoke@yahoo.com>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "kepler_bg.wasm",
+    "kepler.js",
+    "kepler.d.ts"
+  ],
+  "module": "kepler.js",
+  "types": "kepler.d.ts",
+  "sideEffects": false
+}
