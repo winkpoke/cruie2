@@ -37,8 +37,32 @@ class dLayouta extends Component {
     render() {
         return (
             <div>
-                <div>我是header</div>
-                {this.props.children}
+                <div id="head-nav" className="navbar navbar-default navbar-fixed-top" style={{"width":"100%"}}>
+                    <div className="container-fluid">
+                        <div className="navbar-header">
+                            <a className="navbar-brand" href="#"><span>CURIE</span></a>
+                        </div>
+                        <div className="navbar-collapse collapse">
+                            <ul className="nav navbar-nav">
+                                <li className="active"><a href="#"><span style={{"borderBottom":"3px solid"}}>CBCT</span></a></li>
+                            </ul>
+                            <ul className="nav navbar-nav navbar-right user-nav">
+                                <li className="dropdown profile_menu">
+                                    <a href="#" className="dropdown-toggle" data-toggle="dropdown" style={{"paddingTop":"3px solid"}} aria-expanded="false">Javis Heinscof <b className="caret"></b></a>
+                                    <ul className="dropdown-menu">
+                                        <li><a href="system_tolerance.html">System Settings</a></li>
+                                        <li><a href="account.html">Account Settings</a></li>
+                                        <li><a href="#">Sign Out</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <hr style={{"marginTop": "0px" , "marginBottom":"0px" , "border":1 }}/>
+                <div className="fixed-menu" id="cl-wrapper">
+                    {this.props.children}
+                </div>
             </div>
         );
     }

@@ -11,6 +11,9 @@ import {accountLogin} from "@/services/user";
 import {getRes} from "@/utils";
 import { useForm } from 'react-hook-form';
 import schema from 'async-validator';
+
+import '@/assets/css/style.css'
+
 var descriptor = {
     username: {
         type: "string",

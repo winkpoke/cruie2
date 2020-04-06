@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-//import * as wasm from "hello-wasm-pack";
+import * as wasm from "hello-wasm-pack";
 import { start, GlCanvas, ViewType } from "kepler";
 import Toast from '@/components/toast'
 //wasm.greet('ss');
 import {get, post} from '@/utils/request'
-class Kelper extends Component {
+class kp extends Component {
     static displayName = "Kelper";
     constructor(props, context) {
         super(props, context);
@@ -133,4 +133,4 @@ class Kelper extends Component {
 }
 
 
-export default Kelper;
+export default kp;

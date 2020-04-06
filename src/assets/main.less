@@ -1,90 +1,5 @@
 @import "common";
 //@import "bulma";
-body{
-  background:#f7f7f8;
-  font-family: MicrosoftYaHei;
-  font-size:12px;
-  .ant-form-item{margin-bottom: 8px;}
-  .logo {
-    width: 120px;
-    height: 31px;
-    background: rgba(255, 255, 255, 0.2);
-    margin: 16px 28px 16px 0;
-    float: left;
-    text-align: center;
-    line-height: 31px;
-    font-size: 20px;
-  }
-  .ant-layout-header{
-    display: flex;
-    justify-content: flex-end;
-  }
-}
-a{
-  font-size: 12px;
-}
-.ant-form-explain, .ant-form-split{
-   position: absolute!important;
-   margin-top: -5px;
-   font-size:10px;
-}
-.login-form{margin-top:120px;background:#fff;padding:20px;}
-.ant-layout-header{height:44px; line-height: 44px; }
-h3.ti{
-  margin-bottom:0;
-  font-weight:bold;
-  font-size:16px;
-  color:#103153;
-  line-height: 32px;
-}
-.fixed{
-  position:fixed;
-  z-index:9;
-  &.barActions{
-    right:0;
-    top:0;
-    transition: all 0.3s;
-  }
-}
-
-.image-upload-zone{
-  >div.ant-col{
-    width:102px;
-    height:102px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border:1px dashed #e9e9e9;
-    background:#f8f8f8;
-    overflow:hidden;
-    margin-right:10px;
-    border-radius:2px;
-    &:hover{
-      .tools{ top:0;opacity: 1}
-    }
-  }
-  .uploaded-img{width:100%}
-  .fileSelector{
-    cursor:pointer;
-    opacity:0;
-    width:100%;
-    height:100%;
-    position:absolute;
-  }
-  .tools{
-    position:absolute;
-    cursor:pointer;
-    top:-20px;
-    height:20px;
-    width:100%;
-    display: flex;
-    align-items: center;
-    color:#fff;
-    justify-content: center;
-    background:rgba(0,0,0,0.6);
-    transition: all 0.3s
-  }
-}
 
 input::-webkit-input-placeholder {
   color: #e8e8e8;
@@ -96,25 +11,19 @@ input::-ms-input-placeholder {
   color: #e8e8e8;
 }
 
-table{
-  border:1px solid #ddd;
-  input{border:none}
-  th,td{padding:5px 8px}
-}
-#sku-table{margin-top:10px;margin-bottom:10px}
-#div1{flex:1;}
-.drag-zone{
-  border:1px dashed #ddd; box-sizing:border-box; flex:1;min-height: 200px;margin: 0 10px 10px; padding:20px;
-}
-.col{border:1px solid #fff}
-.bg-f3{border:1px dashed #ddd}
-.bg-red{border:1px dashed red ; box-sizing: border-box}
-div，.ant-col{box-sizing: border-box}
-.bg-green{ border:1px dashed green}
-.vh100{min-height:100vh}
-.align-start{align-items: flex-start}
-.tabpane{min-height:100px;background: #f9f8f7}
+/*header*/
+.navbar {
+  border: 0;
+  background-color: #1C1C1C;
+  color: #2D6D4B;
+  padding-left: 10px;
+  padding-right: 25px;
+  margin-right: 5px;
+  .navbar-brand{
+    width: 206px;
+    color: #2D6D4B;
+  }
+  &.nav-default{
 
-.icon-delete{position:absolute;top:0;right:10px;display: none}
-.bg-red>.icon-delete{display: block}
-.color-gray{color:#cac7c7}
+  }
+}
