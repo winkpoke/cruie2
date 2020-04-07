@@ -58,7 +58,7 @@ class kp extends Component {
        setTimeout(()=>{
            window.ToastLoding = Toast.loading();
         })
-        let response = await fetch('http://localhost:3000/static/headneck_360_1024.raw');
+        let response = await fetch('static/headneck_360_1024.raw');
         console.log(response)
         let data = await response.blob();
         let metadata = {
@@ -76,7 +76,7 @@ class kp extends Component {
         let canvas = document.getElementById("mycanvas");
         let w = canvas.clientWidth;
         let h = canvas.clientHeight;
-        this.glcanvas = GlCanvas.new("mycanvas", w, h, 360, 12000, 15000);
+        this.glcanvas = GlCanvas.new("mycanvas", w, h, 12000, 15000);
         this.glcanvas.load_shaders();
         console.log(ViewType.SAGITTAL);
         console.log('window:',this.glcanvas.window);
@@ -87,7 +87,7 @@ class kp extends Component {
         return (
              <div className="kelper page">
                 {/* <input type="file" id="read_image" onChange={this.onGetFile.bind(this)} multiple="multiple" /><br /><br />*/}
-                 <canvas id="mycanvas" width="750" height="500"></canvas>
+                 <canvas id="mycanvas" width="900" height="600"></canvas>
                  {/*slider_window*/}
                  <div className="slide">
                      <input type="range" min="1" max="65535" name="slider_window" value={slider_window} onChange={this.fnChange.bind(this)} className="slider" id="slider_window"/>
