@@ -50,6 +50,7 @@ export function glcanvas_set_slice_sagittal(a: number, b: number): void;
 export function glcanvas_set_slice_coronal(a: number, b: number): void;
 export function glcanvas_load_shaders(a: number): void;
 export function glcanvas_load_volume_from_file(a: number, b: number, c: number, d: number, e: number): void;
+export function glcanvas_load_volume_from_array_buffer(a: number, b: number, c: number, d: number, e: number): void;
 export function glcanvas_setup_geometry(a: number): void;
 export function glcanvas_render(a: number): void;
 export function start(a: number, b: number): void;

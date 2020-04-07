@@ -101,6 +101,13 @@ export class GlCanvas {
 */
   load_volume_from_file(file: File, w: number, h: number, d: number): void;
 /**
+* @param {ArrayBuffer} buffer 
+* @param {number} w 
+* @param {number} h 
+* @param {number} d 
+*/
+  load_volume_from_array_buffer(buffer: ArrayBuffer, w: number, h: number, d: number): void;
+/**
 */
   setup_geometry(): void;
 /**

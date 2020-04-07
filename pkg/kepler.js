@@ -563,6 +563,15 @@ export class GlCanvas {
         }
     }
     /**
+    * @param {ArrayBuffer} buffer
+    * @param {number} w
+    * @param {number} h
+    * @param {number} d
+    */
+    load_volume_from_array_buffer(buffer, w, h, d) {
+        wasm.glcanvas_load_volume_from_array_buffer(this.ptr, addHeapObject(buffer), w, h, d);
+    }
+    /**
     */
     setup_geometry() {
         wasm.glcanvas_setup_geometry(this.ptr);
@@ -578,6 +587,10 @@ export const __wbindgen_object_drop_ref = function(arg0) {
     takeObject(arg0);
 };
 
+export const __wbg_log_86916f586434335d = function(arg0, arg1) {
+    console.log(getStringFromWasm0(arg0, arg1));
+};
+
 export const __wbg_alert_5555fbce5a6ff9fc = function(arg0, arg1) {
     alert(getStringFromWasm0(arg0, arg1));
 };
@@ -585,10 +598,6 @@ export const __wbg_alert_5555fbce5a6ff9fc = function(arg0, arg1) {
 export const __wbindgen_string_new = function(arg0, arg1) {
     var ret = getStringFromWasm0(arg0, arg1);
     return addHeapObject(ret);
-};
-
-export const __wbg_log_86916f586434335d = function(arg0, arg1) {
-    console.log(getStringFromWasm0(arg0, arg1));
 };
 
 export const __wbindgen_cb_forget = function(arg0) {
@@ -672,6 +681,14 @@ export const __wbg_createShader_4a9e685c994bbdae = function(arg0, arg1) {
 export const __wbg_createTexture_72648c03c7fa1750 = function(arg0) {
     var ret = getObject(arg0).createTexture();
     return isLikeNone(ret) ? 0 : addHeapObject(ret);
+};
+
+export const __wbg_deleteProgram_00d8b1ab1f94a057 = function(arg0, arg1) {
+    getObject(arg0).deleteProgram(getObject(arg1));
+};
+
+export const __wbg_deleteTexture_c92f0995e08d52d3 = function(arg0, arg1) {
+    getObject(arg0).deleteTexture(getObject(arg1));
 };
 
 export const __wbg_drawArrays_6051def3c6695806 = function(arg0, arg1, arg2, arg3) {
@@ -920,7 +937,7 @@ export const __wbindgen_memory = function() {
     return addHeapObject(ret);
 };
 
-export const __wbindgen_closure_wrapper199 = function(arg0, arg1, arg2) {
+export const __wbindgen_closure_wrapper206 = function(arg0, arg1, arg2) {
     var ret = makeMutClosure(arg0, arg1, 18, __wbg_adapter_24);
     return addHeapObject(ret);
 };
