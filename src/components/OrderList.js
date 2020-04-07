@@ -5,7 +5,6 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import * as api from "../services/api";
 import {getRes} from "../utils/utils";
-import {Row,Col} from 'antd'
 import { Link} from "react-router-dom";
 function mapStateToProps(state) {
   return {};

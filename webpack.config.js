@@ -50,7 +50,6 @@ module.exports = {
                       plugins:["@babel/plugin-transform-runtime",
                           ["@babel/plugin-proposal-decorators", { "legacy": true }],
                           ["@babel/plugin-proposal-class-properties", { "loose": true }],
-                          ["import", {"libraryName": "antd", "libraryDirectory": "es"},'ant'],
                           ["import", {"libraryName": "lodash", "libraryDirectory": "", "camel2DashComponentName":false},'lodash'],
                           ["import", {"libraryName": "jquery", "libraryDirectory": "", "camel2DashComponentName":false},'jquery'],
                       ]

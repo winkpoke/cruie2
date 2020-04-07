@@ -42,9 +42,6 @@ var isphone = function(phone){
     }
 }
 
-
-
-
 module.exports = {
     signtoken:signtoken,
     verifytoken:verifytoken,

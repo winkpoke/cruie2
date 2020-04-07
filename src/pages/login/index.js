@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {Alert, Form, Input, Button,  Row, Col, message, Modal, Icon, Tabs,Checkbox} from 'antd';
 import { Redirect } from "react-router-dom";
 import {connect} from 'react-redux';
 import io from 'socket.io-client';
@@ -9,7 +8,6 @@ import history from '@/utils/history'
 import {authCheck} from "@/utils/authCheck";
 import {accountLogin} from "@/services/user";
 import {getRes} from "@/utils";
-import { useForm } from 'react-hook-form';
 import schema from 'async-validator';
 
 import '@/assets/css/style.css'
@@ -159,8 +157,8 @@ class Index extends Component {
 function mapStateToProps(state) {
     return {};
 }
-const IndexForm = Form.create({ name: 'normal_login' })(Index);
+//const IndexForm = Form.create({ name: 'normal_login' })(Index);
 
 export default connect(
     mapStateToProps,
-)(IndexForm);
+)(Index);

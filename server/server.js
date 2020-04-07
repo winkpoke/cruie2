@@ -50,7 +50,7 @@ app.use(function(req, res, next){
     console.log('=================我是cookie:',req.cookie);
     let authorization = req.cookies.token;
     // 排除不需要授权的路由
-     if(req.path === `${prefix}/user/login` || req.path.indexOf('static') > 0){
+     if(req.path === `${prefix}/user/login` || req.path === `${prefix}/user/sign` || req.path.indexOf('static') > 0){
         next()
     }else{
         let secretOrPrivateKey= "This is perfect projects.";

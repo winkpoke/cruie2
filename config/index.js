@@ -8,4 +8,11 @@ module.exports = {
     md5secret:"jkkks934(EIURLOE(W)WF<{fs;f{{",
     //mongolink:isthinkpad?'mongodb://test:123456@192.168.99.100:27017/test':'mongodb://test:123456@localhost:27017/test',
     //redislink:isthinkpad?'192.168.99.100':'localhost',
+    build:{
+        // Run the build command with an extra argument to
+        // View the bundle analyzer report after build finishes:
+        // `npm run build --report`
+        // Set to `true` or `false` to always turn it on or off
+        bundleAnalyzerReport: process.env.npm_config_report
+    }
 };

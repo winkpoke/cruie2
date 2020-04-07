@@ -58,7 +58,7 @@ class kp extends Component {
        setTimeout(()=>{
            window.ToastLoding = Toast.loading();
         })
-        let response = await fetch('http://localhost:3000/static/headneck_360_1024.raw');
+        let response = await fetch('/static/headneck_360_1024.raw');
         console.log(response)
         let data = await response.blob();
         let metadata = {

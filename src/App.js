@@ -1,11 +1,10 @@
 import React from 'react';
 import {  HashRouter as Router, Route, Switch, Link,browserHistory  } from "react-router-dom";
 import { Provider } from "react-redux"
-import dLayout from '@/components/dLayout'
-import dLayout1 from '@/components/dLayout1'
+
 import asyncComponent from '@/utils/asyncComponent'
 import PrivateRoute from '@/components/PrivateRoute'
-import Layout from './layout'
+
 
 import CRouter from './routes/index'
 

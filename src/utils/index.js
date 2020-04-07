@@ -1,4 +1,3 @@
-import { message } from 'antd'
 
 export function guid() { //获取随机ID，组件拖到预览视图后就会被设置个ID
     function s4() {
