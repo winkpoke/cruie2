@@ -13,5 +13,9 @@ var Sch = new Schema({
         ref: 'Patient',   // 关联的模型
         required:true
     },
+    createTime:{
+        type: Date,
+        default: Date.now
+    }
 });
 module.exports = mongoose.model(fileName,Sch);
