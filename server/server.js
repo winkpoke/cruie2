@@ -50,38 +50,29 @@ app.use(function(req, res, next){
     console.log('=================我是cookie:',req.cookie);
     let authorization = req.cookies.token;
     // 排除不需要授权的路由
-     if(req.path === `${prefix}/user/login` || req.path === `${prefix}/user/sign` || req.path.indexOf('static') > 0){
+     if(req.path === `${prefix}/user/login` || req.path === `${prefix}/user/signup` || req.path.indexOf('static') > 0){
         next()
     }else{
         let secretOrPrivateKey= "This is perfect projects.";
          jwt.verify(authorization, secretOrPrivateKey, function (err, decode) {
             if (err) {  //  认证出错
-                res.status(403).send('认证无效，请重新登录。');
+                res.status(403).send('认证无效,请重新登录:'+err.message);
             } else {
                 next();
             }
         })
     }
-})
+});
 
 const userRouter = require('../router/user');
-const pageCRouter = require('../router/pageC');
-const categoryRouter = require('../router/category');
-const pageData = require('../router/pageData');
-const attrRouter = require('../router/attr');
 
 app.use( prefix+'/user', userRouter);
-
-/*app.use('/pageC', pageCRouter);
-app.use('/pageData', pageData);
-app.use('/cat', categoryRouter);
-app.use('/attr', attrRouter);*/
 
 app.get('/api/user',(req,res)=>{
     var date = new Date();
     var tomorrow = date.setDate(new Date().getDate() + 10);
     res.cookie('rememberme', '1', { expires: date});
-    res.json({name:'珠峰架构'})
+    res.json({name:'test架构'})
 });
 
 var port = 3000;

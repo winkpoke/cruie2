@@ -7,7 +7,7 @@ var jwt = require('express-jwt');
 const config = require('../config');
 
 /*用户注册*/
-router.post('/sign',function (req,res) {
+router.post('/signup',function (req,res) {
     console.log('==========================req.body',req.body);
     const {username,password} = req.body;
      //是否合法的参数
