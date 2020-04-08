@@ -2,26 +2,31 @@
  * Created by miyaye on 2020/4/7.
  */
 const {response} = require('../utils');
-var Model = require('../../model/Paitent');
+var Model = require('../../model/Patient');
 const assert = require('assert');
 const Patient = {};
 
 /*新增*/
 Patient.add = function (data) {
     const {patientName} = data;
-    Model.findOne({patientName},async  (err,model)=>{
-        if (err) throw err;
-        if(model){
-            console.log('新增失败,病人已存在:'+patientName);
-        }else{
-            var data = await new Model({patientName}).save(function (error) {
-                if(error){
-                    assert.equal(error.errors['patientName'].message,
-                        'Path `patientName` is required.')
-                }
-            });
-            console.log('新增病人:'+data);
-        }
+    return new Promise((resolve,reject)=>{
+        Model.findOne({patientName},async  (err,model)=>{
+            if (err) throw err;
+            if(model){
+                //console.log('新增失败,病人已存在:'+patientName);
+                reject('新增失败,病人已存在'+patientName);
+            }else{
+                var data = await new Model({patientName}).save(function (error) {
+                    if(error){
+                        assert.equal(error.errors['patientName'].message,
+                            'Path `patientName` is required.')
+                        reject('Path `patientName` is required');
+                    }
+                });
+                console.log('新增病人:'+data);
+                resolve(data);
+            }
+        })
     })
 };
 

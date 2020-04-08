@@ -3,7 +3,7 @@ var jwt = require('jsonwebtoken')
 var md5 = require('md5')
 
 var signtoken = function(obj){
-    return jwt.sign(obj, config.jwtsecret, { expiresIn: config.jwtExpireDefault });
+    return jwt.sign(obj, config.jwtsecret, { expiresIn: config.jwtExpire });
 }
 
 var verifytoken = function(token){

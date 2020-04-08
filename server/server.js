@@ -5,8 +5,9 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 const bodyParser = require('body-parser');
 let webpack = require('webpack');
 let middle = require('webpack-dev-middleware');
-let config =  require('../build/webpack.wasm')  ;
-let compiler = webpack(config);
+const config = require('../config')
+let webpackConfig =  require('../build/webpack.wasm');
+let compiler = webpack(webpackConfig);
 var jwt = require('jsonwebtoken');
 app.use(middle(compiler));
 app.use(webpackHotMiddleware(compiler));
@@ -29,7 +30,6 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 io.on('connection', (socket) => {
     console.log('a user connected');
-
     //服务端关闭
     setTimeout(() => socket.disconnect(true), 5000);
 
@@ -45,16 +45,16 @@ io.on('connection', (socket) => {
 
 app.use(function(req, res, next){
     // 获取请求头中的Authorization认证字符
-    //let authorization = req.get('Authorization');
-    console.log('=================我是path:',req.path);
+    let token = req.get('token');
+    console.log('=================我是token:',token);
     console.log('=================我是cookie:',req.cookie);
-    let authorization = req.cookies.token;
+    let authorization = req.cookies.token || token ;
+    console.log('authorization',authorization)
     // 排除不需要授权的路由
      if(req.path === `${prefix}/user/login` || req.path === `${prefix}/user/signup` || req.path.indexOf('static') > 0){
         next()
     }else{
-        let secretOrPrivateKey= "This is perfect projects.";
-         jwt.verify(authorization, secretOrPrivateKey, function (err, decode) {
+         jwt.verify(authorization, config.jwtsecret, function (err, decode) {
             if (err) {  //  认证出错
                 res.status(403).send('认证无效,请重新登录:'+err.message);
             } else {
@@ -65,8 +65,9 @@ app.use(function(req, res, next){
 });
 
 const userRouter = require('../router/user');
-
+const patientRouter = require('../router/patient');
 app.use( prefix+'/user', userRouter);
+app.use( prefix+'/patient', patientRouter);
 
 app.get('/api/user',(req,res)=>{
     var date = new Date();

@@ -1,6 +1,7 @@
 /**
  * Created by miyaye on 2020/4/7.
  */
+const mongoose = require('../db')
 var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
@@ -8,80 +9,114 @@ var exec = require('child_process').exec;
 const Patient = require('./PatientModelOpt/patient');
 const FilePath = require('./PatientModelOpt/filePath');
 
-var num = 0;
-var patientNames = [];
 const _ = require('lodash');
 
+var patientNames = [];
+var split = '/';
 /*新增path*/
- function addFilePath(patientName,fullpath) {
-    const pat =  Patient.findOne({patientName}).then(async(patientRow)=>{
-        const {_id} = patientRow;//病人id
-        await  FilePath.add({
-            patientName,
-            patientId:_id,
-            type:path.basename(fullpath),
-            path:fullpath
-        });
+ function addFilePath(patientName,fullpath ,pid , children ) {
+     Patient.findOne({patientName}).then(async(patientRow)=>{
+        if(patientRow){
+            const {_id} = patientRow;//病人id
+            var name = path.basename(fullpath);
+            var type=null,level=null;
+            if(name.startsWith('ct')){
+                type = 'ct';
+                level = 1;
+            }else if(name.startsWith('cb') || name.startsWith('reg') ){
+                type = 'cbct';
+                level = 2;
+            }else if(name == 'dcm'){
+                type = 'dcm';
+                level = 2;
+            } else {
+                type = 'cname';
+                level = 0
+            }
+            await FilePath.add({
+                patientName,
+                name,
+                level,
+                patientId:_id,
+                type,
+                path:fullpath,
+                pid,
+                children: type == 'cname' || type == 'ct' ? children : []
+            });
+        }else{
+            console.log('路径插入失败:未找到patient')
+        }
     });
 }
 
 function readFileList(dir, filesList = []) {
     const files = fs.readdirSync(dir);
-    if(num == 0){
-        patientNames = _.without(files,'.DS_Store');
-        //循环病人 添加病人mongodb
-        patientNames.forEach(pName=>{
-            Patient.add({patientName:pName});
-        });
-    }
-    num++;
-    //console.log(num,files);
-    //获取病人第一层目录 张三 , 李四
-    var flag = true;
+    const curDirName = path.basename(dir);
     files.forEach(async (item, index) => {
         var fullPath = path.join(dir, item);
-        var patientName = _.intersection(patientNames,fullPath.split('/'))[0];
-        if(!item.endsWith('.DS_Store')){
-            if(path.basename(item).startsWith('ct-')){
-                //这是ct 目录 add ct path
-                //console.log('== ct-',path.join(dir, item));
-                //addFilePath(patientName,item,fullPath)
-            }
+        if(fullPath.indexOf('\\')>0){
+            split = '\\'
         }
-
+        var patientName = (_.intersection(patientNames,fullPath.split(split)))[0];
         const stat = fs.statSync(fullPath);
         if (stat.isDirectory()) {
-            var files = fs.readdirSync(fullPath);
-            //console.log('======',files.length,files);
-            if(files.length == 1 && files[0].indexOf('.DS_Store')>0){
-                //这就是最后的一层目录 只不过是个空目录 todo type 入库
-                //addFilePath(patientName,item,fullPath)
-                console.log('===空目录：',dir,item,fullPath)
-            }
-            //console.log('我是目录',dir);
-            //const res = await addFilePath(patientName,dir,dir);
+            //如果是目录 则路径入库
+            var children = _.without(fs.readdirSync(fullPath),'dcm');
+            addFilePath(patientName,fullPath , path.basename(dir) , children);
             readFileList(path.join(dir, item), filesList); //递归读取文件
-        } else {
-            if(flag){
-                flag = false;
-                if(path.basename(dir).startsWith('c') || path.basename(dir).startsWith('dcm')){
-                    console.log('可以添加了',dir,path.basename(dir));
-                    await addFilePath(patientName,dir);
-                }
-            }
-            if(!item.endsWith('.DS_Store')){
-                //最后一层目录 todo 入库
-
-               //const res = await addFilePath(patientName,dir,dir);
-                filesList.push(fullPath);
-            }
         }
     });
-
-    //console.log(files);
     return filesList;
 }
-var filesList = [];
-readFileList(path.resolve(__dirname,'../../patients'),filesList);
-//console.log(111,patientNames);
-//console.log(filesList);
+
+/************************start reading folders***********************************************************/
+
+var dirPath = path.resolve(__dirname,'../../patients');
+
+const startRead = (dirPath)=>{
+    //读取第一层目录 将病人入库
+    const files = fs.readdirSync(dirPath);
+    patientNames = _.without(files,'.DS_Store');
+
+    //循环病人 添加病人mongodb
+    var filesList = [];
+    const allP = [];
+
+    //初始化 或者检测目录有修改的时候 重新读 drop patients, filepaths
+    const {collections} = mongoose.connection.collections;
+
+    if(collections){
+        for(var col in collections){
+            if(col=='patiens' || col == 'filepaths'){
+                col.drop()
+            }
+        }
+    }
+
+    patientNames.forEach(pName=>{
+        const res = Patient.add({patientName:pName});
+        allP.push(res);
+    });
+
+    //当一级病人目录读完之后才读下面的文件目录
+    Promise.all(allP).then(res=>{
+        //病人都入库后 循环病人下的目录 依次将目录添加到mongodb
+        readFileList(dirPath,filesList);
+    }).catch(e=>{
+        console.log('allp:',e);
+        readFileList(dirPath,filesList);
+    });
+};
+const readDcm = (dir)=>{
+    const files = fs.readdirSync(dirPath);
+    //todo 读取文件信息 合并文件buffer
+};
+module.exports={
+    startRead,
+    readDcm
+};
+
+
+
+
+
