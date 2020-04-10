@@ -10,10 +10,11 @@ router.get('/list',async function (req,res) {
 
   var a =  patients.map(async item=> {
         var obj = {};
-        const {_id,patientName} = item;
+        const {_id,patientName,detail} = item;
         obj['title'] = patientName;
         obj['key'] = _id;
         obj['level'] = 0;
+        obj['detail'] = detail;
         obj['children'] = await ModelFilePath
             .find({patientId: _id, type: "cbct"})
             .select('_id patientId pid name type path')
@@ -28,6 +29,7 @@ router.get('/list',async function (req,res) {
             obj1['type'] = type;
             obj1['level'] = 2;
             obj1['path'] = url;
+            obj1['detail'] = detail;
             return obj1;
         });
         return obj;

@@ -1001,6 +1001,7 @@ body.modal-open,
     float: left;
     width: 100%;
     cursor: default;
+    color:#fff;
 }
 .box.box-solid > .box-header {
     padding-bottom: 0px!important;

@@ -1,94 +1,113 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import DLayouta  from '@/components/dLayout1'
+import {SearchOutlined} from '@ant-design/icons';
 import '@/assets/css/cbct.css'
 import Kp from '../kelper/index'
 import SideL from './sideL';
 @connect((store) => {
-    return {};
+    return {app:store.app,};
 })
 class Index extends Component {
     static displayName='Dash';
+
+    constructor(props, context) {
+        super(props, context);
+        this.child = null;
+
+    }
+
     state={
         tabbar:[
             {title:"CURIE",url:""}
-        ]
+        ],
+        showPatientInfo:false,
+        showSideL:true,
+        curRow:null //当前选中node
+    };
+    onRef(ref){
+        this.child = ref
+    }
+    componentWillReceiveProps(nextProps){
+        this.setState({curRow:nextProps.app.curRow})
     }
     componentDidMount(){
-        //this.props.dispatch({type:'user/alice'})
+
     }
     fnChange(){
 
     }
+    toggleSideL(){
+        this.setState({showSideL:!this.state.showSideL})
+    }
+    togglePatientInfo(){
+        //console.log(this.child.state);
+        this.setState({showPatientInfo:!this.state.showPatientInfo})
+    }
     render() {
+        const {showSideL,showPatientInfo} = this.state;
+        var patinfo = null;
+        if(this.state.curRow){
+            var {detail} = this.state.curRow;
+            if(detail){
+                 var {patinfo} = detail;
+            }
+        }
+
         return (
             <DLayouta tabbar={this.state.tabbar} className="admin-kelper">
                 {/*左侧开始*/}
-                <div className="cl-sidebar" data-position="right" id="leftMenu" style={{"background":"#292929"}}>
+                {showSideL ? <div className="cl-sidebar" data-position="right" id="leftMenu" style={{"background":"#292929"}}>
                     <div className="patientlist cl-navblock" style={{"height":"100%"}}>
-                        <SideL/>
-                       {/* <ul className="yiji">
-                            <li style={{paddingBottom: "3px"}}>
-                                <input type="text" name="searchPatient" placeholder="Search Patient" className="search-input"/>
-                            </li>
-                            <li>
-                            <a href="#" series="0" pantientid="1" className="inactive" id="PatientItem"  ><i className="fa fa-square-o" aria-hidden="true"></i> Cathy Kingslan</a>
+                        <SideL onRef={c=>this.child=c}/>
+                    </div>
+                </div> : '' }
 
-                                <ul style={{display: "none"}}>
-                                <li className="patientlast">
-                                    <a href="#" series="1" className="inactive" id ="ImageSeries"  ><i className="fa fa-square-o" aria-hidden="true"></i> CT 2019/06/21</a>
-                                    <ul>
-                                        <li>
-                                            <a series="2" href="#" ct_id="1" id ="ImageItem"  > <i className="fa fa-square-o" aria-hidden="true"></i> REG 2019/07/01</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                            </li>
-                        </ul>*/}
-                        </div>
-                </div>
                 {/*左侧结束*/}
                  <div className="container-fluid" id="pcont" style={{"paddingBottom": "49px" , "height":"100%","width":"85" }}>
-                    <div id="hidden-patient-info" style={{"paddingLeft":"1px","width":"36px","float":"left"}}>
-                        <div className="box box-solid box-info box2" style={{"height":"106%","marginTop":"1px"}}>
-                            <div className="box-body" style={{"textAlign":"center","marginTop":"1px"}}>
-                                <i className="fa fa-search fa-inverse fa-2x" aria-hidden="true" id="input-icon" style={{paddingTop:"7px",display:"none",cursor:"pointer"}} title="show menu"></i>
-                                <ul className="navbar-nav" style={{padding:"2px",marginTop:"8px"}} id="nav-menu">
-                                    <li>
-                                        <a href="#" data-toggle="offLeftMenu" role="button" title="hidden menu">
-                                            <span className="sr-only">Toggle navigation</span>
-                                            <span className="icon-bar"></span>
-                                            <span className="icon-bar"></span>
-                                            <span className="icon-bar"></span>
-                                        </a>
-                                    </li>
-                                </ul>
-                                <img src="/static/images/show-patient.png" style={{width:"20px",height:"30px",cursor:"pointer"}} id="show-patient" title="Show Patient Info"/>
-                                <img src="/static/images/show-treatment.png" style={{width: "20px",height:"20px",cursor: "pointer",marginTop:"5px"}} id="show-treatment" title="Show Treatment Info"/>
-                                <img src="/static/images/show-comment.png" style={{width: "20px",height:"20px",cursor: "pointer",marginTop:"5px"}} id="show-comment" title="Show Comment Info"/>
-                            </div>
-                        </div>
-                    </div>
+                     {!showPatientInfo ? <div id="hidden-patient-info" style={{"paddingLeft":"1px","width":"36px","float":"left"}}>
+                         <div className="box box-solid box-info box2" style={{"height":"106%","marginTop":"1px"}}>
+                             <div className="box-body" style={{"textAlign":"center","marginTop":"1px"}}>
 
-                     <div id="patient-info-div" className="col-sm-2 col-md-2 patient-info" style={{display:"none",width:"17%",paddingLeft:"1px"}}>
-                         <div className="box box-solid box-info" style={{height: "38%",marginBottom:"1px"}}>
+
+                                 {showSideL ? <ul className="navbar-nav" style={{padding:"2px",marginTop:"8px"}} id="nav-menu">
+                                     <li className="iconList" onClick={this.toggleSideL.bind(this)}>
+                                         <a  data-toggle="offLeftMenu" role="button" title="hidden menu">
+                                             <span className="sr-only">Toggle navigation</span>
+                                             <span className="icon-bar"></span>
+                                             <span className="icon-bar"></span>
+                                             <span className="icon-bar"></span>
+                                         </a>
+                                     </li>
+                                 </ul> :  <SearchOutlined style={{fontSize:"22px",color:"#fff"}} onClick={this.toggleSideL.bind(this)}/>
+                                 }
+
+
+                                 <img src="/static/images/show-patient.png" style={{width:"20px",height:"30px",cursor:"pointer"}} id="show-patient" title="Show Patient Info" onClick={this.togglePatientInfo.bind(this)}/>
+                                 <img src="/static/images/show-treatment.png" style={{width: "20px",height:"20px",cursor: "pointer",marginTop:"5px"}} id="show-treatment" title="Show Treatment Info" onClick={this.togglePatientInfo.bind(this)}/>
+                                 <img src="/static/images/show-comment.png" style={{width: "20px",height:"20px",cursor: "pointer",marginTop:"5px"}} id="show-comment" title="Show Comment Info" onClick={this.togglePatientInfo.bind(this)}/>
+                             </div>
+                         </div>
+                     </div> : '' }
+
+                     {showPatientInfo ? <div id="patient-info-div" className="col-sm-2 col-md-2 patient-info" style={{width:"14%",paddingLeft:"1px"}}>
+                         <div className="box box-solid box-info" style={{height: "38%", marginTop:0, marginBottom:"1px"}}>
                              <div className="box-header">
                                  <h3 className="box-title">
                                      Patient Info
-                                     <a href="#" id="show-list" style={{float: "right",color: "#FCFAF2"}}>
-                                         <img src="" style={{width: "17px",height:"25px",marginTop: "-9px"}} id="show-patient2" title="Show Patient List"/>
+                                     <a id="show-list" style={{float: "right",color: "#FCFAF2"}} onClick={this.togglePatientInfo.bind(this)}>
+                                         <img src="/static/images/show-patient.png" style={{width: "17px",height:"25px",marginTop: "-9px"}} id="show-patient2" title="Show Patient List"/>
                                      </a>
                                  </h3>
                              </div>
                              <div className="box-body box-body2" style={{marginTop:"0px"}}>
                                  <p>
                                      <span>Patient Name:</span>
-                                     <span id="patientnm" ></span>
+                                     <span id="patientnm" >{patinfo ? patinfo[0]: ''}</span>
                                  </p>
                                  <p>
                                      <span>Patient ID:</span>
-                                     <span id="patientid" ></span>
+                                     <span id="patientid" >{patinfo ? patinfo[1] : ''}</span>
                                  </p>
                                  <p>
                                      <span>Gender:</span>
@@ -147,8 +166,9 @@ class Index extends Component {
                                  &nbsp;
                              </div>
                          </div>
-                     </div>
-                     <div id="TSC3D" className="  flex">
+                     </div> : ''}
+
+                     <div id="TSC3D" className="flex" style={{alignItems:"start"}}>
                          <div style={{background:"#1c1c1c"}}>
                              <Kp></Kp>
                          </div>
