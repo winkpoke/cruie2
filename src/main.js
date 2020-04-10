@@ -3,12 +3,12 @@ import ReactDOM from 'react-dom'
 import App from './App'
 
 import './assets/css/bootstrap.min.css'
-import './assets/css/font-awesome.min.css'
+//import './assets/css/font-awesome.min.css'
 
 //import './assets/main.less'
 
 //import 'antd/dist/antd.css'
-//import './assets/main.less';
+import './assets/main.less';
 import { Provider } from "react-redux"
 import store from "./store/index"
 import  './utils/axiosSetting'

@@ -11,19 +11,20 @@ input::-ms-input-placeholder {
   color: #e8e8e8;
 }
 
-/*header*/
-.navbar {
-  border: 0;
-  background-color: #1C1C1C;
-  color: #2D6D4B;
-  padding-left: 10px;
-  padding-right: 25px;
-  margin-right: 5px;
-  .navbar-brand{
-    width: 206px;
-    color: #2D6D4B;
-  }
-  &.nav-default{
-
+.admin-kelper{
+  .sideL{
+    .ant-tree{
+      background:none;
+      color:#fff;
+      .ant-tree-node-content-wrapper:hover {
+        background-color: #444
+      }
+       .ant-tree-node-content-wrapper.ant-tree-node-selected {
+        background-color: #5a5a5a
+      }
+      .ant-tree-checkbox{
+        transform: scale(.65);
+      }
+    }
   }
 }

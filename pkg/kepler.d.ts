@@ -31,65 +31,113 @@ export class GlCanvas {
 */
   set_window(window: number): void;
 /**
+* @returns {number} 
+*/
+  get_window(): number;
+/**
 * @param {number} level 
 */
   set_level(level: number): void;
+/**
+* @returns {number} 
+*/
+  get_level(): number;
 /**
 * @param {number} scale 
 */
   set_scale_transverse(scale: number): void;
 /**
+* @returns {number} 
+*/
+  get_scale_transverse(): number;
+/**
 * @param {number} scale 
 */
   set_scale_sagittal(scale: number): void;
+/**
+* @returns {number} 
+*/
+  get_scale_sagittal(): number;
 /**
 * @param {number} scale 
 */
   set_scale_coronal(scale: number): void;
 /**
+* @returns {number} 
+*/
+  get_scale_coronal(): number;
+/**
 * @param {number} x 
 */
   set_pan_transverse_x(x: number): void;
+/**
+* @returns {number} 
+*/
+  get_pan_transverse_x(): number;
 /**
 * @param {number} y 
 */
   set_pan_transverse_y(y: number): void;
 /**
+* @returns {number} 
+*/
+  get_pan_transverse_y(): number;
+/**
 * @param {number} x 
 */
   set_pan_sagittal_x(x: number): void;
+/**
+* @returns {number} 
+*/
+  get_pan_sagittal_x(): number;
 /**
 * @param {number} y 
 */
   set_pan_sagittal_y(y: number): void;
 /**
+* @returns {number} 
+*/
+  get_pan_sagittal_y(): number;
+/**
 * @param {number} x 
 */
   set_pan_coronal_x(x: number): void;
 /**
-* @param {number} y 
+* @returns {number} 
 */
-  set_pan_coronal_y(y: number): void;
+  get_pan_coronal_x(): number;
 /**
-* @param {number} dx 
+* @param {number} z 
 */
-  set_pan_dx(dx: number): void;
+  set_pan_coronal_y(z: number): void;
 /**
-* @param {number} dy 
+* @returns {number} 
 */
-  set_pan_dy(dy: number): void;
+  get_pan_coronal_y(): number;
 /**
 * @param {number} slice 
 */
   set_slice_transverse(slice: number): void;
 /**
+* @returns {number} 
+*/
+  get_slice_transverse(): number;
+/**
 * @param {number} slice 
 */
   set_slice_sagittal(slice: number): void;
 /**
+* @returns {number} 
+*/
+  get_slice_sagittal(): number;
+/**
 * @param {number} slice 
 */
   set_slice_coronal(slice: number): void;
+/**
+* @returns {number} 
+*/
+  get_slice_coronal(): number;
 /**
 */
   load_shaders(): void;

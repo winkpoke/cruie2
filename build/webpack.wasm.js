@@ -97,7 +97,7 @@ module.exports = {
     // mode: "development",
     // devtool: 'cheap-module-eval-source-map',
     devtool: false,
-    mode:"production",
+    mode: config.build.isProd ? "production": "development",
     module:{
       rules:[
           {
@@ -114,6 +114,7 @@ module.exports = {
                       plugins:["@babel/plugin-transform-runtime",
                           ["@babel/plugin-proposal-decorators", { "legacy": true }],
                           ["@babel/plugin-proposal-class-properties", { "loose": true }],
+                          ["import", {"libraryName": "antd", "libraryDirectory": "es"},'ant'],
                           ["import", {"libraryName": "lodash", "libraryDirectory": "", "camel2DashComponentName":false},'lodash'],
                       ]
                   }
@@ -156,12 +157,12 @@ module.exports = {
               }
           },
           {
-              test: /\.(woff|woff2|eot|ttf|otf)$/,
+              test: /\.(woff|svg|woff2|eot|ttf|otf)$/,
               use: {
                   loader:'url-loader',
                   options:{
                       limit:1,// 超过这个用　file-loader 生成真正的图片,否则用url-loader
-                      outputPath:'fonts/'
+                      outputPath:'static/fonts/'
                   }
               }
           },

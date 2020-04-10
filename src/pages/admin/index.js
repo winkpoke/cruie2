@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import DLayouta  from '@/components/dLayout1'
 import '@/assets/css/cbct.css'
 import Kp from '../kelper/index'
+import SideL from './sideL';
 @connect((store) => {
     return {};
 })
@@ -20,19 +21,20 @@ class Index extends Component {
 
     }
     render() {
-
         return (
-            <DLayouta tabbar={this.state.tabbar}>
+            <DLayouta tabbar={this.state.tabbar} className="admin-kelper">
                 {/*左侧开始*/}
                 <div className="cl-sidebar" data-position="right" id="leftMenu" style={{"background":"#292929"}}>
                     <div className="patientlist cl-navblock" style={{"height":"100%"}}>
-                        <ul className="yiji">
+                        <SideL/>
+                       {/* <ul className="yiji">
                             <li style={{paddingBottom: "3px"}}>
                                 <input type="text" name="searchPatient" placeholder="Search Patient" className="search-input"/>
                             </li>
                             <li>
                             <a href="#" series="0" pantientid="1" className="inactive" id="PatientItem"  ><i className="fa fa-square-o" aria-hidden="true"></i> Cathy Kingslan</a>
-                            <ul style={{display: "none"}}>
+
+                                <ul style={{display: "none"}}>
                                 <li className="patientlast">
                                     <a href="#" series="1" className="inactive" id ="ImageSeries"  ><i className="fa fa-square-o" aria-hidden="true"></i> CT 2019/06/21</a>
                                     <ul>
@@ -43,7 +45,7 @@ class Index extends Component {
                                 </li>
                             </ul>
                             </li>
-                        </ul>
+                        </ul>*/}
                         </div>
                 </div>
                 {/*左侧结束*/}

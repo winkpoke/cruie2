@@ -5,7 +5,7 @@ const mongoose = require('../db')
 var fs = require('fs');
 var path = require('path');
 var exec = require('child_process').exec;
-
+const rDicom = require('./rDicom');
 const Patient = require('./PatientModelOpt/patient');
 const FilePath = require('./PatientModelOpt/filePath');
 
@@ -43,6 +43,10 @@ var split = '/';
                 pid,
                 children: type == 'cname' || type == 'ct' ? children : []
             });
+
+            if(name == 'dcm'){
+                await rDicom.readDicom(fullpath);
+            }
         }else{
             console.log('路径插入失败:未找到patient')
         }
@@ -107,13 +111,11 @@ const startRead = (dirPath)=>{
         readFileList(dirPath,filesList);
     });
 };
-const readDcm = (dir)=>{
-    const files = fs.readdirSync(dirPath);
-    //todo 读取文件信息 合并文件buffer
-};
+//开始读病人目录
+startRead(dirPath);
 module.exports={
     startRead,
-    readDcm
+    rDicom
 };
 
 

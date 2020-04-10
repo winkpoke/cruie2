@@ -32,7 +32,7 @@ class dLayouta extends Component {
     }
     render() {
         return (
-            <div>
+            <div className={this.props.className}>
                 <div id="head-nav" className="navbar navbar-default navbar-fixed-top" style={{"width":"100%"}}>
                     <div className="container-fluid">
                         <div className="navbar-header">

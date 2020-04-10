@@ -58,7 +58,7 @@ class kp extends Component {
        setTimeout(()=>{
            window.ToastLoding = Toast.loading();
         })
-        let response = await fetch('/static/headneck_360_1024.raw');
+        let response = await fetch('/static/raw/headneck_360_1024.raw');
         console.log(response)
         let data = await response.blob();
         let metadata = {
@@ -73,12 +73,13 @@ class kp extends Component {
         setTimeout(window.ToastLoding,3000)
     }
     componentDidMount(){
+        console.log('mounted');
         let canvas = document.getElementById("mycanvas");
         let w = canvas.clientWidth;
         let h = canvas.clientHeight;
         this.glcanvas = GlCanvas.new("mycanvas", w, h, 12000, 15000);
         this.glcanvas.load_shaders();
-        console.log(ViewType.SAGITTAL);
+        console.log(ViewType.SAGITTAL || 'ssss' );
         console.log('window:',this.glcanvas.window);
         this.getFile();
     }

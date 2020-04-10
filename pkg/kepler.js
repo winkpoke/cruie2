@@ -20,6 +20,15 @@ function takeObject(idx) {
     return ret;
 }
 
+function addHeapObject(obj) {
+    if (heap_next === heap.length) heap.push(heap.length + 1);
+    const idx = heap_next;
+    heap_next = heap[idx];
+
+    heap[idx] = obj;
+    return idx;
+}
+
 const lTextDecoder = typeof TextDecoder === 'undefined' ? require('util').TextDecoder : TextDecoder;
 
 let cachedTextDecoder = new lTextDecoder('utf-8', { ignoreBOM: true, fatal: true });
@@ -38,13 +47,24 @@ function getStringFromWasm0(ptr, len) {
     return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
 }
 
-function addHeapObject(obj) {
-    if (heap_next === heap.length) heap.push(heap.length + 1);
-    const idx = heap_next;
-    heap_next = heap[idx];
+function isLikeNone(x) {
+    return x === undefined || x === null;
+}
 
-    heap[idx] = obj;
-    return idx;
+let cachegetFloat64Memory0 = null;
+function getFloat64Memory0() {
+    if (cachegetFloat64Memory0 === null || cachegetFloat64Memory0.buffer !== wasm.memory.buffer) {
+        cachegetFloat64Memory0 = new Float64Array(wasm.memory.buffer);
+    }
+    return cachegetFloat64Memory0;
+}
+
+let cachegetInt32Memory0 = null;
+function getInt32Memory0() {
+    if (cachegetInt32Memory0 === null || cachegetInt32Memory0.buffer !== wasm.memory.buffer) {
+        cachegetInt32Memory0 = new Int32Array(wasm.memory.buffer);
+    }
+    return cachegetInt32Memory0;
 }
 
 function debugString(val) {
@@ -169,14 +189,6 @@ function passStringToWasm0(arg, malloc, realloc) {
     return ptr;
 }
 
-let cachegetInt32Memory0 = null;
-function getInt32Memory0() {
-    if (cachegetInt32Memory0 === null || cachegetInt32Memory0.buffer !== wasm.memory.buffer) {
-        cachegetInt32Memory0 = new Int32Array(wasm.memory.buffer);
-    }
-    return cachegetInt32Memory0;
-}
-
 function makeMutClosure(arg0, arg1, dtor, f) {
     const state = { a: arg0, b: arg1, cnt: 1 };
     const real = (...args) => {
@@ -196,7 +208,7 @@ function makeMutClosure(arg0, arg1, dtor, f) {
     real.original = state;
     return real;
 }
-function __wbg_adapter_24(arg0, arg1) {
+function __wbg_adapter_26(arg0, arg1) {
     wasm._dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hb5f4ab0214dc77a0(arg0, arg1);
 }
 
@@ -227,10 +239,6 @@ export function start(canvas_id) {
 
 function handleError(e) {
     wasm.__wbindgen_exn_store(addHeapObject(e));
-}
-
-function isLikeNone(x) {
-    return x === undefined || x === null;
 }
 /**
 */
@@ -455,10 +463,24 @@ export class GlCanvas {
         wasm.glcanvas_set_window(this.ptr, window);
     }
     /**
+    * @returns {number}
+    */
+    get_window() {
+        var ret = wasm.glcanvas_get_window(this.ptr);
+        return ret;
+    }
+    /**
     * @param {number} level
     */
     set_level(level) {
         wasm.glcanvas_set_level(this.ptr, level);
+    }
+    /**
+    * @returns {number}
+    */
+    get_level() {
+        var ret = wasm.glcanvas_get_level(this.ptr);
+        return ret;
     }
     /**
     * @param {number} scale
@@ -467,10 +489,24 @@ export class GlCanvas {
         wasm.glcanvas_set_scale_transverse(this.ptr, scale);
     }
     /**
+    * @returns {number}
+    */
+    get_scale_transverse() {
+        var ret = wasm.glcanvas_get_scale_transverse(this.ptr);
+        return ret;
+    }
+    /**
     * @param {number} scale
     */
     set_scale_sagittal(scale) {
         wasm.glcanvas_set_scale_sagittal(this.ptr, scale);
+    }
+    /**
+    * @returns {number}
+    */
+    get_scale_sagittal() {
+        var ret = wasm.glcanvas_get_scale_sagittal(this.ptr);
+        return ret;
     }
     /**
     * @param {number} scale
@@ -479,10 +515,24 @@ export class GlCanvas {
         wasm.glcanvas_set_scale_coronal(this.ptr, scale);
     }
     /**
+    * @returns {number}
+    */
+    get_scale_coronal() {
+        var ret = wasm.glcanvas_get_scale_coronal(this.ptr);
+        return ret;
+    }
+    /**
     * @param {number} x
     */
     set_pan_transverse_x(x) {
         wasm.glcanvas_set_pan_transverse_x(this.ptr, x);
+    }
+    /**
+    * @returns {number}
+    */
+    get_pan_transverse_x() {
+        var ret = wasm.glcanvas_get_pan_transverse_x(this.ptr);
+        return ret;
     }
     /**
     * @param {number} y
@@ -491,10 +541,24 @@ export class GlCanvas {
         wasm.glcanvas_set_pan_transverse_y(this.ptr, y);
     }
     /**
+    * @returns {number}
+    */
+    get_pan_transverse_y() {
+        var ret = wasm.glcanvas_get_pan_transverse_y(this.ptr);
+        return ret;
+    }
+    /**
     * @param {number} x
     */
     set_pan_sagittal_x(x) {
         wasm.glcanvas_set_pan_sagittal_x(this.ptr, x);
+    }
+    /**
+    * @returns {number}
+    */
+    get_pan_sagittal_x() {
+        var ret = wasm.glcanvas_get_pan_sagittal_x(this.ptr);
+        return ret;
     }
     /**
     * @param {number} y
@@ -503,28 +567,37 @@ export class GlCanvas {
         wasm.glcanvas_set_pan_sagittal_y(this.ptr, y);
     }
     /**
+    * @returns {number}
+    */
+    get_pan_sagittal_y() {
+        var ret = wasm.glcanvas_get_pan_sagittal_y(this.ptr);
+        return ret;
+    }
+    /**
     * @param {number} x
     */
     set_pan_coronal_x(x) {
         wasm.glcanvas_set_pan_coronal_x(this.ptr, x);
     }
     /**
-    * @param {number} y
+    * @returns {number}
     */
-    set_pan_coronal_y(y) {
-        wasm.glcanvas_set_pan_coronal_y(this.ptr, y);
+    get_pan_coronal_x() {
+        var ret = wasm.glcanvas_get_pan_coronal_x(this.ptr);
+        return ret;
     }
     /**
-    * @param {number} dx
+    * @param {number} z
     */
-    set_pan_dx(dx) {
-        wasm.glcanvas_set_pan_dx(this.ptr, dx);
+    set_pan_coronal_y(z) {
+        wasm.glcanvas_set_pan_coronal_y(this.ptr, z);
     }
     /**
-    * @param {number} dy
+    * @returns {number}
     */
-    set_pan_dy(dy) {
-        wasm.glcanvas_set_pan_dy(this.ptr, dy);
+    get_pan_coronal_y() {
+        var ret = wasm.glcanvas_get_pan_coronal_y(this.ptr);
+        return ret;
     }
     /**
     * @param {number} slice
@@ -533,16 +606,37 @@ export class GlCanvas {
         wasm.glcanvas_set_slice_transverse(this.ptr, slice);
     }
     /**
+    * @returns {number}
+    */
+    get_slice_transverse() {
+        var ret = wasm.glcanvas_get_slice_transverse(this.ptr);
+        return ret;
+    }
+    /**
     * @param {number} slice
     */
     set_slice_sagittal(slice) {
         wasm.glcanvas_set_slice_sagittal(this.ptr, slice);
     }
     /**
+    * @returns {number}
+    */
+    get_slice_sagittal() {
+        var ret = wasm.glcanvas_get_slice_sagittal(this.ptr);
+        return ret;
+    }
+    /**
     * @param {number} slice
     */
     set_slice_coronal(slice) {
         wasm.glcanvas_set_slice_coronal(this.ptr, slice);
+    }
+    /**
+    * @returns {number}
+    */
+    get_slice_coronal() {
+        var ret = wasm.glcanvas_get_slice_coronal(this.ptr);
+        return ret;
     }
     /**
     */
@@ -593,6 +687,11 @@ export const __wbg_log_86916f586434335d = function(arg0, arg1) {
 
 export const __wbg_alert_5555fbce5a6ff9fc = function(arg0, arg1) {
     alert(getStringFromWasm0(arg0, arg1));
+};
+
+export const __wbindgen_object_clone_ref = function(arg0) {
+    var ret = getObject(arg0);
+    return addHeapObject(ret);
 };
 
 export const __wbindgen_string_new = function(arg0, arg1) {
@@ -729,6 +828,11 @@ export const __wbg_getShaderParameter_7be7bfb09e311949 = function(arg0, arg1, ar
     return addHeapObject(ret);
 };
 
+export const __wbg_getUniform_7406a21a28360774 = function(arg0, arg1, arg2) {
+    var ret = getObject(arg0).getUniform(getObject(arg1), getObject(arg2));
+    return addHeapObject(ret);
+};
+
 export const __wbg_getUniformLocation_34cdcb1c7d68bf1a = function(arg0, arg1, arg2, arg3) {
     var ret = getObject(arg0).getUniformLocation(getObject(arg1), getStringFromWasm0(arg2, arg3));
     return isLikeNone(ret) ? 0 : addHeapObject(ret);
@@ -844,6 +948,11 @@ export const __wbg_call_804d3ad7e8acd4d5 = function(arg0, arg1) {
     }
 };
 
+export const __wbg_instanceof_Object_eff62166ff6be605 = function(arg0) {
+    var ret = getObject(arg0) instanceof Object;
+    return ret;
+};
+
 export const __wbg_globalThis_48a5e9494e623f26 = function() {
     try {
         var ret = globalThis.globalThis;
@@ -905,9 +1014,11 @@ export const __wbg_newwithbyteoffset_618efb438fcb4bf9 = function(arg0, arg1) {
     return addHeapObject(ret);
 };
 
-export const __wbindgen_object_clone_ref = function(arg0) {
-    var ret = getObject(arg0);
-    return addHeapObject(ret);
+export const __wbindgen_number_get = function(arg0, arg1) {
+    const obj = getObject(arg1);
+    var ret = typeof(obj) === 'number' ? obj : undefined;
+    getFloat64Memory0()[arg0 / 8 + 1] = isLikeNone(ret) ? 0 : ret;
+    getInt32Memory0()[arg0 / 4 + 0] = !isLikeNone(ret);
 };
 
 export const __wbindgen_boolean_get = function(arg0) {
@@ -937,8 +1048,8 @@ export const __wbindgen_memory = function() {
     return addHeapObject(ret);
 };
 
-export const __wbindgen_closure_wrapper206 = function(arg0, arg1, arg2) {
-    var ret = makeMutClosure(arg0, arg1, 18, __wbg_adapter_24);
+export const __wbindgen_closure_wrapper221 = function(arg0, arg1, arg2) {
+    var ret = makeMutClosure(arg0, arg1, 20, __wbg_adapter_26);
     return addHeapObject(ret);
 };
 

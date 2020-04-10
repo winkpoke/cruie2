@@ -23,7 +23,7 @@ Patient.add = function (data) {
                         reject('Path `patientName` is required');
                     }
                 });
-                console.log('新增病人:'+data);
+                console.log('新增病人:'+patientName);
                 resolve(data);
             }
         })
