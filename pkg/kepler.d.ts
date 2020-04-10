@@ -5,10 +5,6 @@
 */
 export function greet(name: string): void;
 /**
-* @param {string} canvas_id 
-*/
-export function start(canvas_id: string): void;
-/**
 */
 export enum ViewType {
   TRANSVERSE,
@@ -139,22 +135,15 @@ export class GlCanvas {
 */
   get_slice_coronal(): number;
 /**
-*/
-  load_shaders(): void;
-/**
-* @param {File} file 
-* @param {number} w 
-* @param {number} h 
-* @param {number} d 
-*/
-  load_volume_from_file(file: File, w: number, h: number, d: number): void;
-/**
 * @param {ArrayBuffer} buffer 
 * @param {number} w 
 * @param {number} h 
 * @param {number} d 
 */
-  load_volume_from_array_buffer(buffer: ArrayBuffer, w: number, h: number, d: number): void;
+  load_primary(buffer: ArrayBuffer, w: number, h: number, d: number): void;
+/**
+*/
+  load_lut(): void;
 /**
 */
   setup_geometry(): void;
@@ -162,17 +151,5 @@ export class GlCanvas {
 */
   render(): void;
   level: number;
-  pan_coronal_x: number;
-  pan_coronal_y: number;
-  pan_sagittal_x: number;
-  pan_sagittal_y: number;
-  pan_transverse_x: number;
-  pan_transverse_y: number;
-  scale_coronal: number;
-  scale_sagittal: number;
-  scale_transverse: number;
-  slice_coronal: number;
-  slice_sagittal: number;
-  slice_transverse: number;
   window: number;
 }

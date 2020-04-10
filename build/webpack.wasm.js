@@ -157,12 +157,12 @@ module.exports = {
               }
           },
           {
-              test: /\.(woff|svg|woff2|eot|ttf|otf)$/,
+              test: /\.(woff|woff2|eot|ttf|otf)$/,
               use: {
                   loader:'url-loader',
                   options:{
                       limit:1,// 超过这个用　file-loader 生成真正的图片,否则用url-loader
-                      outputPath:'static/fonts/'
+                      outputPath:'fonts/'
                   }
               }
           },

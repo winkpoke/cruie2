@@ -55,21 +55,70 @@ class kp extends Component {
         this.setState(obj);
     }
     async getFile(){
-       setTimeout(()=>{
+        var file_reader = new FileReader();
+        var _this = this;
+        setTimeout(()=>{
            window.ToastLoding = Toast.loading();
         })
-        let response = await fetch('/static/raw/headneck_360_1024.raw');
-        console.log(response)
+        let response = await fetch('/static/dcm_data.raw');
+
+        let dataBuffer = await response.arrayBuffer();
+        console.log(dataBuffer);
+        var array_view = new Uint16Array(dataBuffer);
+        console.log("start of transforming...");
+        array_view.forEach((element, index, array) => array[index] += 1000);
+        console.log("end of transforming...");
+        console.log("JS - Read file complished.")
+        // glcanvas.load_volume_from_array_buffer(file_reader.result, 1024, 1024, 360);
+        // glcanvas.load_volume_from_array_buffer(file_reader.result, 512, 512, 133);
+        _this.glcanvas.load_primary(dataBuffer, 512, 512, 133);
+        // glcanvas.set_window(12000);
+        // glcanvas.set_level(15000);
+        // glcanvas.setup_geometry();
+        _this.glcanvas.render();
+        setTimeout(window.ToastLoding,3000);
+        return;
+
+        /*下面的没用*/
         let data = await response.blob();
+        console.log(await response.arrayBuffer());
         let metadata = {
-            type: ''
+            type: 'application/octet-stream'
         };
-        let file = new File([data], "headneck_360_1024.raw", metadata);
-        this.glcanvas.load_volume_from_file(file, 1024, 1024, 360);
+        let file_name = new File([data], "dcm_data.raw", metadata);
+
+
+        /*alix start*/
+        //let file_name = image_file.files[0];
+
+
+            file_reader.onload = function (e) {
+                console.log('11111')
+                var array_view = new Uint16Array(file_reader.result);
+                console.log("start of transforming...");
+                array_view.forEach((element, index, array) => array[index] += 1000);
+                console.log("end of transforming...");
+                console.log("JS - Read file complished.")
+                // glcanvas.load_volume_from_array_buffer(file_reader.result, 1024, 1024, 360);
+                // glcanvas.load_volume_from_array_buffer(file_reader.result, 512, 512, 133);
+                _this.glcanvas.load_primary(file_reader.result, 512, 512, 133);
+                // glcanvas.set_window(12000);
+                // glcanvas.set_level(15000);
+                // glcanvas.setup_geometry();
+                _this.glcanvas.render();
+            }
+            file_reader.readAsArrayBuffer(file_name);
+            console.log("JS - Start read file.")
+
+
+        /*alix end*/
+
+
+        /*this.glcanvas.load_volume_from_file(file, 1024, 1024, 360);
         this.glcanvas.set_window(12000);
         this.glcanvas.set_level(15000);
         this.glcanvas.setup_geometry();
-        this.glcanvas.render();
+        this.glcanvas.render();*/
         setTimeout(window.ToastLoding,3000)
     }
     componentDidMount(){
@@ -77,8 +126,16 @@ class kp extends Component {
         let canvas = document.getElementById("mycanvas");
         let w = canvas.clientWidth;
         let h = canvas.clientHeight;
+        /*this.glcanvas = GlCanvas.new("mycanvas", w, h, 12000, 15000);
+        this.glcanvas.load_shaders();*/
+
         this.glcanvas = GlCanvas.new("mycanvas", w, h, 12000, 15000);
-        this.glcanvas.load_shaders();
+        this.glcanvas.set_window(12000);
+        this.glcanvas.set_level(15000);
+        this.glcanvas.setup_geometry();
+        this.glcanvas.render();
+        //console.log(ViewType.SAGITTAL);
+
         console.log(ViewType.SAGITTAL || 'ssss' );
         console.log('window:',this.glcanvas.window);
         this.getFile();
