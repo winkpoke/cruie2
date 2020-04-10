@@ -55,7 +55,6 @@ class kp extends Component {
         this.setState(obj);
     }
     async getFile(){
-        var file_reader = new FileReader();
         var _this = this;
         setTimeout(()=>{
            window.ToastLoding = Toast.loading();
@@ -77,49 +76,6 @@ class kp extends Component {
         // glcanvas.setup_geometry();
         _this.glcanvas.render();
         setTimeout(window.ToastLoding,3000);
-        return;
-
-        /*下面的没用*/
-        let data = await response.blob();
-        console.log(await response.arrayBuffer());
-        let metadata = {
-            type: 'application/octet-stream'
-        };
-        let file_name = new File([data], "dcm_data.raw", metadata);
-
-
-        /*alix start*/
-        //let file_name = image_file.files[0];
-
-
-            file_reader.onload = function (e) {
-                console.log('11111')
-                var array_view = new Uint16Array(file_reader.result);
-                console.log("start of transforming...");
-                array_view.forEach((element, index, array) => array[index] += 1000);
-                console.log("end of transforming...");
-                console.log("JS - Read file complished.")
-                // glcanvas.load_volume_from_array_buffer(file_reader.result, 1024, 1024, 360);
-                // glcanvas.load_volume_from_array_buffer(file_reader.result, 512, 512, 133);
-                _this.glcanvas.load_primary(file_reader.result, 512, 512, 133);
-                // glcanvas.set_window(12000);
-                // glcanvas.set_level(15000);
-                // glcanvas.setup_geometry();
-                _this.glcanvas.render();
-            }
-            file_reader.readAsArrayBuffer(file_name);
-            console.log("JS - Start read file.")
-
-
-        /*alix end*/
-
-
-        /*this.glcanvas.load_volume_from_file(file, 1024, 1024, 360);
-        this.glcanvas.set_window(12000);
-        this.glcanvas.set_level(15000);
-        this.glcanvas.setup_geometry();
-        this.glcanvas.render();*/
-        setTimeout(window.ToastLoding,3000)
     }
     componentDidMount(){
         console.log('mounted');
