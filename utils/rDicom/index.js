@@ -6,7 +6,8 @@ var FilPathModel = require('../../model/FilePath');
 
 var allP = [];
 /*读取dicom文件*/
-async function readDicom(dir="/private/var/www/frontend/patients/李四/ct-1/dcm") {
+var dirPath = path.resolve(__dirname,'../../../patients/李四/ct-1/dcm');
+async function readDicom(dir=dirPath) {
     //根据当前dir 获取病人行
     console.log('===dir===',dir);
     try{
@@ -42,7 +43,7 @@ async function readDicom(dir="/private/var/www/frontend/patients/李四/ct-1/dcm
 
 }
 
-async function getAllPixelArraybuffer(dir="/private/var/www/frontend/patients/李四/ct-1/dcm")
+async function getAllPixelArraybuffer(dir=dirPath)
 {
     try{
         var imagestack = await readDicom(dir);
