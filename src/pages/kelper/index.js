@@ -58,8 +58,8 @@ class kp extends Component {
         var _this = this;
         setTimeout(()=>{
            window.ToastLoding = Toast.loading();
-        })
-        let response = await fetch('/static/dcm_data.raw');
+        });
+        let response = await fetch('/static/a.raw');
 
         let dataBuffer = await response.arrayBuffer();
         console.log(dataBuffer);
@@ -70,11 +70,12 @@ class kp extends Component {
         console.log("JS - Read file complished.")
         // glcanvas.load_volume_from_array_buffer(file_reader.result, 1024, 1024, 360);
         // glcanvas.load_volume_from_array_buffer(file_reader.result, 512, 512, 133);
-        _this.glcanvas.load_primary(dataBuffer, 512, 512, 133);
+        //this.glcanvas.load_primary(dataBuffer, 512, 512, 133);
+        this.glcanvas.load_primary(dataBuffer, 1024, 1024, 3);
         // glcanvas.set_window(12000);
         // glcanvas.set_level(15000);
         // glcanvas.setup_geometry();
-        _this.glcanvas.render();
+        this.glcanvas.render();
         setTimeout(window.ToastLoding,3000);
     }
     componentDidMount(){
