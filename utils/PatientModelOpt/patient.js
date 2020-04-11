@@ -26,7 +26,11 @@ Patient.add = function (data) {
                 console.log('新增病人:'+patientName);
                 resolve(data);
             }
+        }).catch(err=>{
+            console.log('err111:',err)
         })
+    }).catch(err=>{
+        console.log('err222',err)
     })
 };
 
