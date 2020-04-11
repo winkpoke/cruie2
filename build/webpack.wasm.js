@@ -135,7 +135,7 @@ module.exports = {
                   'less-loader'
               ]
           },
-          {
+          /*{
               test: /\.scss/,
               exclude:/node_modules/,
               use: [
@@ -144,7 +144,7 @@ module.exports = {
                   'postcss-loader',//解析css之前就加上前缀
                   'sass-loader'
               ]
-          },
+          },*/
           {
               test: /\.(png|jpg|svg|gif)$/,
               use: {
