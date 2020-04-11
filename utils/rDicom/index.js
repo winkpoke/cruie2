@@ -18,9 +18,9 @@ async function readDicom(dir="/private/var/www/frontend/patients/李四/ct-1/dcm
     files.forEach(async (item,index)=>{
         var fullPath = path.join(dir, item);
         const d = fs.readFileSync(fullPath);
-        /*if(index == 0){//获取第一张图片信息
+        allP.push(parseFile(d));
+        if(index == 0){//获取第一张图片信息
             var image = await parseFile(d);
-            allP.push(parseFile(d));
             //console.log(image);
             const {rows,columns,patinfo} = image[1];
             PatientModel.findByIdAndUpdate(patientId,{detail: {rows,columns,patinfo}},(err,doc)=>{
@@ -30,8 +30,8 @@ async function readDicom(dir="/private/var/www/frontend/patients/李四/ct-1/dcm
                 }
                 //console.log(doc)
             })
-        }*/
-        allP.push(parseFile(d));
+        }
+
     });
     return await Promise.all(allP);
 }
