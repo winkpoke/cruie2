@@ -76,7 +76,7 @@ app.get('/api/user',(req,res)=>{
     res.json({name:'test架构'})
 });
 
-var port = 3000;
+var port = process.env.PORT || 3000;
 server.listen(port,function () {
     console.log('http server started at: http://localhost:'+port)
 });
