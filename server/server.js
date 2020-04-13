@@ -50,9 +50,6 @@ io.on('connection', (socket) => {
     });
 });
 
-
-
-
 app.use(function(req, res, next){
     // 获取请求头中的Authorization认证字符
     let token = req.get('token');

@@ -32,8 +32,9 @@ const helper = {
         delCookie: function (name) {
             var exp = new Date();
             exp.setTime(exp.getTime() - 1);
-            var cval = showOrgHeader(name);
-            if (cval != null) document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+            var cval=this.getCookie(name);
+            if(cval!=null)
+                document.cookie= name + "="+cval+";expires="+exp.toGMTString();
         },
         //5.四舍五入保留2位小数（不够位数，则用0替补）
         decimal2(num) {

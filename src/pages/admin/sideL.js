@@ -4,7 +4,7 @@
 import React, {Component} from 'react';
 import {Tree} from 'antd';
 import {connect} from 'react-redux';
-import 'antd/es/tree/style/css';
+
 import {getPatientList} from "../../services/user";
 import {getRes} from "@/utils";
 const { TreeNode } = Tree;

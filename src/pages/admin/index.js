@@ -14,7 +14,6 @@ class Index extends Component {
     constructor(props, context) {
         super(props, context);
         this.child = null;
-
     }
 
     state={

@@ -7,11 +7,13 @@ import CRouter from '../routes/index'
 import notFound from "@/pages/notFound";
 import AllComponents from '../pages/index'
 
-import routeConfig from '../routes/config'*/
+//import routeConfig from '../routes/config'*/
 import {logout} from "@/services/user";
 import {getRes} from "@/utils";
-import {Spin} from 'antd';
-import 'antd/es/spin/style/css';
+import {Spin,message,Menu, Dropdown} from 'antd';
+import { DownOutlined,CaretDownOutlined } from '@ant-design/icons';
+import helper from '@/utils/helper';
+
 @connect((store) => {
     return {
         user:store.userReducer.user,
@@ -26,18 +28,56 @@ class dLayouta extends Component {
     }
     state = {
         collapsed: false,
-        loading:false
+        username:"",
+        loading:false,
+        showNavDropMenu:false,
+        theme:"dark"
     };
 
     componentDidMount(){
-       // this.props.dispatch({type:'setData',payload:{ key:'lng' , value: sessionStorage.getItem('lng') || 'zh-CN' }})
+        var jwt = require('jsonwebtoken');
+        const config = require('../../config');
+        if(helper.getCookie('token')){
+            jwt.verify(helper.getCookie('token'), config.jwtsecret, (err, decode)=> {
+                if (err) {  //  认证出错
+                    message.error(err);
+                } else {
+                    this.setState({username:decode.username})
+                }
+            })
+        }
     }
     componentWillReceiveProps(nextProps){
         this.setState({loading:nextProps.app.loading})
     }
+    signOut(){
+        helper.delCookie('token');
+        location.reload();
+    }
     render() {
-        return (
+        const {username,showNavDropMenu} = this.state;
 
+        const menu = (
+            <Menu theme={this.state.theme}>
+                <Menu.Item>
+                    <a target="_blank" rel="noopener noreferrer" href="http://www.alipay.com/">
+                        System Settings
+                    </a>
+                </Menu.Item>
+                <Menu.Item>
+                    <a target="_blank" rel="noopener noreferrer" href="http://www.taobao.com/">
+                        Account Settings
+                    </a>
+                </Menu.Item>
+                <Menu.Item>
+                    <a target="_blank" rel="noopener noreferrer" onClick={this.signOut.bind(this)}>
+                        Sign Out
+                    </a>
+                </Menu.Item>
+            </Menu>
+        );
+
+        return (
             <div className={this.props.className}>
                 <div id="head-nav" className="navbar navbar-default navbar-fixed-top" style={{"width":"100%"}}>
                     <div className="container-fluid">
@@ -48,16 +88,13 @@ class dLayouta extends Component {
                             <ul className="nav navbar-nav">
                                 <li className="active"><a href="#"><span style={{"borderBottom":"3px solid"}}>CBCT</span></a></li>
                             </ul>
-                            <ul className="nav navbar-nav navbar-right user-nav">
-                                <li className="dropdown profile_menu">
-                                    <a href="#" className="dropdown-toggle" data-toggle="dropdown" style={{"paddingTop":"3px solid"}} aria-expanded="false">Javis Heinscof <b className="caret"></b></a>
-                                    <ul className="dropdown-menu">
-                                        <li><a href="system_tolerance.html">System Settings</a></li>
-                                        <li><a href="account.html">Account Settings</a></li>
-                                        <li><a href="#">Sign Out</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
+                            <div className="nav navbar-nav navbar-right user-nav">
+                                    <Dropdown overlay={menu} trigger="click" overlayClassName="navbar-dropdown-menu dropdown profile_menu">
+                                        <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                                            {username} <CaretDownOutlined />
+                                        </a>
+                                    </Dropdown>
+                            </div>
                         </div>
                     </div>
                 </div>
