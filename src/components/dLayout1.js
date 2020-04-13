@@ -10,7 +10,8 @@ import AllComponents from '../pages/index'
 import routeConfig from '../routes/config'*/
 import {logout} from "@/services/user";
 import {getRes} from "@/utils";
-
+import {Spin} from 'antd';
+import 'antd/es/spin/style/css';
 @connect((store) => {
     return {
         user:store.userReducer.user,
@@ -25,13 +26,18 @@ class dLayouta extends Component {
     }
     state = {
         collapsed: false,
+        loading:false
     };
 
     componentDidMount(){
        // this.props.dispatch({type:'setData',payload:{ key:'lng' , value: sessionStorage.getItem('lng') || 'zh-CN' }})
     }
+    componentWillReceiveProps(nextProps){
+        this.setState({loading:nextProps.app.loading})
+    }
     render() {
         return (
+
             <div className={this.props.className}>
                 <div id="head-nav" className="navbar navbar-default navbar-fixed-top" style={{"width":"100%"}}>
                     <div className="container-fluid">
@@ -60,6 +66,7 @@ class dLayouta extends Component {
                     {this.props.children}
                 </div>
             </div>
+
         );
     }
 }

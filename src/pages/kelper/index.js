@@ -1,12 +1,16 @@
 import React, {Component} from 'react';
 import * as wasm from "hello-wasm-pack";
 import { start, GlCanvas, ViewType } from "kepler";
-import Toast from '@/components/toast'
-//wasm.greet('ss');
+import { Spin} from 'antd';
 import {get, post} from '@/utils/request'
 import io from 'socket.io-client';
 import axios from 'axios'
+import 'antd/es/spin/style/css';
 const socket = io();
+import {connect} from 'react-redux';
+@connect((store) => {
+    return {app:store.app};
+})
 class kp extends Component {
     static displayName = "Kelper";
     constructor(props, context) {
@@ -14,6 +18,7 @@ class kp extends Component {
         this.glcanvas = null;
     }
     state={
+        loading:false,
         slider_window:"18500",
         slider_level:"12000",
         pan:"transverse",
@@ -68,69 +73,63 @@ class kp extends Component {
         //console.log(arr1);
         return Buffer.concat(arr1)
     }
+    base64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding)
+            .replace(/\-/g, '+')
+            .replace(/_/g, '/');
 
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
     async getFile(){
         var _this = this;
-
-        setTimeout(()=>{
-            window.ToastLoding = Toast.loading();
-        });
         //let response = await fetch('/static/a.raw');
         var arr = [];
         var i = 0;
         console.log(new Date())
+        //this.props.dispatch({type:'setData',payload:{key:'loading',value:true}});
+        this.setState({loading:true})
         axios.get('/curie-api/patient/rawFile',{type:"arrayBuffer"}).then(res=>{
             console.log(111,res);
-            socket.on('chunk', function(msg){
-                arr.push(msg);
-                i++;
-                console.log('我收到管理员的chunk了:'+i);
-            });
-
-            socket.on('chunk end',(totalNum)=>{
-                console.log('我收到管理员的chunk end 了:',totalNum);
-                if(arr.length == totalNum){
-                    //let dataBuffer = await response.arrayBuffer();
-                    var dataBuffer = (this.concatArrayBuffer(arr)).buffer;//这里是arrayBuffer格式
-                    console.log('dataBuffer',dataBuffer);
-                    console.log(new Date());
-                    var array_view = new Uint16Array(dataBuffer);
-                    console.log("start of transforming...");
-                    array_view.forEach((element, index, array) => array[index] += 1000);
-                    console.log("end of transforming...");
-                    console.log("JS - Read file complished.")
-                    // glcanvas.load_volume_from_array_buffer(file_reader.result, 1024, 1024, 360);
-                    // glcanvas.load_volume_from_array_buffer(file_reader.result, 512, 512, 133);
-                    //this.glcanvas.load_primary(dataBuffer, 512, 512, 133);
-                    this.glcanvas.load_primary(dataBuffer, 1024, 1024, 3);
-                    // glcanvas.set_window(12000);
-                    // glcanvas.set_level(15000);
-                    // glcanvas.setup_geometry();
-                    this.glcanvas.render();
-                }
-
-                setTimeout(window.ToastLoding,5000);
-            });
         });
 
+        socket.on('chunk', (msg)=>{
+            arr.push(this.base64ToUint8Array(msg));
+            i++;
+            console.log('我收到管理员的chunk了:'+i);
+        });
 
+        socket.on('chunk end',(msg)=>{
+            console.log('我收到管理员的chunk end 了:',msg);
+            if(arr.length == msg){
+                //let dataBuffer = await response.arrayBuffer();
+                var dataBuffer = (this.concatArrayBuffer(arr)).buffer;//这里是arrayBuffer格式
+                console.log('dataBuffer',dataBuffer);
+                console.log(new Date());
+                var array_view = new Uint16Array(dataBuffer);
+                console.log("start of transforming...");
+                array_view.forEach((element, index, array) => array[index] += 1000);
+                console.log("end of transforming...");
+                console.log("JS - Read file complished.")
+                // glcanvas.load_volume_from_array_buffer(file_reader.result, 1024, 1024, 360);
+                // glcanvas.load_volume_from_array_buffer(file_reader.result, 512, 512, 133);
+                //this.glcanvas.load_primary(dataBuffer, 512, 512, 133);
+                this.glcanvas.load_primary(dataBuffer, 1024, 1024, 3);
+                // glcanvas.set_window(12000);
+                // glcanvas.set_level(15000);
+                // glcanvas.setup_geometry();
+                this.glcanvas.render();
+                this.setState({loading:false})
+                //this.props.dispatch({type:'setData',payload:{key:'loading',value:false}});
+            }
+        });
 
-        /*let dataBuffer = await response.arrayBuffer();
-         console.log(dataBuffer);
-         var array_view = new Uint16Array(dataBuffer);
-         console.log("start of transforming...");
-         array_view.forEach((element, index, array) => array[index] += 1000);
-         console.log("end of transforming...");
-         console.log("JS - Read file complished.")
-         // glcanvas.load_volume_from_array_buffer(file_reader.result, 1024, 1024, 360);
-         // glcanvas.load_volume_from_array_buffer(file_reader.result, 512, 512, 133);
-         //this.glcanvas.load_primary(dataBuffer, 512, 512, 133);
-         this.glcanvas.load_primary(dataBuffer, 1024, 1024, 3);
-         // glcanvas.set_window(12000);
-         // glcanvas.set_level(15000);
-         // glcanvas.setup_geometry();
-         this.glcanvas.render();
-         setTimeout(window.ToastLoding,3000);*/
     }
     componentDidMount(){
         console.log('mounted');
@@ -154,6 +153,7 @@ class kp extends Component {
     render() {
         const {slider_window,slider_level,pan,slider_scale,slider_pan_x,slider_pan_y,slider_slice} = this.state;
         return (
+            <Spin spinning={this.state.loading} tip="文件读取中..." className="noTextShadow">
             <div className="kelper page">
                 {/* <input type="file" id="read_image" onChange={this.onGetFile.bind(this)} multiple="multiple" /><br /><br />*/}
                 <canvas id="mycanvas" width="750" height="600"></canvas>
@@ -197,6 +197,7 @@ class kp extends Component {
                     <span>Slice</span>
                 </div>
             </div>
+            </Spin>
         );
     }
 }

@@ -52,9 +52,9 @@ router.get('/rawFile',function (req,res) {
         console.log('===new buffer:===',chunk);
         //res.write(chunk);
         i++;
-        socket.emit('aaa', chunk);
+        socket.emit('aaa', chunk.toString('base64'));
     });
-    readStream.on('end',function (i) {
+    readStream.on('end',function () {
         socket.emit('aaa end', i);
         console.log('读取结束');
         res.end('读取结束');
