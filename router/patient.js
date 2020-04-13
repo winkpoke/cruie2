@@ -42,7 +42,7 @@ router.get('/list',async function (req,res) {
 });
 
 router.get('/rawFile',function (req,res) {
-    const socket = io('http://localhost:3003');
+    const socket = io();
 
     res.setHeader('Transfer-Encoding', 'chunked');
     console.log( path.resolve(__dirname , '../static/a.raw') );

@@ -83,7 +83,7 @@ class Index extends Component {
             history.push('/admin')
         }
 
-        const socket = io('http://localhost:3000');
+        const socket = io();
         socket.emit('chat message', '你好..');
 
         socket.emit('say to someone', '你好 say..');
