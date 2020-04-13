@@ -77,33 +77,37 @@ class kp extends Component {
         });
         //let response = await fetch('/static/a.raw');
         var arr = [];
+        var i = 0;
         console.log(new Date())
         axios.get('/curie-api/patient/rawFile',{type:"arrayBuffer"}).then(res=>{
             console.log(111,res);
             socket.on('chunk', function(msg){
                 arr.push(msg);
-                console.log('我收到管理员的chunk了:'+msg);
+                i++;
+                console.log('我收到管理员的chunk了:'+i);
             });
 
-            socket.on('chunk end',(msg)=>{
-                console.log('我收到管理员的chunk end 了:');
-                //let dataBuffer = await response.arrayBuffer();
-                var dataBuffer = (this.concatArrayBuffer(arr)).buffer;//这里是arrayBuffer格式
-                console.log('dataBuffer',dataBuffer);
-                console.log(new Date());
-                var array_view = new Uint16Array(dataBuffer);
-                console.log("start of transforming...");
-                array_view.forEach((element, index, array) => array[index] += 1000);
-                console.log("end of transforming...");
-                console.log("JS - Read file complished.")
-                // glcanvas.load_volume_from_array_buffer(file_reader.result, 1024, 1024, 360);
-                // glcanvas.load_volume_from_array_buffer(file_reader.result, 512, 512, 133);
-                //this.glcanvas.load_primary(dataBuffer, 512, 512, 133);
-                this.glcanvas.load_primary(dataBuffer, 1024, 1024, 3);
-                // glcanvas.set_window(12000);
-                // glcanvas.set_level(15000);
-                // glcanvas.setup_geometry();
-                this.glcanvas.render();
+            socket.on('chunk end',(totalNum)=>{
+                console.log('我收到管理员的chunk end 了:',totalNum);
+                if(arr.length == totalNum){
+                    //let dataBuffer = await response.arrayBuffer();
+                    var dataBuffer = (this.concatArrayBuffer(arr)).buffer;//这里是arrayBuffer格式
+                    console.log('dataBuffer',dataBuffer);
+                    console.log(new Date());
+                    var array_view = new Uint16Array(dataBuffer);
+                    console.log("start of transforming...");
+                    array_view.forEach((element, index, array) => array[index] += 1000);
+                    console.log("end of transforming...");
+                    console.log("JS - Read file complished.")
+                    // glcanvas.load_volume_from_array_buffer(file_reader.result, 1024, 1024, 360);
+                    // glcanvas.load_volume_from_array_buffer(file_reader.result, 512, 512, 133);
+                    //this.glcanvas.load_primary(dataBuffer, 512, 512, 133);
+                    this.glcanvas.load_primary(dataBuffer, 1024, 1024, 3);
+                    // glcanvas.set_window(12000);
+                    // glcanvas.set_level(15000);
+                    // glcanvas.setup_geometry();
+                    this.glcanvas.render();
+                }
 
                 setTimeout(window.ToastLoding,5000);
             });

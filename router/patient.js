@@ -54,7 +54,7 @@ router.get('/rawFile',function (req,res) {
         i++;
         socket.emit('aaa', chunk);
     });
-    readStream.on('end',function () {
+    readStream.on('end',function (i) {
         socket.emit('aaa end', i);
         console.log('读取结束');
         res.end('读取结束');
