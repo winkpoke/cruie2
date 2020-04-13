@@ -97,7 +97,7 @@ module.exports = {
     // mode: "development",
     // devtool: 'cheap-module-eval-source-map',
     devtool: false,
-    mode:"production" ,
+    mode:"development" ,
     module:{
       rules:[
           {

@@ -31,7 +31,15 @@ const io = require('socket.io')(server);
 io.on('connection', (socket) => {
     console.log('a user connected');
     //服务端关闭
-    setTimeout(() => socket.disconnect(true), 5000);
+    //setTimeout(() => socket.disconnect(true), 5000);
+    socket.on('aaa',function (msg) {
+        io.emit('chunk',msg);
+        //console.log('接受chunk:',msg);
+    });
+    socket.on('aaa end',function (msg) {
+        io.emit('chunk end',msg);
+        //console.log('接受chunk:',msg);
+    });
 
     socket.on('chat message', function(msg){
         io.emit('chat message', msg);
@@ -41,6 +49,8 @@ io.on('connection', (socket) => {
         console.log('user disconnected');
     });
 });
+
+
 
 
 app.use(function(req, res, next){

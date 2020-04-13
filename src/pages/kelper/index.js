@@ -4,6 +4,9 @@ import { start, GlCanvas, ViewType } from "kepler";
 import Toast from '@/components/toast'
 //wasm.greet('ss');
 import {get, post} from '@/utils/request'
+import io from 'socket.io-client';
+import axios from 'axios'
+const socket = io();
 class kp extends Component {
     static displayName = "Kelper";
     constructor(props, context) {
@@ -54,29 +57,76 @@ class kp extends Component {
         this.glcanvas.render();
         this.setState(obj);
     }
+    concatArrayBuffer(arr){
+        var arr1 = [];
+        arr.map((arrayBuffer,index)=>{
+            //console.log(111,arrayBuffer);
+            //console.log(222,Buffer.from(arrayBuffer));
+            arr1.push(Buffer.from(arrayBuffer));
+            return arrayBuffer
+        });
+        //console.log(arr1);
+        return Buffer.concat(arr1)
+    }
+
     async getFile(){
         var _this = this;
-        setTimeout(()=>{
-           window.ToastLoding = Toast.loading();
-        });
-        let response = await fetch('/static/a.raw');
 
-        let dataBuffer = await response.arrayBuffer();
-        console.log(dataBuffer);
-        var array_view = new Uint16Array(dataBuffer);
-        console.log("start of transforming...");
-        array_view.forEach((element, index, array) => array[index] += 1000);
-        console.log("end of transforming...");
-        console.log("JS - Read file complished.")
-        // glcanvas.load_volume_from_array_buffer(file_reader.result, 1024, 1024, 360);
-        // glcanvas.load_volume_from_array_buffer(file_reader.result, 512, 512, 133);
-        //this.glcanvas.load_primary(dataBuffer, 512, 512, 133);
-        this.glcanvas.load_primary(dataBuffer, 1024, 1024, 3);
-        // glcanvas.set_window(12000);
-        // glcanvas.set_level(15000);
-        // glcanvas.setup_geometry();
-        this.glcanvas.render();
-        setTimeout(window.ToastLoding,3000);
+        setTimeout(()=>{
+            window.ToastLoding = Toast.loading();
+        });
+        //let response = await fetch('/static/a.raw');
+        var arr = [];
+        console.log(new Date())
+        axios.get('/curie-api/patient/rawFile',{type:"arrayBuffer"}).then(res=>{
+            console.log(111,res);
+            socket.on('chunk', function(msg){
+                arr.push(msg);
+                console.log('我收到管理员的chunk了:'+msg);
+            });
+
+            socket.on('chunk end',(msg)=>{
+                console.log('我收到管理员的chunk end 了:');
+                //let dataBuffer = await response.arrayBuffer();
+                var dataBuffer = (this.concatArrayBuffer(arr)).buffer;//这里是arrayBuffer格式
+                console.log('dataBuffer',dataBuffer);
+                console.log(new Date());
+                var array_view = new Uint16Array(dataBuffer);
+                console.log("start of transforming...");
+                array_view.forEach((element, index, array) => array[index] += 1000);
+                console.log("end of transforming...");
+                console.log("JS - Read file complished.")
+                // glcanvas.load_volume_from_array_buffer(file_reader.result, 1024, 1024, 360);
+                // glcanvas.load_volume_from_array_buffer(file_reader.result, 512, 512, 133);
+                //this.glcanvas.load_primary(dataBuffer, 512, 512, 133);
+                this.glcanvas.load_primary(dataBuffer, 1024, 1024, 3);
+                // glcanvas.set_window(12000);
+                // glcanvas.set_level(15000);
+                // glcanvas.setup_geometry();
+                this.glcanvas.render();
+
+                setTimeout(window.ToastLoding,5000);
+            });
+        });
+
+
+
+        /*let dataBuffer = await response.arrayBuffer();
+         console.log(dataBuffer);
+         var array_view = new Uint16Array(dataBuffer);
+         console.log("start of transforming...");
+         array_view.forEach((element, index, array) => array[index] += 1000);
+         console.log("end of transforming...");
+         console.log("JS - Read file complished.")
+         // glcanvas.load_volume_from_array_buffer(file_reader.result, 1024, 1024, 360);
+         // glcanvas.load_volume_from_array_buffer(file_reader.result, 512, 512, 133);
+         //this.glcanvas.load_primary(dataBuffer, 512, 512, 133);
+         this.glcanvas.load_primary(dataBuffer, 1024, 1024, 3);
+         // glcanvas.set_window(12000);
+         // glcanvas.set_level(15000);
+         // glcanvas.setup_geometry();
+         this.glcanvas.render();
+         setTimeout(window.ToastLoding,3000);*/
     }
     componentDidMount(){
         console.log('mounted');
@@ -84,7 +134,7 @@ class kp extends Component {
         let w = canvas.clientWidth;
         let h = canvas.clientHeight;
         /*this.glcanvas = GlCanvas.new("mycanvas", w, h, 12000, 15000);
-        this.glcanvas.load_shaders();*/
+         this.glcanvas.load_shaders();*/
 
         this.glcanvas = GlCanvas.new("mycanvas", w, h, 12000, 15000);
         this.glcanvas.set_window(12000);
@@ -100,49 +150,49 @@ class kp extends Component {
     render() {
         const {slider_window,slider_level,pan,slider_scale,slider_pan_x,slider_pan_y,slider_slice} = this.state;
         return (
-             <div className="kelper page">
+            <div className="kelper page">
                 {/* <input type="file" id="read_image" onChange={this.onGetFile.bind(this)} multiple="multiple" /><br /><br />*/}
-                 <canvas id="mycanvas" width="750" height="600"></canvas>
-                 {/*slider_window*/}
-                 <div className="slide">
-                     <input type="range" min="1" max="65535" name="slider_window" value={slider_window} onChange={this.fnChange.bind(this)} className="slider" id="slider_window"/>
-                     <span>Window</span>
-                 </div>
-                 {/*slider_level*/}
-                 <div className="slide">
-                     <input type="range" min="0" max="65535" name="slider_level" value={slider_level}  onChange={this.fnChange.bind(this)} className="slider" id="slider_level"/>
-                     <span>Level</span>
-                 </div>
-                 <form>
-                     {/*pan*/}
-                     <input type="radio" id="radio_transverse" name="pan" value="transverse" checked={pan=='transverse'} onChange={this.fnChange.bind(this)} />
-                     <label htmlFor="transverse">Transverse</label>
-                     <input type="radio" id="radio_sagittal" name="pan" value="sagittal" checked={pan=='sagittal'} onChange={this.fnChange.bind(this)}/>
-                     <label htmlFor="transverse">Sagittal</label>
-                     <input type="radio" id="radio_coronal" name="pan" value="coronal" checked={pan=='coronal'} onChange={this.fnChange.bind(this)}/>
+                <canvas id="mycanvas" width="750" height="600"></canvas>
+                {/*slider_window*/}
+                <div className="slide">
+                    <input type="range" min="1" max="65535" name="slider_window" value={slider_window} onChange={this.fnChange.bind(this)} className="slider" id="slider_window"/>
+                    <span>Window</span>
+                </div>
+                {/*slider_level*/}
+                <div className="slide">
+                    <input type="range" min="0" max="65535" name="slider_level" value={slider_level}  onChange={this.fnChange.bind(this)} className="slider" id="slider_level"/>
+                    <span>Level</span>
+                </div>
+                <form>
+                    {/*pan*/}
+                    <input type="radio" id="radio_transverse" name="pan" value="transverse" checked={pan=='transverse'} onChange={this.fnChange.bind(this)} />
+                    <label htmlFor="transverse">Transverse</label>
+                    <input type="radio" id="radio_sagittal" name="pan" value="sagittal" checked={pan=='sagittal'} onChange={this.fnChange.bind(this)}/>
+                    <label htmlFor="transverse">Sagittal</label>
+                    <input type="radio" id="radio_coronal" name="pan" value="coronal" checked={pan=='coronal'} onChange={this.fnChange.bind(this)}/>
                     <label htmlFor="transverse">Coronal</label>
-                 </form>
-                 {/*scale*/}
-                 <div className="slide">
-                     <input type="range" min="1" max="10" name="slider_scale" value={slider_scale} onChange={this.fnChange.bind(this)} step="0.1" className="slider" id="slider_scale"/>
-                     <span>Zoom in/out</span>
-                 </div>
-                 {/*slider_pan_x*/}
-                 <div className="slide">
-                     <input type="range" min="-1" max="1" name="slider_pan_x" value={slider_pan_x} onChange={this.fnChange.bind(this)} step="0.01" className="slider" id="slider_pan_x"/>
-                         <span>Pan: X</span>
-                 </div>
-                 {/*slider_pan_y*/}
-                 <div className="slide">
-                     <input type="range" min="-1" max="1" name="slider_pan_y" value={slider_pan_y} onChange={this.fnChange.bind(this)} step="0.01" className="slider" id="slider_pan_y"/>
-                         <span>Pan: Y</span>
-                 </div>
-                 {/*slice*/}
-                 <div className="slide">
-                     <input type="range" min="0" max="1" name="slider_slice" value={slider_slice} onChange={this.fnChange.bind(this)} step="0.01" className="slider" id="slider_slice"/>
-                         <span>Slice</span>
-                 </div>
-             </div>
+                </form>
+                {/*scale*/}
+                <div className="slide">
+                    <input type="range" min="1" max="10" name="slider_scale" value={slider_scale} onChange={this.fnChange.bind(this)} step="0.1" className="slider" id="slider_scale"/>
+                    <span>Zoom in/out</span>
+                </div>
+                {/*slider_pan_x*/}
+                <div className="slide">
+                    <input type="range" min="-1" max="1" name="slider_pan_x" value={slider_pan_x} onChange={this.fnChange.bind(this)} step="0.01" className="slider" id="slider_pan_x"/>
+                    <span>Pan: X</span>
+                </div>
+                {/*slider_pan_y*/}
+                <div className="slide">
+                    <input type="range" min="-1" max="1" name="slider_pan_y" value={slider_pan_y} onChange={this.fnChange.bind(this)} step="0.01" className="slider" id="slider_pan_y"/>
+                    <span>Pan: Y</span>
+                </div>
+                {/*slice*/}
+                <div className="slide">
+                    <input type="range" min="0" max="1" name="slider_slice" value={slider_slice} onChange={this.fnChange.bind(this)} step="0.01" className="slider" id="slider_slice"/>
+                    <span>Slice</span>
+                </div>
+            </div>
         );
     }
 }
