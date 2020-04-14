@@ -33,14 +33,16 @@ class SideL extends Component {
     }
     onSelect(selectedKeys, info){
         console.log('selected', selectedKeys, info);
-        this.setState({selectedKeys});
+        if(info.selected){
+            this.setState({checkedKeys:[info.node.key]});
+        }
     };
     onCheck(checkedKeys, info){
         console.log('onCheck', checkedKeys, info);
-        //const {checkedKeys:orgCks, selectedKeys} = this.state;
-        this.setState({checkedKeys});
-
-        this.props.dispatch({type:'setData',payload:{key:'curRow',value:info.checked ? info.node : null}})
+        if(info.checked){
+            this.setState({checkedKeys:[info.node.key]});
+            this.props.dispatch({type:'setData',payload:{key:'curRow',value:info.checked ? info.node : null}})
+        }
     };
     render() {
         const {treeData,checkedKeys, selectedKeys} = this.state;
@@ -49,10 +51,11 @@ class SideL extends Component {
                 {treeData.length > 0 ? <Tree
                     checkable
                     checkedKeys={checkedKeys}
-                    selectedKeys={selectedKeys}
+                    /*selectedKeys={selectedKeys}*/
                     onSelect={this.onSelect.bind(this)}
                     onCheck={this.onCheck.bind(this)}
                     treeData={treeData}
+                    multiple={false}
                 /> : '' }
 
             </div>

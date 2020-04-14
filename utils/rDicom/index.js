@@ -6,7 +6,7 @@ var FilPathModel = require('../../model/FilePath');
 
 var allP = [];
 /*读取dicom文件*/
-var dirPath = path.resolve(__dirname,'../../../patients/李四/ct-1/dcm');
+var dirPath = path.resolve(__dirname,'../../../patients/李四/ct-20200408/dcm');
 async function readDicom(dir=dirPath) {
     //根据当前dir 获取病人行
     console.log('===dir===',dir);

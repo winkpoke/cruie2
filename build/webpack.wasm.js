@@ -38,7 +38,7 @@ const plugins = [
     new Webpack.IgnorePlugin(/\.\/locale/,/moment/),
     new CopyWebpackPlugin(['index.html']),
     new CopyWebpackPlugin([
-        { from: resolve('static'), to: resolve('dist/static') }
+        { from: resolve('static'), to: resolve('dist/static') ,ignore: ['*.raw','*.dicom'] }
     ])
 ];
 
