@@ -94,13 +94,13 @@ class kp extends Component {
     componentWillReceiveProps(nextProps){
         //如果侧边栏 和 病人信息都打开了 则隐藏最右侧菜单 操作
         const {showSideBar,showPatientInfo} = nextProps.app;
-
+        var dWidth = document.documentElement.clientWidth;
          if(showSideBar==false && showPatientInfo==false){//左侧都隐藏
-            var w = TSC3D.offsetWidth - 225;
+            var w = dWidth - 250;
          }else if(showSideBar || showPatientInfo){//左侧显示一个
-             var w = TSC3D.offsetWidth - 225;
+             var w = dWidth - 450;
          }else if(showSideBar && showPatientInfo){//左侧都显示
-             var w = TSC3D.offsetWidth
+             var w = dWidth - 390
          }
         this.setState({cWidth:w});
         const {kpData} = this.props.app;
@@ -215,28 +215,26 @@ class kp extends Component {
 
     }
     render() {
-        console.log('render');
-
         const {cWidth,slider_blend,slider_window,slider_level,pan,slider_scale,slider_pan_x,slider_pan_y,slider_slice} = this.state;
         return (
             <Spin spinning={this.state.loading} tip="文件读取中..." className="noTextShadow">
                 <div className="kelper page">
                     {/* <input type="file" id="read_image" onChange={this.onGetFile.bind(this)} multiple="multiple" /><br /><br />*/}
                     <canvas id="mycanvas" width={cWidth}></canvas>
-                    {/*<div className="slide flex">*/}
-                        {/*<input type="range" min="0" max="1.0" step="0.01" name="slider_blend" value={slider_blend} onChange={this.fnChange.bind(this)} className="slider" id="slider_blend"/>*/}
-                        {/*<span>Blend</span>*/}
-                    {/*</div>*/}
-                    {/*/!*slider_window*!/*/}
-                    {/*<div className="slide flex">*/}
-                        {/*<input type="range" min="1" max="3000" name="slider_window" value={slider_window} onChange={this.fnChange.bind(this)} className="slider" id="slider_window"/>*/}
-                        {/*<span>Window {slider_window}</span>*/}
-                    {/*</div>*/}
-                    {/*/!*slider_level*!/*/}
-                    {/*<div className="slide flex">*/}
-                        {/*<input type="range" min="0" max="3000" name="slider_level" value={slider_level}  onChange={this.fnChange.bind(this)} className="slider" id="slider_level"/>*/}
-                        {/*<span>Level {slider_level}</span>*/}
-                    {/*</div>*/}
+                    <div className="slide flex">
+                        <input type="range" min="0" max="1.0" step="0.01" name="slider_blend" value={slider_blend} onChange={this.fnChange.bind(this)} className="slider" id="slider_blend"/>
+                        <span>Blend</span>
+                    </div>
+                    {/*slider_window*/}
+                    <div className="slide flex">
+                        <input type="range" min="1" max="3000" name="slider_window" value={slider_window} onChange={this.fnChange.bind(this)} className="slider" id="slider_window"/>
+                        <span>Window {slider_window}</span>
+                    </div>
+                    {/*slider_level*/}
+                    <div className="slide flex">
+                        <input type="range" min="0" max="3000" name="slider_level" value={slider_level}  onChange={this.fnChange.bind(this)} className="slider" id="slider_level"/>
+                        <span>Level {slider_level}</span>
+                    </div>
                     <form>
                         {/*pan*/}
 
