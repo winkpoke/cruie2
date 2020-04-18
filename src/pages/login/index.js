@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 import history from '@/utils/history'
 //检查是否登陆
 import {authCheck} from "@/utils/authCheck";
-import {accountLogin} from "@/services/user";
+import {accountLogin} from "@/services/api";
 import {getRes} from "@/utils";
 import schema from 'async-validator';
 

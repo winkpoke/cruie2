@@ -43,9 +43,10 @@ var split = '/';
                 pid,
                 children: type == 'cname' || type == 'ct' ? children : []
             });
-
+            // console.log('已经添加完这一条');
             if(name == 'dcm'){
-                await rDicom.readDicom(fullpath);
+                //await rDicom.readDicom(fullpath);
+                await rDicom.fnWriteFile(fullpath);
             }
         }else{
             console.log('路径插入失败:未找到patient')
@@ -111,6 +112,12 @@ const startRead = (dirPath)=>{
         readFileList(dirPath,filesList);
     });
 };
+
+process.on('unhandledRejection', (reason, p) => {
+    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    // application specific logging, throwing an error, or other logic here
+});
+
 //开始读病人目录
 startRead(dirPath);
 module.exports={

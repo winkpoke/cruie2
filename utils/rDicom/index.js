@@ -4,10 +4,16 @@ const parseFile = require('./parseFile');
 var PatientModel = require('../../model/Patient');
 var FilPathModel = require('../../model/FilePath');
 
-var allP = [];
+
 /*读取dicom文件*/
-var dirPath = path.resolve(__dirname,'../../../patients/李四/ct-20200408/dcm');
-async function readDicom(dir=dirPath) {
+//var dirPath = path.resolve(__dirname,'../../../patients/李四/ct-20200408/dcm');
+async function readDicom(dir) {
+    var allP = [];
+    var dcmRawDir = path.resolve(dir,'../dcmRaw');
+    if(!fs.existsSync(dcmRawDir)) fs.mkdirSync(dcmRawDir);
+    let data_dcm_raw = dcmRawDir+'/data_dcm.raw';
+    fs.writeFileSync(data_dcm_raw,'');
+
     //根据当前dir 获取病人行
     console.log('===dir===',dir);
     try{
@@ -17,7 +23,7 @@ async function readDicom(dir=dirPath) {
             const {patientId} = fileRow[0];
             console.log('====patientId===',patientId);
             const files = fs.readdirSync(dir);
-            //console.log('=====files len==',files.length);
+            console.log('=====files len==',files.length);
             files.forEach( async (item,index)=>{
                 var fullPath = path.join(dir, item);
                 const d = fs.readFileSync(fullPath);
@@ -35,7 +41,9 @@ async function readDicom(dir=dirPath) {
                     })
                 }
             });
-            return await Promise.all(allP);
+            return await Promise.all(allP).catch(e=>{
+                console.log('==sdfsdf==')
+            });
         }
     }catch (e){
         console.log('===err===',e)
@@ -43,7 +51,7 @@ async function readDicom(dir=dirPath) {
 
 }
 
-async function getAllPixelArraybuffer(dir=dirPath)
+async function getAllPixelArraybuffer(dir)
 {
     try{
         var imagestack = await readDicom(dir);
@@ -96,32 +104,38 @@ async function getAllPixelArraybuffer(dir=dirPath)
 
 }
 
-async function fnWriteFile() {
-    const arrayBuffer = await getAllPixelArraybuffer();
-    console.log('arrayBufer',arrayBuffer);
-    //fs.writeFileSync('./static/a.raw',Buffer.from(arrayBuffer),'binary');
+async function fnWriteFile(fullpath) {
+    const arrayBuffer = await getAllPixelArraybuffer(fullpath);
+    console.log('arrayBufer:',arrayBuffer,'| fullpath:',fullpath);
+    var dirName = path.basename(fullpath);
+    console.log('===writeFile===',dirName);
     if(!arrayBuffer){
-        console.log('==arrayBuffer==',arrayBuffer)
+        console.log('==arrayBuffer==',arrayBuffer);
         return;
     }
-    arrayBuffer.forEach(item=>{
-        fs.appendFile('./static/a.raw', Buffer.from(item),'binary', function (err) {
-         if (err) {
-            throw(err);
-         } else {
-         return(arrayBuffer.length);
-         }
-         });
-    })
+
+    if(dirName == 'dcm'){
+        var data_dcm_raw = path.resolve(fullpath,'../dcmRaw/data_dcm.raw');
+        console.log(data_dcm_raw,fs.existsSync(data_dcm_raw))
+       var fd= fs.openSync(data_dcm_raw,'w');
+        console.log('打开文件:'+data_dcm_raw,fd);
+        arrayBuffer.forEach((item,index)=>{
+            fs.writeSync(fd, Buffer.from(item));
+            if(index == arrayBuffer.length -1){
+                fs.closeSync(fd);
+                console.log("操作完毕，关闭文件:"+data_dcm_raw,fd);
+            }
+        });
+    }
 }
 
 //readDicom()
 
 //获取.raw文件
-fnWriteFile();
+//fnWriteFile();
 
 module.exports = {
-    //getAllPixelArraybuffer,
+    getAllPixelArraybuffer,
     readDicom,
     fnWriteFile,
 };

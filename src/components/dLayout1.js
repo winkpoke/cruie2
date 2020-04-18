@@ -8,7 +8,7 @@ import notFound from "@/pages/notFound";
 import AllComponents from '../pages/index'
 
 //import routeConfig from '../routes/config'*/
-import {logout} from "@/services/user";
+import {logout} from "@/services/api";
 import {getRes} from "@/utils";
 import {Spin,message,Menu, Dropdown} from 'antd';
 import { DownOutlined,CaretDownOutlined } from '@ant-design/icons';
@@ -36,7 +36,7 @@ class dLayouta extends Component {
 
     componentDidMount(){
         var jwt = require('jsonwebtoken');
-        const config = require('../../config');
+        const config = require('../../config/index');
         if(helper.getCookie('token')){
             jwt.verify(helper.getCookie('token'), config.jwtsecret, (err, decode)=> {
                 if (err) {  //  认证出错

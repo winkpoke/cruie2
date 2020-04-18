@@ -53,8 +53,8 @@ io.on('connection', (socket) => {
 app.use(function(req, res, next){
     // 获取请求头中的Authorization认证字符
     let token = req.get('token');
-    console.log('=================我是token:',token);
-    console.log('=================我是cookie:',req.cookie);
+    //console.log('=================我是token:',token);
+    //console.log('=================我是cookie:',req.cookie);
     let authorization = req.cookies.token || token ;
     console.log('authorization',authorization)
     // 排除不需要授权的路由
@@ -71,6 +71,8 @@ app.use(function(req, res, next){
     }
 });
 
+console.log(config)
+
 const userRouter = require('../router/user');
 const patientRouter = require('../router/patient');
 app.use( prefix+'/user', userRouter);
@@ -83,7 +85,7 @@ app.get('/api/user',(req,res)=>{
     res.json({name:'test架构'})
 });
 
-var port = process.env.PORT || 3003;
+var port = process.env.PORT || config.port;
 server.listen(port,function () {
     console.log('http server started at: http://localhost:'+port)
 });

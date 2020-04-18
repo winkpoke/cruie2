@@ -443,6 +443,17 @@ export class GlCanvas {
         return ret;
     }
     /**
+    * @param {number} k
+    */
+    set_blend(k) {
+        wasm.glcanvas_set_blend(this.ptr, k);
+    }
+    /**
+    */
+    load_shaders() {
+        wasm.glcanvas_load_shaders(this.ptr);
+    }
+    /**
     * @param {ArrayBuffer} buffer
     * @param {number} w
     * @param {number} h
@@ -452,9 +463,13 @@ export class GlCanvas {
         wasm.glcanvas_load_primary(this.ptr, addHeapObject(buffer), w, h, d);
     }
     /**
+    * @param {ArrayBuffer} buffer
+    * @param {number} w
+    * @param {number} h
+    * @param {number} d
     */
-    load_lut() {
-        wasm.glcanvas_load_lut(this.ptr);
+    load_secondary(buffer, w, h, d) {
+        wasm.glcanvas_load_secondary(this.ptr, addHeapObject(buffer), w, h, d);
     }
     /**
     */

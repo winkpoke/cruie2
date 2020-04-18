@@ -5,10 +5,10 @@ import promise from "redux-promise-middleware"
 
 import reducer from "./reducers"
 
-import createSagaMiddleware from 'redux-saga';
-import  rootSaga  from './sagas';
-const sagaMiddleware = createSagaMiddleware();
-const middleware = applyMiddleware(sagaMiddleware,promise(), thunk  )
+//import createSagaMiddleware from 'redux-saga';
+//import  rootSaga  from './sagas';
+//const sagaMiddleware = createSagaMiddleware();
+const middleware = applyMiddleware(promise(), thunk  )
 
 var store;
 if(window.__REDUX_DEVTOOLS_EXTENSION__){
@@ -17,6 +17,6 @@ if(window.__REDUX_DEVTOOLS_EXTENSION__){
       store = createStore(reducer, compose(middleware))
 }
 
-sagaMiddleware.run(rootSaga);
+//sagaMiddleware.run(rootSaga);
 
 export default store

@@ -135,6 +135,13 @@ export class GlCanvas {
 */
   get_slice_coronal(): number;
 /**
+* @param {number} k 
+*/
+  set_blend(k: number): void;
+/**
+*/
+  load_shaders(): void;
+/**
 * @param {ArrayBuffer} buffer 
 * @param {number} w 
 * @param {number} h 
@@ -142,8 +149,12 @@ export class GlCanvas {
 */
   load_primary(buffer: ArrayBuffer, w: number, h: number, d: number): void;
 /**
+* @param {ArrayBuffer} buffer 
+* @param {number} w 
+* @param {number} h 
+* @param {number} d 
 */
-  load_lut(): void;
+  load_secondary(buffer: ArrayBuffer, w: number, h: number, d: number): void;
 /**
 */
   setup_geometry(): void;

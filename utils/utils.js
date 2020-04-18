@@ -42,12 +42,22 @@ var isphone = function(phone){
     }
 }
 
+var concatArrayBuffer = (arr)=>{
+    var arr1 = [];
+    arr.map((arrayBuffer,index)=>{
+        arr1.push(Buffer.from(arrayBuffer));
+        return arrayBuffer
+    });
+    return Buffer.concat(arr1)
+}
+
 module.exports = {
     signtoken:signtoken,
     verifytoken:verifytoken,
     md5:cmd5,
     ismail:ismail,
     isphone:isphone,
+    concatArrayBuffer,
     response: {
         succ(data){return {code:0,message:'',data}},
         err(message){return {code:-1,message  }}

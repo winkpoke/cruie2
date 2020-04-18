@@ -1,5 +1,19 @@
 export default function reducer(state={
-    sideBarCollapsed:false,
+    showSideBar:true,//默认显示目录
+    showPatientInfo:false,//默认不显示病人信息
+    buffers:{},//前端存放buffer
+    currentKey:"",
+    curNode:{},
+    kpData:{
+        slider_blend:"0.5",
+        slider_window:"18500",
+        slider_level:"12000",
+        pan:"transverse",
+        slider_scale:"1",
+        slider_pan_x:"0",
+        slider_pan_y:"0",
+        slider_slice:"0"
+    },
     options:{
         formData:{},
         formItem:[],
@@ -7,9 +21,6 @@ export default function reducer(state={
             'label-width': 60
         },
     },
-    /*detail:{},
-    list: [],
-    attrList:[]*/
 }, action) {
     switch (action.type) {
         case "setData": {
