@@ -219,12 +219,12 @@ class kp extends Component {
         const {buffers} = this.props.app;
         var primaryKey = obj['primary'];
         if(primaryKey){
-            this.glcanvas.load_primary(buffers[primaryKey], 512, 512, 133);
+            this.glcanvas.load_primary(buffers[primaryKey], 1024, 1024, 3);
         }
 
         var secondaryKey = obj['secondary'];
         if(obj['secondary']){
-            this.glcanvas.load_secondary(buffers[secondaryKey], 512, 512, 133);
+            this.glcanvas.load_secondary(buffers[secondaryKey], 1024, 1024, 3);
         }
 
         this.glcanvas.set_blend(0.5);
