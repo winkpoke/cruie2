@@ -3,7 +3,7 @@ import asyncComponent from "@/utils/asyncComponent";
 
 const Admin = asyncComponent(()=>import('./admin/index'));
 const Kelper = asyncComponent(()=>import('./kelper/index'));
-
+const Test = asyncComponent(()=>import('./test'));
 /*属性管理*/
 /*const AttributeSet = asyncComponent(()=>import('./attributeSet/index'));
 const Attribute = asyncComponent(()=>import('./attribute/index'));
@@ -24,6 +24,6 @@ const OrderList = asyncComponent(()=>import('./orderList/index'));
 const OrderDetail = asyncComponent(()=>import('./orderList/orderDetail'));*/
 
 export default {
-    Admin,Kelper/*AttributeSet,Attribute,NewAttribute,EditAttribute,ProductCategory,NewProductCategory,EditProductCategory, Product,
+    Admin,Kelper,Test/*AttributeSet,Attribute,NewAttribute,EditAttribute,ProductCategory,NewProductCategory,EditProductCategory, Product,
     NewProduct,EditProduct,OrderList,OrderDetail*/
 }

@@ -10,8 +10,6 @@ import CRouter from './routes/index'
 
 //按需加载组件
 const Login = asyncComponent(()=>import('./pages/login/index'));
-
-
 //404页面
 import notFound from './pages/notFound'
 
@@ -21,6 +19,7 @@ const App = (props) => {
                 <Switch>
                         <Route path="/login" exact component={Login} />
                         <PrivateRoute path="/" component={CRouter} />
+
                         <Route component={notFound} />
                 </Switch>
             </Router>

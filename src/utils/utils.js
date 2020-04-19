@@ -11,7 +11,7 @@ export const getRes = (res, fnSuccess, fnFail)=>{
 
 export const guid = function() {
     return Number(Math.random().toString().substr(3, 3) + Date.now()).toString(36);
-}
+};
 
 export function canclebubble(event){
     var event = event||window.event;        //兼容火狐
@@ -75,5 +75,30 @@ export function transformStr2Obj(a={},str) {
     return {
         orgObj:a,
         lastLevalObj:  lastLevalObj
+    }
+}
+
+export function  debounce(fn, wait){
+    var timeout = null;      //定义一个定时器
+    return function() {
+        if(timeout !== null)
+            clearTimeout(timeout);  //清除这个定时器
+        timeout = setTimeout(fn, wait);
+    }
+}
+
+export function throttle(fn,ev,delay){
+    let valid = true
+    return function() {
+        if(!valid){
+            //休息时间 暂不接客
+            return false
+        }
+        // 工作时间，执行函数并且在间隔期内把状态位设为无效
+        valid = false;
+        setTimeout(() => {
+            fn(ev)
+            valid = true;
+        }, delay)
     }
 }

@@ -83,27 +83,27 @@ class Index extends Component {
             history.push('/admin')
         }
 
-        const socket = io();
-        socket.emit('chat message', '你好..');
-
-        socket.emit('say to someone', '你好 say..');
-
-        socket.on('chat message', function(msg){
-             console.log('我收到管理员的回复了:'+msg);
-        });
-        socket.on('hi', function(msg){
-            console.log('我收到管理员的回复了hi:'+msg);
-        });
-
-        socket.on('connect', function(){
-            console.log('connect');
-            //客户端关闭
-            setTimeout(() => socket.close(), 5000);
-        });
-        socket.on('event', function(data){});
-        socket.on('disconnect', function(){
-            console.log('dis connect')
-        });
+        // const socket = io();
+        // socket.emit('chat message', '你好..');
+        //
+        // socket.emit('say to someone', '你好 say..');
+        //
+        // socket.on('chat message', function(msg){
+        //      console.log('我收到管理员的回复了:'+msg);
+        // });
+        // socket.on('hi', function(msg){
+        //     console.log('我收到管理员的回复了hi:'+msg);
+        // });
+        //
+        // socket.on('connect', function(){
+        //     console.log('connect');
+        //     //客户端关闭
+        //     setTimeout(() => socket.close(), 5000);
+        // });
+        // socket.on('event', function(data){});
+        // socket.on('disconnect', function(){
+        //     console.log('dis connect')
+        // });
     }
 
     render() {

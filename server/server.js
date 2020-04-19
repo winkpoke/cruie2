@@ -28,8 +28,10 @@ app.all('*', function(req, res, next) {
 
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+var socketGlobal;
 io.on('connection', (socket) => {
     console.log('a user connected');
+    //socket.disconnect(true);
     //服务端关闭
     //setTimeout(() => socket.disconnect(true), 5000);
     socket.on('aaa',function (msg) {
@@ -47,6 +49,7 @@ io.on('connection', (socket) => {
     });
     socket.on('disconnect', function(){
         console.log('user disconnected');
+        socket.disconnect(true);
     });
 });
 

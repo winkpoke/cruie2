@@ -23,7 +23,7 @@ function createNotification() {
 
 let notification
 const notice = (type, content, duration = 2000, onClose) => {
-    if (!notification) notification = createNotification()
+    if (!notification) notification = createNotification();
     return notification.addNotice({ type, content, duration, onClose })
 }
 

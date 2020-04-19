@@ -59,6 +59,13 @@ const helper = {
             }
             return s_x ;
         },
+      formatMili(num){
+        num = this.decimal2(num);
+        let DIGIT_PATTERN = /(^|\s)\d+(?=\.?\d*($|\s))/g
+        let MILI_PATTERN = /(?=(?!\b)(\d{2})+\.?\b)/g
+        return  num.toString()
+            .replace(DIGIT_PATTERN, (m) => m.replace(MILI_PATTERN, ','))
+    },
     // 将数字转换为千分位格式，如果是非有效数字，则直接返回
      formatThousand(num){
             num = decimal2(num);

@@ -55,7 +55,7 @@ class dLayouta extends Component {
         location.reload();
     }
     render() {
-        const {username,showNavDropMenu} = this.state;
+        const {username,showNavDropMenu,loading} = this.state;
 
         const menu = (
             <Menu theme={this.state.theme}>
@@ -76,34 +76,40 @@ class dLayouta extends Component {
                 </Menu.Item>
             </Menu>
         );
-
         return (
-            <div className={this.props.className}>
-                <div id="head-nav" className="navbar navbar-default navbar-fixed-top" style={{"width":"100%"}}>
-                    <div className="container-fluid">
-                        <div className="navbar-header">
-                            <a className="navbar-brand" href="#"><span>CURIE</span></a>
-                        </div>
-                        <div className="navbar-collapse collapse">
-                            <ul className="nav navbar-nav">
-                                <li className="active"><a href="#"><span style={{"borderBottom":"3px solid"}}>CBCT</span></a></li>
-                            </ul>
-                            <div className="nav navbar-nav navbar-right user-nav">
-                                    <Dropdown overlay={menu} trigger="click" overlayClassName="navbar-dropdown-menu dropdown profile_menu">
-                                        <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                                            {username} <CaretDownOutlined />
-                                        </a>
-                                    </Dropdown>
+            <div className="warpper">
+                <div className={this.props.className}>
+                    <div id="head-nav" className="navbar navbar-default navbar-fixed-top" style={{"width":"100%"}}>
+                        <div className="container-fluid">
+                            <div className="navbar-header">
+                                <a className="navbar-brand" href="#"><span>CURIE</span></a>
+                            </div>
+                            <div className="navbar-collapse collapse">
+                                <ul className="nav navbar-nav">
+                                    <li className="active"><a href="#"><span style={{"borderBottom":"3px solid"}}>CBCT</span></a></li>
+                                </ul>
+                                <div className="nav navbar-nav navbar-right user-nav">
+                                        <Dropdown overlay={menu} trigger="click" overlayClassName="navbar-dropdown-menu dropdown profile_menu">
+                                            <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                                                {username} <CaretDownOutlined />
+                                            </a>
+                                        </Dropdown>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <hr style={{"marginTop": "0px" , "marginBottom":"0px" , "border":1 }}/>
+                    <div className="fixed-menu" id="cl-wrapper">
+                        {this.props.children}
+                    </div>
                 </div>
-                <hr style={{"marginTop": "0px" , "marginBottom":"0px" , "border":1 }}/>
-                <div className="fixed-menu" id="cl-wrapper">
-                    {this.props.children}
-                </div>
+                {loading ? <div className="toast_bg">
+                    <div className={`toast_box loading`}>
+                        <div className={`toast_icon toast_loading`}></div>
+                        <div className='toast_text'></div>
+                    </div>
+                </div> : ''}
             </div>
-
         );
     }
 }

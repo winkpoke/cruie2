@@ -3,6 +3,7 @@ export default {
     menus: [ // 菜单相关路由
         { key: '/admin', title: '后台', icon: 'appstore', component:'Admin' },
         { key: '/kp', title: 'kp', icon: 'appstore', component:'Kelper' },
+        { key: '/test', title: 'test', icon: 'appstore', component:'Test' },
         /*{
             key: '/admin/attr', title: '属性管理', icon: 'scan',
             subs: [

@@ -49,16 +49,14 @@ class Index extends Component {
     }
     componentWillReceiveProps(nextProps){
         console.log('===nextProps:===',nextProps);
-        this.setState({curRow:nextProps.app.curRow});
-        const {showSideBar,showPatientInfo} = nextProps.app;
+        //this.setState({curRow:nextProps.app.curRow});
+        const {showSideBar,showPatientInfo,action,kpData,curRow} = nextProps.app;
         //如果左侧都展开了 右侧隐藏
         if(showSideBar && showPatientInfo){
-            this.setState({hideR:true})
+            this.setState({hideR:true,action,kpData,curRow})
         }else{
-            this.setState({hideR:false})
+            this.setState({hideR:false,action,kpData,curRow})
         }
-        const {kpData} = this.props.app;
-        this.setState({...kpData});
     }
     componentDidMount(){
     }
@@ -72,7 +70,7 @@ class Index extends Component {
             case 'slider_level':
                 break
         }
-        this.setState(kpData);
+        this.setState({...kpData});
         this.props.dispatch({type:'setData',payload:{key:'kpData',value:kpData}})
     }
     showWLList(item){
@@ -103,6 +101,10 @@ class Index extends Component {
         this.setState({psb:type});
         EventBus.emit('setGl',{name:'slider_blend', value:val});
     }
+    setAction(action){
+        const {kpData} = this.props.app;
+        this.props.dispatch({type:'setData',payload:{key:'action',value:action}});
+    }
     toggleSideL(){
         var show = !this.state.showSideL;
         this.setState({showSideL:show});
@@ -114,8 +116,8 @@ class Index extends Component {
         this.setState({showPatientInfo:show});
     }
     render() {
-        const {kpData} = this.props.app;
-        const {showSideL,showPatientInfo,hideR ,showWLList ,wlList , psb } = this.state;
+        //const {kpData} = this.props.app;
+        const {showSideL,showPatientInfo,hideR ,showWLList ,wlList , psb , action } = this.state;
         var patinfo = null;
         if(this.state.curRow){
             var {detail} = this.state.curRow;
@@ -231,7 +233,7 @@ class Index extends Component {
                      </div> : ''}
 
                      <div id="TSC3D" className="flex" style={{alignItems:"start"}}>
-                         <div style={{background:"#1c1c1c",flex:1}}>
+                         <div style={{background:"#1c1c1c"}}>
                              <Kp></Kp>
                          </div>
                          {hideR ? '' :
@@ -245,13 +247,13 @@ class Index extends Component {
                                          <button disabled={isEmptyCurNode} onClick={this.setBlend.bind(this,'primary')} className={`tool-btn  tool-btn1 ${psb=='primary' ? 'active' : ''}`} >Primary</button>
                                          <button disabled={level!==2} onClick={this.setBlend.bind(this,'secondary')} className={`tool-btn  tool-btn1 ${psb=='secondary' ? 'active' : ''}`}>Secondary</button>
                                          <button disabled={level!==2} onClick={this.setBlend.bind(this,'blend')} className={`tool-btn  tool-btn1 ${psb=='blend' ? 'active' : ''}`}>Blend</button>
-                                         <button disabled={isEmptyCurNode} className="tool-btn  tool-btn1">Zoom</button>
-                                         <button disabled={isEmptyCurNode} className="tool-btn  tool-btn1">Pan</button>
-                                         <button disabled={isEmptyCurNode} className="tool-btn  tool-btn1">Reset</button>
+                                         <button disabled={isEmptyCurNode} onClick={this.setAction.bind(this,'scale')} className={`tool-btn  tool-btn1 ${action == 'scale' ? 'active' : ''} `}>Zoom</button>
+                                         <button disabled={isEmptyCurNode} onClick={this.setAction.bind(this,'pan')} className={`tool-btn  tool-btn1 ${action == 'pan' ? 'active' : ''} `}>Pan</button>
+                                         <button disabled={isEmptyCurNode} onClick={this.setAction.bind(this,'reset')} className={`tool-btn  tool-btn1 ${action == 'reset' ? 'active' : ''} `}>Reset</button>
                                          <button disabled={isEmptyCurNode} className="tool-btn  tool-btn1">W/L</button>
                                           <div className="wl-wigdet">
-                                             <input type="number" disabled={isEmptyCurNode} className="tool-number" id="wwidth" title="Window Width" style={{width: "46%"}} name="slider_window" value={kpData.slider_window || ''} onChange={this.fnChange.bind(this)} />
-                                             <input type="number" disabled={isEmptyCurNode} className="tool-number" id="wcenter"  title="Window Level" style={{width: "46%",float: "right"}} name="slider_window" value={kpData.slider_level || ''} onChange={this.fnChange.bind(this)} />
+                                             <input type="number" disabled={isEmptyCurNode} className="tool-number" id="wwidth" title="Window Width" style={{width: "46%"}} name="slider_window" value={this.state['slider_window'] || ''} onChange={this.fnChange.bind(this)} />
+                                             <input type="number" disabled={isEmptyCurNode} className="tool-number" id="wcenter"  title="Window Level" style={{width: "46%",float: "right"}} name="slider_window" value={this.state['slider_level'] || ''} onChange={this.fnChange.bind(this)} />
                                              <div className="dropdown drop-select-parent" id="AdjustWL">
                                                  <a onClick={this.showWLList.bind(this)} className="dropdown-toggle" data-toggle="dropdown"><img src="/static/images/off.png" style={{marginBottom: "-10px"}}/></a>
                                                  {showWLList ? <ul className="dropdown-menu">

@@ -696,7 +696,6 @@ body.modal-open,
     background: #1C1C1C;
     position: absolute;
     width: 10%;
-    z-index: 2;
 }
 .toggledLeftMenu {
     display: none;

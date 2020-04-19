@@ -29,8 +29,10 @@ const { dispatch } = store
 // request拦截器
 axios.interceptors.request.use(
     config => {
-        window.ajaxNum ++
-        window.ToastLoding = Toast.loading()
+        window.ajaxNum ++;
+        if(config.url.indexOf('rawFile')==-1){
+            window.ToastLoding = Toast.loading()
+        }
 
         dispatch({type:'FETCH_DATA'})
         return config

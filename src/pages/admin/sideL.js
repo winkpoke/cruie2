@@ -5,6 +5,7 @@ import React, {Component} from 'react';
 import {Tree} from 'antd';
 import {connect} from 'react-redux';
 //import EventBus from
+import Toast from '@/components/toast'
 import { createFromIconfontCN } from '@ant-design/icons';
 import EventBus from '@/utils/eventBus';
 const IconFont = createFromIconfontCN({
@@ -56,6 +57,7 @@ class SideL extends Component {
         })
     }
     async onSelect(selectedKeys, info){
+        this.props.dispatch({type:'setData',payload:{key:'loading',value:true}})
         console.log('selected', selectedKeys, info);
         var {dcmPath,level,path,key,pid} = info.node;
         //查看store中是否有当前key, 如果有则拿store的 如果没有则请求
@@ -85,6 +87,7 @@ class SideL extends Component {
                         //getRawFile({level,path ,key,pid });
                         //当primary 数据接受完毕再请求第二批数据
                         EventBus.addListener('recieveEnd', (res)=>{
+                            this.props.dispatch({type:'setData',payload:{key:'loading',value:true}});
                             if(res) getRawFile({level,path ,key,pid });
                         })
                     }else{
@@ -93,7 +96,6 @@ class SideL extends Component {
                 }
             }
             //this.props.dispatch({type:'currentKey',value:key});
-
         }
     };
     render() {
