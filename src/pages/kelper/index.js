@@ -25,49 +25,44 @@ class kp extends Component {
         this.second = new Second();
         this.fnGetPos = this.second.fnGetPos.bind(this);
     }
-    setGl(name,value,panXY=[]){
+    setGl(name,value ){
         const {kpData} = this.props.app;
         const obj = {};
-        if(panXY.length == 0){
-            switch (name){
-                case 'slider_blend':
-                    this.glcanvas.set_blend(value);
-                    break;
-                case 'slider_window':
-                    this.glcanvas.set_window(value);
-                    break;
-                case 'slider_level':
-                    this.glcanvas.set_level(value);
-                    break;
-                case 'pan'://类型
-                    break;
-                case 'slider_scale':
-                    this.glcanvas[`set_scale_${this.state.pan}`](value);
-                    break;
-                case 'slider_pan_x':
-                    this.glcanvas[`set_pan_${this.state.pan}_x`](value);
-                    break;
-                case 'slider_pan_y':
-                    this.glcanvas[`set_pan_${this.state.pan}_y`](value);
-                    break;
-                case 'slider_slice':
-                    this.glcanvas[`set_slice_${this.state.pan}`](value);
-                    break;
-            }
-            obj[name] = value;
-            kpData[name] = value;
-        }else{
-            kpData['slider_pan_x'] = panXY[0];
-            kpData['slider_pan_y'] = panXY[1];
-            this.glcanvas[`set_pan_${this.state.pan}_x`](panXY[0]);
-            this.glcanvas[`set_pan_${this.state.pan}_y`](panXY[1]);
+
+        switch (name){
+            case 'slider_blend':
+                this.glcanvas.set_blend(value);
+                break;
+            case 'slider_window':
+                this.glcanvas.set_window(value);
+                break;
+            case 'slider_level':
+                this.glcanvas.set_level(value);
+                break;
+            case 'pan'://类型
+                break;
+            case 'slider_scale':
+                this.glcanvas[`set_scale_${this.state.pan}`](value);
+                break;
+            case 'slider_pan_x':
+                this.glcanvas[`set_pan_${this.state.pan}_x`](value);
+                break;
+            case 'slider_pan_y':
+                this.glcanvas[`set_pan_${this.state.pan}_y`](value);
+                break;
+            case 'slider_slice':
+                this.glcanvas[`set_slice_${this.state.pan}`](value);
+                break;
         }
-        this.props.dispatch({type:'setData',payload:{key:'kpData',value:kpData}});
+        obj[name] = value;
+        kpData[name] = value;
+
         this.glcanvas.render();
+        this.props.dispatch({type:'setData',payload:{key:'kpData',value:kpData}});
         this.setState(obj);
     }
     fnChange(e){
-        console.log('触发了change事件')
+        console.log('触发了change事件',new Date())
         const {name,value} = e.target;
         const obj = {};
         obj[name] = value;
@@ -210,21 +205,21 @@ class kp extends Component {
             console.log('====updateGl====',res);
             this.glRender(res);
         });
-        EventBus.addListener('setGl', (res)=>{
-            console.log('====setGl====',res);
-            this.setGl(res.name,res.value,res['panXY']);
-        });
+        // EventBus.addListener('setGl', (res)=>{
+        //     console.log('====setGl====',res);
+        //     this.setGl(res.name,res.value,res['panXY']);
+        // });
     }
     glRender(obj){
         const {buffers} = this.props.app;
         var primaryKey = obj['primary'];
         if(primaryKey){
-            this.glcanvas.load_primary(buffers[primaryKey], 1024, 1024, 3);
+            this.glcanvas.load_primary(buffers[primaryKey], 512,512,133);
         }
 
         var secondaryKey = obj['secondary'];
         if(obj['secondary']){
-            this.glcanvas.load_secondary(buffers[secondaryKey], 1024, 1024, 3);
+            this.glcanvas.load_secondary(buffers[secondaryKey], 512,512,133);
         }
 
         this.glcanvas.set_blend(0.5);

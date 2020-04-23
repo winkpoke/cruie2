@@ -54,59 +54,61 @@ export default class Second extends Component{
             //console.log('fnDown disXY:',disX,disY);
 
             var left,top;
-            //console.log(slider_pan_x,slider_pan_y);
-            //var {slider_pan_x,slider_pan_y} = kpData;
             var slider_pan_x = kpData.slider_pan_x;
             var slider_pan_y = kpData.slider_pan_y;
 
-
+            var i = 0;
             const fnMove = function(ev){
-
                 //边界检测
                 left = ev.clientX - disX - l;
                 top = ev.clientY - disY - t;
 
+                var isMovingH = Math.abs(left) - Math.abs(top);
+
                 switch (action){
                     case 'pan':
-                        if(left > 0){
-                            if( slider_pan_x >= 1){
-                                slider_pan_x = 1;
-                                return;
-                            }
-                            slider_pan_x =  Math.floor((slider_pan_x +0.01)*1000)/1000;
+                        if(isMovingH > 0){
+                            if(left > 0){
+                                if( slider_pan_x >= 1){
+                                    slider_pan_x = 1;
+                                    return;
+                                }
+                                slider_pan_x =  (parseInt(slider_pan_x*100 + 100*0.01))/100;
 
-                        }else{
-                            if(slider_pan_x <= -1){
-                                slider_pan_x = -1;
-                                return
+                            }else{
+                                if(slider_pan_x <= -1){
+                                    slider_pan_x = -1;
+                                    return
+                                }
+                                slider_pan_x =  (parseInt(slider_pan_x*100 - 100*0.01))/100;
                             }
-                            slider_pan_x = Math.floor((slider_pan_x -0.01)*1000)/1000;
-                        }
+                            this.setGl('slider_pan_x',slider_pan_x);
+                        }else{
+                            //垂直方向 -1 to 1: - 代表+
+                            if(top<0){
+                                if(slider_pan_y >= 1){
+                                    slider_pan_y = 1;
+                                    return;
+                                }
+                                slider_pan_y  =  (parseInt(slider_pan_y*100 + 100 * 0.01))/100;
 
-                        if(top>0){
-                            if(slider_pan_y >= 1){
-                                slider_pan_y = 1;
-                                return;
+                            }else{
+                                if(slider_pan_y <= -1){
+                                    slider_pan_y = -1;
+                                    return;
+                                }
+                                slider_pan_y  =  (parseInt(slider_pan_y*100 - 100 * 0.01))/100;
                             }
-                            slider_pan_y  = Math.floor((slider_pan_y +0.01)*1000)/1000;
-                        }else{
-                            if(slider_pan_y <= -1){
-                                slider_pan_y = -1;
-                                return;
-                            }
-                            slider_pan_y  = Math.floor((slider_pan_y -0.01)*1000)/1000;
+                            this.setGl('slider_pan_y',slider_pan_y);
                         }
-                        break;
+                    break;
                 }
-
-                console.log(slider_pan_x);
-                kpData['slider_pan_x'] = slider_pan_x;
-                kpData['slider_pan_y'] = slider_pan_y;
-
-                EventBus.emit('setGl',{name:"slider_pan_x",value:slider_pan_x });
+                console.log(slider_pan_x,slider_pan_y);
+                //this.setGl('','',[slider_pan_x,slider_pan_y])
             };
 
-            document.onmousemove = _.throttle(fnMove, 20);
+             document.onmousemove = _.throttle(fnMove.bind(this), 10);
+            //document.onmousemove = fnMove.bind(this);
             document.onmouseup = (ev)=>{
                 // left = ev.clientX - disX - l;
                 // top = ev.clientY - disY - t;
