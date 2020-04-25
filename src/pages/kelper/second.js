@@ -6,14 +6,16 @@ import helper from '@/utils/helper';
 import {debounce} from '@/utils/utils';
 import EventBus from '@/utils/eventBus';
 import _ from 'lodash';
+
+var left = 0,top = 0;
 function getDisXY(pos,ev) {
     var disX=0;
     var disY=0;
     var {myCanvasSideLXStart, myCanvasSideLXEnd, myCanvasSideRXStart, myCanvasSideRXEnd, startLineY, middleLineY, endLineY, tsc} = pos;
     switch (tsc){
         case 'transverse':
-            disX = ev.clientX-myCanvasSideLXStart;
-            disY = ev.clientY - startLineY;
+            disX = ev.clientX-myCanvasSideLXStart ;
+            disY = ev.clientY - startLineY   ;
             break;
         case 'sagittal':
             disX = ev.clientX - myCanvasSideRXStart;
@@ -26,10 +28,13 @@ function getDisXY(pos,ev) {
     }
     return {disX,disY}
 }
+
 export default class Second extends Component{
     fnMounseDown(){
+        var _this = this;
+        console.log(_this.glcanvas);
         if(this.state.inited){
-            console.log('down');
+            console.log('down left-top:',left,top);
             var ev= event;
             var pos = this.fnGetPos(ev.clientX,ev.clientY);
             const {myCanvasSideLXStart, myCanvasSideLXEnd, myCanvasSideRXStart, myCanvasSideRXEnd, startLineY, middleLineY, endLineY, tsc} = pos;
@@ -50,70 +55,21 @@ export default class Second extends Component{
                     break;
             }
             const {disX,disY} = getDisXY(pos,ev);
-            const {kpData} = this.props.app;
-            //console.log('fnDown disXY:',disX,disY);
+            //const {kpData} = this.props.app;
+            console.log('fnDown disXY:',disX,disY);
 
-            var left,top;
-            var slider_pan_x = kpData.slider_pan_x;
-            var slider_pan_y = kpData.slider_pan_y;
-
-            var i = 0;
-            const fnMove = function(ev){
-                //边界检测
-                left = ev.clientX - disX - l;
-                top = ev.clientY - disY - t;
-
-                var isMovingH = Math.abs(left) - Math.abs(top);
-
-                switch (action){
-                    case 'pan':
-                        if(isMovingH > 0){
-                            if(left > 0){
-                                if( slider_pan_x >= 1){
-                                    slider_pan_x = 1;
-                                    return;
-                                }
-                                slider_pan_x =  (parseInt(slider_pan_x*100 + 100*0.01))/100;
-
-                            }else{
-                                if(slider_pan_x <= -1){
-                                    slider_pan_x = -1;
-                                    return
-                                }
-                                slider_pan_x =  (parseInt(slider_pan_x*100 - 100*0.01))/100;
-                            }
-                            this.setGl('slider_pan_x',slider_pan_x);
-                        }else{
-                            //垂直方向 -1 to 1: - 代表+
-                            if(top<0){
-                                if(slider_pan_y >= 1){
-                                    slider_pan_y = 1;
-                                    return;
-                                }
-                                slider_pan_y  =  (parseInt(slider_pan_y*100 + 100 * 0.01))/100;
-
-                            }else{
-                                if(slider_pan_y <= -1){
-                                    slider_pan_y = -1;
-                                    return;
-                                }
-                                slider_pan_y  =  (parseInt(slider_pan_y*100 - 100 * 0.01))/100;
-                            }
-                            this.setGl('slider_pan_y',slider_pan_y);
-                        }
-                    break;
-                }
-                console.log(slider_pan_x,slider_pan_y);
-                //this.setGl('','',[slider_pan_x,slider_pan_y])
-            };
-
-             document.onmousemove = _.throttle(fnMove.bind(this), 10);
-            //document.onmousemove = fnMove.bind(this);
+             document.onmousemove = _.throttle(function (ev) {
+                 const {disX,disY} = getDisXY(pos,ev);
+                 var transformdX =  parseInt( (disX) * 1000 / 315 )/1000 - 1;
+                 var transformdY =  1 - parseInt(disY * 1000 / 315 )/1000 ;
+                 console.log(helper.decimal2(transformdX), helper.decimal2(transformdY));
+                 _this.glcanvas[`set_pan_transverse_x`](transformdX);
+                 _this.glcanvas[`set_pan_transverse_y`](transformdY);
+                 _this.glcanvas.render();
+                 _this.setState({name:'alice'});
+             }.bind(this), 10);
             document.onmouseup = (ev)=>{
-                // left = ev.clientX - disX - l;
-                // top = ev.clientY - disY - t;
-                // console.log('fnUp left top:',left,top);
-                document.onmousemove=document.onmouseup=null
+                document.onmousemove=document.onmouseup=null;
             };
         }
     }
