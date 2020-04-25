@@ -7,7 +7,7 @@ import {debounce} from '@/utils/utils';
 import EventBus from '@/utils/eventBus';
 import _ from 'lodash';
 
-var left = 0,top = 0;
+var left = 0,top = 0  ;
 function getDisXY(pos,ev) {
     var disX=0;
     var disY=0;
@@ -55,23 +55,35 @@ export default class Second extends Component{
                     break;
             }
             const {disX,disY} = getDisXY(pos,ev);
+
+            var transformdX =  parseInt( (disX) * 1000 / 315 )/1000 - 1;
+            var transformdY =  1 - parseInt( (disY) * 1000 / 315 )/1000 ;
+
+            _this.glcanvas[`set_pan_transverse_x`](transformdX);
+            _this.glcanvas[`set_pan_transverse_y`](transformdY);
+            _this.glcanvas.render();
+            _this.setState({name:'alice'});
+
             //const {kpData} = this.props.app;
             console.log('fnDown disXY:',disX,disY);
 
-             document.onmousemove = _.throttle(function (ev) {
+             document.onmousemove = function (ev) {
                  const {disX,disY} = getDisXY(pos,ev);
-                 var transformdX =  parseInt( (disX) * 1000 / 315 )/1000 - 1;
-                 var transformdY =  1 - parseInt(disY * 1000 / 315 )/1000 ;
+                 var  transformdX =  parseInt( (disX) * 1000 / 315 )/1000 - 1;
+                 var  transformdY =  1 - parseInt( (disY) * 1000 / 315 )/1000 ;
                  console.log(helper.decimal2(transformdX), helper.decimal2(transformdY));
                  _this.glcanvas[`set_pan_transverse_x`](transformdX);
                  _this.glcanvas[`set_pan_transverse_y`](transformdY);
                  _this.glcanvas.render();
                  _this.setState({name:'alice'});
-             }.bind(this), 10);
+             };
             document.onmouseup = (ev)=>{
                 document.onmousemove=document.onmouseup=null;
             };
         }
+    }
+    renderGl(){
+
     }
     fnMouseMove(){
         console.log('move')
