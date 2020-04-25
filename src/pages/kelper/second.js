@@ -85,8 +85,8 @@ export default class Second extends Component{
                  //比例尺 0-630  | 0-2
                  var w = (myCanvasSideLXEnd - myCanvasSideLXStart) ;
                  //console.log('w:',w);
-                 var  transformdX =  left / w ;
-                 var  transformdY =  -(top  / w);
+                 var  transformdX =  left / w  ;
+                 var  transformdY =  -(top  / w  );
 
                  var distanceX = Math.abs(transformdX);
                  //var discanceY = Math.abs(transformdY);
@@ -99,8 +99,8 @@ export default class Second extends Component{
 
                  console.log('transformedXY:', transformdX,transformdY);
                  //console.log(helper.decimal2(transformdX), helper.decimal2(transformdY));
-                 _this.glcanvas[`set_pan_transverse_x`](( (transformdX) + initialX));
-                 _this.glcanvas[`set_pan_transverse_y`](( (transformdY) + initialY) );
+                 _this.glcanvas[`set_pan_transverse_x`](( (transformdX) + initialX)/0.95);
+                 _this.glcanvas[`set_pan_transverse_y`](( (transformdY) + initialY)/0.95);
                  _this.glcanvas.render();
                  _this.setState({name:'alice'});
              };
