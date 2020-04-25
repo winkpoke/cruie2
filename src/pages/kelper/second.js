@@ -79,14 +79,14 @@ export default class Second extends Component{
                  var left = disXM - disX;
                  var top = disYM - disY;
 
-                 if(Math.abs(left) < 3 ||  Math.abs(top) < 3){return};
+                 //if(Math.abs(left) < 3 ||  Math.abs(top) < 3){return};
 
                  console.log('移动距离:',left,top);
                  //比例尺 0-630  | 0-2
                  var w = (myCanvasSideLXEnd - myCanvasSideLXStart) ;
                  //console.log('w:',w);
                  var  transformdX =  left / w ;
-                 var  transformdY =  -(top  / w)   ;
+                 var  transformdY =  -(top  / w);
 
                  var distanceX = Math.abs(transformdX);
                  //var discanceY = Math.abs(transformdY);
