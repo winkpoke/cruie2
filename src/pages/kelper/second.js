@@ -33,8 +33,11 @@ export default class Second extends Component{
     fnMounseDown(){
         var _this = this;
         console.log(_this.glcanvas);
+
         if(this.state.inited){
             console.log('down left-top:',left,top);
+            var initialX = this.glcanvas.get_pan_transverse_x();
+            var initialY = this.glcanvas.get_pan_transverse_y();
             var ev= event;
             var pos = this.fnGetPos(ev.clientX,ev.clientY);
             const {myCanvasSideLXStart, myCanvasSideLXEnd, myCanvasSideRXStart, myCanvasSideRXEnd, startLineY, middleLineY, endLineY, tsc} = pos;
@@ -54,26 +57,50 @@ export default class Second extends Component{
                     t = middleLineY;
                     break;
             }
-            const {disX,disY} = getDisXY(pos,ev);
+            const posDisXY = getDisXY(pos,ev);
 
-            var transformdX =  parseInt( (disX) * 1000 / 315 )/1000 - 1;
-            var transformdY =  1 - parseInt( (disY) * 1000 / 315 )/1000 ;
+            var disX =   posDisXY.disX;
+            var disY =   posDisXY.disY;
+            //var disY = initialY > 0  ? 315 - initialY * 315   : posDisXY.disY;
 
-            _this.glcanvas[`set_pan_transverse_x`](transformdX);
-            _this.glcanvas[`set_pan_transverse_y`](transformdY);
-            _this.glcanvas.render();
-            _this.setState({name:'alice'});
+           /* if(initialY > 0){
+                disY = 315 - initialY * 315;
+            }else if(initialY < 0){
+                disY = 315 + initialY * 315
+            }*/
 
             //const {kpData} = this.props.app;
             console.log('fnDown disXY:',disX,disY);
 
              document.onmousemove = function (ev) {
-                 const {disX,disY} = getDisXY(pos,ev);
-                 var  transformdX =  parseInt( (disX) * 1000 / 315 )/1000 - 1;
-                 var  transformdY =  1 - parseInt( (disY) * 1000 / 315 )/1000 ;
-                 console.log(helper.decimal2(transformdX), helper.decimal2(transformdY));
-                 _this.glcanvas[`set_pan_transverse_x`](transformdX);
-                 _this.glcanvas[`set_pan_transverse_y`](transformdY);
+                 console.log('tsc:',_this.glcanvas.get_pan_transverse_x(),_this.glcanvas.get_pan_transverse_y())
+                 const {disX:disXM,disY:disYM} = getDisXY(pos,ev);
+
+                 var left = disXM - disX;
+                 var top = disYM - disY;
+
+                 if(Math.abs(left) < 3 ||  Math.abs(top) < 3){return};
+
+                 console.log('移动距离:',left,top);
+                 //比例尺 0-630  | 0-2
+                 var w = (myCanvasSideLXEnd - myCanvasSideLXStart) ;
+                 //console.log('w:',w);
+                 var  transformdX =  left / w ;
+                 var  transformdY =  -(top  / w)   ;
+
+                 var distanceX = Math.abs(transformdX);
+                 //var discanceY = Math.abs(transformdY);
+
+                 if(transformdX > 0){
+                     transformdX = distanceX > 1-initialX ? 1-initialX : distanceX
+                 }else{
+                     transformdX = distanceX > 1-initialX ? -(1-initialX) : -distanceX
+                 }
+
+                 console.log('transformedXY:', transformdX,transformdY);
+                 //console.log(helper.decimal2(transformdX), helper.decimal2(transformdY));
+                 _this.glcanvas[`set_pan_transverse_x`](( (transformdX) + initialX));
+                 _this.glcanvas[`set_pan_transverse_y`](( (transformdY) + initialY) );
                  _this.glcanvas.render();
                  _this.setState({name:'alice'});
              };
