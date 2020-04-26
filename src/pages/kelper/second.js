@@ -36,8 +36,7 @@ export default class Second extends Component{
 
         if(this.state.inited){
             console.log('down left-top:',left,top);
-            var initialX = this.glcanvas.get_pan_transverse_x();
-            var initialY = this.glcanvas.get_pan_transverse_y();
+
             var ev= event;
             var pos = this.fnGetPos(ev.clientX,ev.clientY);
             const {myCanvasSideLXStart, myCanvasSideLXEnd, myCanvasSideRXStart, myCanvasSideRXEnd, startLineY, middleLineY, endLineY, tsc} = pos;
@@ -45,32 +44,32 @@ export default class Second extends Component{
             var l,t;
             switch (tsc){
                 case 'transverse':
-                    l = myCanvasSideLXStart;
-                    t = startLineY;
+                    var initialX = this.glcanvas.get_pan_transverse_x();
+                    var initialY = this.glcanvas.get_pan_transverse_y();
+                    var initialScale = this.glcanvas.get_scale_transverse();
+                    var initialSlice = this.glcanvas.get_slice_transverse();
                     break;
                 case 'sagittal' :
-                    l = myCanvasSideRXStart;
-                    t = startLineY;
+                    var initialX = this.glcanvas.get_pan_sagittal_x();
+                    var initialY = this.glcanvas.get_pan_sagittal_y();
+                    var initialScale = this.glcanvas.get_scale_sagittal();
+                    var initialSlice = this.glcanvas.get_slice_sagittal();
                     break;
                 case 'coronal':
-                    l = myCanvasSideRXStart;
-                    t = middleLineY;
+                    var initialX = this.glcanvas.get_pan_coronal_x();
+                    var initialY = this.glcanvas.get_pan_coronal_y();
+                    var initialScale = this.glcanvas.get_scale_coronal();
+                    var initialSlice = this.glcanvas.get_slice_coronal();
                     break;
             }
+
             const posDisXY = getDisXY(pos,ev);
 
             var disX =   posDisXY.disX;
             var disY =   posDisXY.disY;
-            //var disY = initialY > 0  ? 315 - initialY * 315   : posDisXY.disY;
 
-           /* if(initialY > 0){
-                disY = 315 - initialY * 315;
-            }else if(initialY < 0){
-                disY = 315 + initialY * 315
-            }*/
-
-            //const {kpData} = this.props.app;
             console.log('fnDown disXY:',disX,disY);
+            console.log('fnDown initialScale:',initialScale);
 
              document.onmousemove = function (ev) {
                  console.log('tsc:',_this.glcanvas.get_pan_transverse_x(),_this.glcanvas.get_pan_transverse_y())
@@ -79,17 +78,24 @@ export default class Second extends Component{
                  var left = disXM - disX;
                  var top = disYM - disY;
 
-                 //if(Math.abs(left) < 3 ||  Math.abs(top) < 3){return};
-
                  console.log('移动距离:',left,top);
                  //比例尺 0-630  | 0-2
-                 var w = (myCanvasSideLXEnd - myCanvasSideLXStart) ;
-                 //console.log('w:',w);
+                 switch(tsc){
+                     case 'transverse':
+                         var w = (myCanvasSideLXEnd - myCanvasSideLXStart) ;
+                         break;
+                     case 'sagittal' :
+                         var w = (myCanvasSideRXEnd - myCanvasSideRXStart) ;
+                         break;
+                     case 'coronal':
+                         var w = (myCanvasSideRXEnd - myCanvasSideRXStart) ;
+                         break;
+                 }
+
                  var  transformdX =  left / w  ;
                  var  transformdY =  -(top  / w  );
 
                  var distanceX = Math.abs(transformdX);
-                 //var discanceY = Math.abs(transformdY);
 
                  if(transformdX > 0){
                      transformdX = distanceX > 1-initialX ? 1-initialX : distanceX
@@ -98,9 +104,18 @@ export default class Second extends Component{
                  }
 
                  console.log('transformedXY:', transformdX,transformdY);
-                 //console.log(helper.decimal2(transformdX), helper.decimal2(transformdY));
-                 _this.glcanvas[`set_pan_transverse_x`](( (transformdX) + initialX)/0.95);
-                 _this.glcanvas[`set_pan_transverse_y`](( (transformdY) + initialY)/0.95);
+                 switch (action){
+                     case 'pan':
+                         _this.glcanvas[`set_pan_${tsc}_x`](( (transformdX) + initialX) );
+                         _this.glcanvas[`set_pan_${tsc}_y`](( (transformdY) + initialY) );
+                         break;
+                     case 'scale':
+                         var scaledY = transformdY * 10;
+                         console.log('放大缩小：',scaledY);
+                         _this.glcanvas[`set_scale_${tsc}`]( initialScale  + scaledY);
+                         break;
+                 }
+
                  _this.glcanvas.render();
                  _this.setState({name:'alice'});
              };
@@ -109,21 +124,26 @@ export default class Second extends Component{
             };
         }
     }
-    renderGl(){
-
-    }
-    fnMouseMove(){
-        console.log('move')
-    }
-    fnMounseUp(){
-        console.log('mounseUp')
-    }
     fnScroll(){
         var ev = window.event;
-        if(ev.wheelDelta){//IE/Opera/Chrome
-             //console.log(ev.wheelDelta);
-        }else if(ev.detail){//Firefox
-             //console.log(ev.detail);
+        this.fnGetPos(ev.clientX,ev.clientY);
+        var init = this.glcanvas.get_slice_transverse();
+        if(this.state.inited){
+            var {tsc, action} = this.props.app;
+            if(action !=='slice') return;
+            var ev = window.event;
+            if(ev.wheelDelta){//IE/Opera/Chrome
+                var last = init + (ev.wheelDelta / 120 * 0.01);
+                if(last < 0) last = 0;
+                if(last > 1) last = 1;
+
+                console.log('last:',last,' | wheelDelta:',ev.wheelDelta);
+                this.setGl('slider_slice',last)
+                // this.glcanvas[`set_slice_${tsc}`]( last );
+                // this.setState({name:'alice11'+ev.wheelDelta});
+            }else if(ev.detail){//Firefox
+                //console.log(ev.detail);
+            }
         }
         window.event.preventDefault();
         return false;
@@ -145,8 +165,6 @@ export default class Second extends Component{
         var middleLineY = myCanvasOffsetTop + myCanvasHeight/2;
         var startLineY = myCanvasOffsetTop;
         var endLineY = myCanvasOffsetTop + myCanvasHeight;
-
-        //console.log(x,y);
 
         if(x < myCanvasSideLXEnd){
             tsc = 'transverse'
@@ -170,17 +188,5 @@ export default class Second extends Component{
             endLineY,
             tsc
         }
-    }
-    fnCheckTsc(pos){
-
-    }
-    fnScale(){
-
-    }
-    fnPan(){
-
-    }
-    fnSlice(){
-
     }
 }

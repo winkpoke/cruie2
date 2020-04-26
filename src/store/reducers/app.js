@@ -5,7 +5,7 @@ export default function reducer(state={
     currentKey:"",
     curNode:{},//当前选中节点
     tsc:"", // transverse sagittal coronal
-    action:"pan",//scale,pan,slice
+    action:"slice",//scale,pan,slice
     kpData:{
         slider_blend:0.5,
         slider_window:18500,

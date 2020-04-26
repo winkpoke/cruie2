@@ -26,7 +26,7 @@ class kp extends Component {
         this.fnGetPos = this.second.fnGetPos.bind(this);
     }
     setGl(name,value ){
-        const {kpData} = this.props.app;
+        const {kpData,tsc} = this.props.app;
         const obj = {};
 
         switch (name){
@@ -42,16 +42,16 @@ class kp extends Component {
             case 'pan'://类型
                 break;
             case 'slider_scale':
-                this.glcanvas[`set_scale_${this.state.pan}`](value);
+                this.glcanvas[`set_scale_${tsc}`](value);
                 break;
             case 'slider_pan_x':
-                this.glcanvas[`set_pan_${this.state.pan}_x`](value);
+                this.glcanvas[`set_pan_${tsc}_x`](value);
                 break;
             case 'slider_pan_y':
-                this.glcanvas[`set_pan_${this.state.pan}_y`](value);
+                this.glcanvas[`set_pan_${tsc}_y`](value);
                 break;
             case 'slider_slice':
-                this.glcanvas[`set_slice_${this.state.pan}`](value);
+                this.glcanvas[`set_slice_${tsc}`](value);
                 break;
         }
         obj[name] = value;
@@ -230,10 +230,9 @@ class kp extends Component {
         const {cWidth,cHeight,slider_blend,slider_window,slider_level,pan,slider_scale,slider_pan_x,slider_pan_y,slider_slice} = this.state;
         return (
                 <div className="kelper page">
-                    <canvas ref="canvas" id="mycanvas" width={cWidth} height={cHeight}
+                    <canvas ref="canvas" id="mycanvas" className={this.props.app.action} width={cWidth} height={cHeight}
                             onMouseDown={this.second.fnMounseDown.bind(this)}
-                            /*onMouseMove={this.second.fnMouseMove.bind(this)}*/
-                            onMouseUp={this.second.fnMounseUp.bind(this)}
+                            onScroll={this.second.fnScroll.bind(this)}
                     >
                     </canvas>
                     <div className="slide flex">
@@ -282,7 +281,7 @@ class kp extends Component {
                     {/*slice*/}
                     <div className="slide flex">
                         <input type="range" min="0" max="1" name="slider_slice" value={slider_slice} onChange={this.fnChange.bind(this)} step="0.01" className="slider" id="slider_slice"/>
-                        <span>Slice</span>
+                        <span>Slice {slider_slice}</span>
                     </div>
                 </div>
         );
