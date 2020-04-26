@@ -70,6 +70,7 @@ export default class Second extends Component{
 
             console.log('fnDown disXY:',disX,disY);
             console.log('fnDown initialScale:',initialScale);
+            console.log('fnDown initialSlice:',initialSlice);
 
              document.onmousemove = function (ev) {
                  console.log('tsc:',_this.glcanvas.get_pan_transverse_x(),_this.glcanvas.get_pan_transverse_y())
@@ -126,10 +127,20 @@ export default class Second extends Component{
     }
     fnScroll(){
         var ev = window.event;
-        this.fnGetPos(ev.clientX,ev.clientY);
-        var init = this.glcanvas.get_slice_transverse();
+        const {tsc} = this.fnGetPos(ev.clientX,ev.clientY);
+        switch(tsc){
+            case 'transverse':
+                var init = this.glcanvas.get_slice_transverse();
+                break;
+            case 'sagittal' :
+                var init = this.glcanvas.get_slice_sagittal();
+                break;
+            case 'coronal':
+                var init = this.glcanvas.get_slice_sagittal();
+                break;
+        }
         if(this.state.inited){
-            var {tsc, action} = this.props.app;
+            var {action} = this.props.app;
             if(action !=='slice') return;
             var ev = window.event;
             if(ev.wheelDelta){//IE/Opera/Chrome
