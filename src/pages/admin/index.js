@@ -311,7 +311,7 @@ class Index extends Component {
                                          </div>
                                          {Object.keys(shifts).map((k,index)=>
                                              <div className="inner-div" key={index}>
-                                                 {k}: <input type="number" name={shifts[k].name} value={kpData && kpData[`slider_shift_${(k.toLowerCase())}`] || 0} onChange={this.fnChange.bind(this)}  disabled={level!==2 || kpData['isLocked'] } className="operator-input" step="0.01"/> cm &nbsp;
+                                                 {k}: <input type="number" name={shifts[k].name} value={kpData && kpData[`slider_shift_${(k.toLowerCase())}`] || 0} onChange={this.fnChange.bind(this)}  disabled={level!==2 || (kpData&&kpData['isLocked']) } className="operator-input" step="0.01"/> cm &nbsp;
                                                  <button id="xPlus" className="operator-btn" onClick={this.changeShift.bind(this,shifts[k],1)}>+</button>&nbsp;
                                                  <button id="xMinus" className="operator-btn" onClick={this.changeShift.bind(this,shifts[k],0)}>-</button>
                                              </div>
