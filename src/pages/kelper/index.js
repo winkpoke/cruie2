@@ -91,7 +91,7 @@ class kp extends Component {
     }
     componentWillMount(){
         const {kpData} = this.props.app;
-        this.setState({...kpData});
+        this.setState({kpData});
         this.second.fnMounseDown.call(this,'sss');
         this.getWH()
     }
@@ -99,8 +99,8 @@ class kp extends Component {
         document.addEventListener('DOMMouseScroll', (e)=>{console.log('DOMMouseScroll');e.preventDefault();return false}, false);
         document.addEventListener('mousewheel',(e)=>{this.second.fnScroll.call(this)},{ passive: false });
 
-        this.glcanvas = GlCanvas.new("mycanvas", this.state.cWidth, this.state.cHeight, 12000, 15000);
-        this.glcanvas.load_shaders();
+        this.glcanvas = GlCanvas.new("mycanvas", this.state.cWidth, this.state.cHeight, this.state.kpData.slider_window, this.state.kpData.slider_level);
+        // this.glcanvas.load_shaders();
         this.glcanvas.set_window(12000);
         this.glcanvas.set_level(15000);
         this.glcanvas.setup_geometry();
@@ -124,14 +124,14 @@ class kp extends Component {
         const {buffers} = this.props.app;
         var primaryKey = obj['primary'];
         if(primaryKey){
-            this.glcanvas.load_primary(buffers[primaryKey], 1024,1024,3);
+            this.glcanvas.load_primary(buffers[primaryKey], 512, 512, 133, 1.98, 1.98, 5.0);
         }
 
         var secondaryKey = obj['secondary'];
         if(obj['secondary']){
-            this.glcanvas.load_secondary(buffers[secondaryKey], 1024,1024,3);
+            this.glcanvas.load_secondary(buffers[secondaryKey], 512, 512, 100, 1.98, 1.98, 5.0);
         }
-
+        this.glcanvas.setup_geometry();
         this.glcanvas.set_blend(0.5);
         this.glcanvas.render();
         this.props.dispatch({type:'setData',payload:{key:'loading',value:false}});
@@ -145,54 +145,54 @@ class kp extends Component {
                             onScroll={this.second.fnScroll.bind(this)}
                     >
                     </canvas>
-                    <div className="slide flex">
-                        <input type="range" min="0" max="1.0" step="0.01" name="slider_blend" value={slider_blend} onChange={this.fnChange.bind(this)} className="slider" id="slider_blend"/>
-                        <span>Blend</span>
-                    </div>
-                    {/*slider_window*/}
-                    <div className="slide flex">
-                        <input type="range" min="1" max="3000" name="slider_window" value={slider_window} onChange={this.fnChange.bind(this)} className="slider" id="slider_window"/>
-                        <span>Window {slider_window}</span>
-                    </div>
-                    {/*slider_level*/}
-                    <div className="slide flex">
-                        <input type="range" min="0" max="3000" name="slider_level" value={slider_level}  onChange={this.fnChange.bind(this)} className="slider" id="slider_level"/>
-                        <span>Level {slider_level}</span>
-                    </div>
-                    <form>
-                        {/*pan*/}
+                    {/*<div className="slide flex">*/}
+                    {/*    <input type="range" min="0" max="1.0" step="0.01" name="slider_blend" value={slider_blend} onChange={this.fnChange.bind(this)} className="slider" id="slider_blend"/>*/}
+                    {/*    <span>Blend</span>*/}
+                    {/*</div>*/}
+                    {/*/!*slider_window*!/*/}
+                    {/*<div className="slide flex">*/}
+                    {/*    <input type="range" min="1" max="3000" name="slider_window" value={slider_window} onChange={this.fnChange.bind(this)} className="slider" id="slider_window"/>*/}
+                    {/*    <span>Window {slider_window}</span>*/}
+                    {/*</div>*/}
+                    {/*/!*slider_level*!/*/}
+                    {/*<div className="slide flex">*/}
+                    {/*    <input type="range" min="0" max="3000" name="slider_level" value={slider_level}  onChange={this.fnChange.bind(this)} className="slider" id="slider_level"/>*/}
+                    {/*    <span>Level {slider_level}</span>*/}
+                    {/*</div>*/}
+                    {/*<form>*/}
+                    {/*    /!*pan*!/*/}
 
-                            <input type="radio" id="radio_transverse" name="pan" value="transverse" checked={pan=='transverse'} onChange={this.fnChange.bind(this)} />
-                            <label htmlFor="transverse">Transverse</label>
+                    {/*        <input type="radio" id="radio_transverse" name="pan" value="transverse" checked={pan=='transverse'} onChange={this.fnChange.bind(this)} />*/}
+                    {/*        <label htmlFor="transverse">Transverse</label>*/}
 
-                            <input type="radio" id="radio_sagittal" name="pan" value="sagittal" checked={pan=='sagittal'} onChange={this.fnChange.bind(this)}/>
-                            <label htmlFor="transverse">Sagittal</label>
+                    {/*        <input type="radio" id="radio_sagittal" name="pan" value="sagittal" checked={pan=='sagittal'} onChange={this.fnChange.bind(this)}/>*/}
+                    {/*        <label htmlFor="transverse">Sagittal</label>*/}
 
 
-                            <input type="radio" id="radio_coronal" name="pan" value="coronal" checked={pan=='coronal'} onChange={this.fnChange.bind(this)}/>
-                            <label htmlFor="transverse">Coronal</label>
+                    {/*        <input type="radio" id="radio_coronal" name="pan" value="coronal" checked={pan=='coronal'} onChange={this.fnChange.bind(this)}/>*/}
+                    {/*        <label htmlFor="transverse">Coronal</label>*/}
 
-                    </form>
-                    {/*scale*/}
-                    <div className="slide flex">
-                        <input type="range" min="1" max="10" name="slider_scale" value={slider_scale} onChange={this.fnChange.bind(this)} step="0.1" className="slider" id="slider_scale"/>
-                        <span>Zoom in/out</span>
-                    </div>
-                    {/*slider_pan_x*/}
-                    <div className="slide flex">
-                        <input type="range" min="-1" max="1" name="slider_pan_x" value={slider_pan_x} onChange={this.fnChange.bind(this)} step="0.01" className="slider" id="slider_pan_x"/>
-                        <span>Pan: X</span>
-                    </div>
-                    {/*slider_pan_y*/}
-                    <div className="slide flex">
-                        <input type="range" min="-1" max="1" name="slider_pan_y" value={slider_pan_y} onChange={this.fnChange.bind(this)} step="0.01" className="slider" id="slider_pan_y"/>
-                        <span>Pan: Y</span>
-                    </div>
-                    {/*slice*/}
-                    <div className="slide flex">
-                        <input type="range" min="0" max="1" name="slider_slice" value={slider_slice} onChange={this.fnChange.bind(this)} step="0.01" className="slider" id="slider_slice"/>
-                        <span>Slice {slider_slice}</span>
-                    </div>
+                    {/*</form>*/}
+                    {/*/!*scale*!/*/}
+                    {/*<div className="slide flex">*/}
+                    {/*    <input type="range" min="1" max="10" name="slider_scale" value={slider_scale} onChange={this.fnChange.bind(this)} step="0.1" className="slider" id="slider_scale"/>*/}
+                    {/*    <span>Zoom in/out</span>*/}
+                    {/*</div>*/}
+                    {/*/!*slider_pan_x*!/*/}
+                    {/*<div className="slide flex">*/}
+                    {/*    <input type="range" min="-1" max="1" name="slider_pan_x" value={slider_pan_x} onChange={this.fnChange.bind(this)} step="0.01" className="slider" id="slider_pan_x"/>*/}
+                    {/*    <span>Pan: X</span>*/}
+                    {/*</div>*/}
+                    {/*/!*slider_pan_y*!/*/}
+                    {/*<div className="slide flex">*/}
+                    {/*    <input type="range" min="-1" max="1" name="slider_pan_y" value={slider_pan_y} onChange={this.fnChange.bind(this)} step="0.01" className="slider" id="slider_pan_y"/>*/}
+                    {/*    <span>Pan: Y</span>*/}
+                    {/*</div>*/}
+                    {/*/!*slice*!/*/}
+                    {/*<div className="slide flex">*/}
+                    {/*    <input type="range" min="0" max="1" name="slider_slice" value={slider_slice} onChange={this.fnChange.bind(this)} step="0.01" className="slider" id="slider_slice"/>*/}
+                    {/*    <span>Slice {slider_slice}</span>*/}
+                    {/*</div>*/}
                 </div>
         );
     }

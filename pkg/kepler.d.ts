@@ -23,6 +23,16 @@ export class GlCanvas {
 */
   static new(canvas_id: string, width: number, height: number, win: number, level: number): GlCanvas;
 /**
+* @param {number} s0 
+* @param {number} s1 
+* @param {number} s2 
+*/
+  set_shift(s0: number, s1: number, s2: number): void;
+/**
+* @returns {Float32Array} 
+*/
+  get_shift(): Float32Array;
+/**
 * @param {number} window 
 */
   set_window(window: number): void;
@@ -62,6 +72,11 @@ export class GlCanvas {
 * @returns {number} 
 */
   get_scale_coronal(): number;
+/**
+* @param {number} x 
+* @param {number} y 
+*/
+  set_pan_transverse(x: number, y: number): void;
 /**
 * @param {number} x 
 */
@@ -139,22 +154,25 @@ export class GlCanvas {
 */
   set_blend(k: number): void;
 /**
+* @param {ArrayBuffer} buffer 
+* @param {number} w 
+* @param {number} h 
+* @param {number} d 
+* @param {number} spacing_x 
+* @param {number} spacing_y 
+* @param {number} spacing_z 
 */
-  load_shaders(): void;
+  load_primary(buffer: ArrayBuffer, w: number, h: number, d: number, spacing_x: number, spacing_y: number, spacing_z: number): void;
 /**
 * @param {ArrayBuffer} buffer 
 * @param {number} w 
 * @param {number} h 
 * @param {number} d 
+* @param {number} spacing_x 
+* @param {number} spacing_y 
+* @param {number} spacing_z 
 */
-  load_primary(buffer: ArrayBuffer, w: number, h: number, d: number): void;
-/**
-* @param {ArrayBuffer} buffer 
-* @param {number} w 
-* @param {number} h 
-* @param {number} d 
-*/
-  load_secondary(buffer: ArrayBuffer, w: number, h: number, d: number): void;
+  load_secondary(buffer: ArrayBuffer, w: number, h: number, d: number, spacing_x: number, spacing_y: number, spacing_z: number): void;
 /**
 */
   setup_geometry(): void;

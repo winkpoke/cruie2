@@ -261,6 +261,21 @@ export class GlCanvas {
         return GlCanvas.__wrap(ret);
     }
     /**
+    * @param {number} s0
+    * @param {number} s1
+    * @param {number} s2
+    */
+    set_shift(s0, s1, s2) {
+        wasm.glcanvas_set_shift(this.ptr, s0, s1, s2);
+    }
+    /**
+    * @returns {Float32Array}
+    */
+    get_shift() {
+        var ret = wasm.glcanvas_get_shift(this.ptr);
+        return takeObject(ret);
+    }
+    /**
     * @param {number} window
     */
     set_window(window) {
@@ -324,6 +339,13 @@ export class GlCanvas {
     get_scale_coronal() {
         var ret = wasm.glcanvas_get_scale_coronal(this.ptr);
         return ret;
+    }
+    /**
+    * @param {number} x
+    * @param {number} y
+    */
+    set_pan_transverse(x, y) {
+        wasm.glcanvas_set_pan_transverse(this.ptr, x, y);
     }
     /**
     * @param {number} x
@@ -449,27 +471,28 @@ export class GlCanvas {
         wasm.glcanvas_set_blend(this.ptr, k);
     }
     /**
+    * @param {ArrayBuffer} buffer
+    * @param {number} w
+    * @param {number} h
+    * @param {number} d
+    * @param {number} spacing_x
+    * @param {number} spacing_y
+    * @param {number} spacing_z
     */
-    load_shaders() {
-        wasm.glcanvas_load_shaders(this.ptr);
+    load_primary(buffer, w, h, d, spacing_x, spacing_y, spacing_z) {
+        wasm.glcanvas_load_primary(this.ptr, addHeapObject(buffer), w, h, d, spacing_x, spacing_y, spacing_z);
     }
     /**
     * @param {ArrayBuffer} buffer
     * @param {number} w
     * @param {number} h
     * @param {number} d
+    * @param {number} spacing_x
+    * @param {number} spacing_y
+    * @param {number} spacing_z
     */
-    load_primary(buffer, w, h, d) {
-        wasm.glcanvas_load_primary(this.ptr, addHeapObject(buffer), w, h, d);
-    }
-    /**
-    * @param {ArrayBuffer} buffer
-    * @param {number} w
-    * @param {number} h
-    * @param {number} d
-    */
-    load_secondary(buffer, w, h, d) {
-        wasm.glcanvas_load_secondary(this.ptr, addHeapObject(buffer), w, h, d);
+    load_secondary(buffer, w, h, d, spacing_x, spacing_y, spacing_z) {
+        wasm.glcanvas_load_secondary(this.ptr, addHeapObject(buffer), w, h, d, spacing_x, spacing_y, spacing_z);
     }
     /**
     */
@@ -507,6 +530,27 @@ export const __wbindgen_object_clone_ref = function(arg0) {
 export const __wbindgen_string_new = function(arg0, arg1) {
     var ret = getStringFromWasm0(arg0, arg1);
     return addHeapObject(ret);
+};
+
+export const __wbg_new_59cb74e423758ede = function() {
+    var ret = new Error();
+    return addHeapObject(ret);
+};
+
+export const __wbg_stack_558ba5917b466edd = function(arg0, arg1) {
+    var ret = getObject(arg1).stack;
+    var ptr0 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    var len0 = WASM_VECTOR_LEN;
+    getInt32Memory0()[arg0 / 4 + 1] = len0;
+    getInt32Memory0()[arg0 / 4 + 0] = ptr0;
+};
+
+export const __wbg_error_4bb6c2a97407129a = function(arg0, arg1) {
+    try {
+        console.error(getStringFromWasm0(arg0, arg1));
+    } finally {
+        wasm.__wbindgen_free(arg0, arg1);
+    }
 };
 
 export const __wbg_instanceof_WebGl2RenderingContext_1f3735f620a46ed0 = function(arg0) {
@@ -578,6 +622,10 @@ export const __wbg_deleteProgram_00d8b1ab1f94a057 = function(arg0, arg1) {
     getObject(arg0).deleteProgram(getObject(arg1));
 };
 
+export const __wbg_deleteTexture_c92f0995e08d52d3 = function(arg0, arg1) {
+    getObject(arg0).deleteTexture(getObject(arg1));
+};
+
 export const __wbg_drawElements_427ff273a1d052d9 = function(arg0, arg1, arg2, arg3, arg4) {
     getObject(arg0).drawElements(arg1 >>> 0, arg2, arg3 >>> 0, arg4);
 };
@@ -645,6 +693,10 @@ export const __wbg_uniform1f_6e9ab56dc8f65c9e = function(arg0, arg1, arg2) {
 
 export const __wbg_uniform1i_9a7856dfa4d25de9 = function(arg0, arg1, arg2) {
     getObject(arg0).uniform1i(getObject(arg1), arg2);
+};
+
+export const __wbg_uniform3f_5b44f79bab0725c0 = function(arg0, arg1, arg2, arg3, arg4) {
+    getObject(arg0).uniform3f(getObject(arg1), arg2, arg3, arg4);
 };
 
 export const __wbg_useProgram_6201d054f7b93dbe = function(arg0, arg1) {
@@ -773,9 +825,9 @@ export const __wbg_newwithbyteoffset_618efb438fcb4bf9 = function(arg0, arg1) {
     return addHeapObject(ret);
 };
 
-export const __wbg_buffer_f6585109a1f740dc = function(arg0) {
-    var ret = getObject(arg0).buffer;
-    return addHeapObject(ret);
+export const __wbg_instanceof_Float32Array_173e15ade51bbc23 = function(arg0) {
+    var ret = getObject(arg0) instanceof Float32Array;
+    return ret;
 };
 
 export const __wbindgen_number_get = function(arg0, arg1) {

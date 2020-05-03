@@ -7,6 +7,8 @@ import '@/assets/css/cbct.css'
 import Kp from '../kelper/index'
 import SideL from './sideL';
 import EventBus from '@/utils/eventBus';
+import {saveShifts} from "@/services/api";
+import kp from "../kelper/index";
 @connect((store) => {
     return {app:store.app,};
 })
@@ -43,11 +45,17 @@ class Index extends Component {
             {sw:1600,sl:300,label:'BONE_SPINE'},
             {sw:3000,sl:500,label:'BONE_TEMPORAL'}
         ],
-        psb:"" //primary secondary blend
+        psb:"", //primary secondary blend
+        shifts:{
+            x:{label:'X' , name: 'slider_shift_x' , c:'x'},
+            y:{label:'Y' , name: 'slider_shift_y' , c:'y'},
+            z:{label:'Z' , name: 'slider_shift_z' , c:'z'}
+        }
     };
    /* onRef(ref){
         this.child1 = ref
     }*/
+
     componentWillReceiveProps(nextProps){
         console.log('===nextProps:===',nextProps);
         //this.setState({curRow:nextProps.app.curRow});
@@ -62,7 +70,6 @@ class Index extends Component {
     componentDidMount(){
     }
     fnChange(e){
-        console.log(this.child1)
         const {kpData} = this.props.app;
         const {name,value} = e.target;
         kpData[name] = value;
@@ -72,8 +79,46 @@ class Index extends Component {
             case 'slider_level':
                 break
         }
-        this.setState({...kpData});
+        this.setState({kpData});
         this.child1.setGl(name,value)
+    }
+    changeShift(item, isIncrease){
+        const {kpData} = this.state;
+        var name = item.name
+        if(isIncrease > 0){
+            kpData[name] = ( kpData[name] * 100 + 1 ) / 100
+            //kpData[name]+=0.01
+            if(kpData[name] > 1) kpData[name] = 1
+        }else{
+            //kpData[name]-=0.01
+            kpData[name] = ( kpData[name] * 100 - 1 ) / 100
+            if(kpData[name] < -1) kpData[name] = -1
+        }
+        this.setState({kpData})
+
+        let val = kpData[name]
+        let shift = this.child1.glcanvas.get_shift();
+        switch (item.c) {
+            case 'x':
+                this.child1.glcanvas.set_shift(val, shift[1], shift[2]);
+                break;
+            case 'y':
+                this.child1.glcanvas.set_shift(shift[0],val, shift[2]);
+                break;
+            case 'z':
+                this.child1.glcanvas.set_shift(shift[0], shift[1], val);
+        }
+
+        this.child1.glcanvas.render();
+    }
+    fnLock(){
+        const {kpData} = this.state;
+        kpData.isLocked = true
+        this.setState({kpData})
+        this.props.dispatch({type:'setData',payload:{key:'kpData',value:kpData}});
+        var {curNode} = this.props.app
+        const {slider_shift_x, slider_shift_y, slider_shift_z} = kpData
+        saveShifts(curNode.pid , {shifts: {slider_shift_x , slider_shift_y, slider_shift_z}} )
     }
     showWLList(item){
         const {showWLList} = this.state;
@@ -82,7 +127,7 @@ class Index extends Component {
             const {kpData} = this.props.app;
             kpData['slider_window'] = item.sw;
             kpData['slider_level'] = item.sl;
-            this.setState({...kpData});
+            this.setState({kpData});
             this.child1.setGl('slider_window',item.sw)
             this.child1.setGl('slider_level',item.sl)
         }
@@ -120,7 +165,7 @@ class Index extends Component {
     }
     render() {
         //const {kpData} = this.props.app;
-        const {showSideL,showPatientInfo,hideR ,showWLList ,wlList , psb , action } = this.state;
+        const {showSideL,showPatientInfo,hideR ,showWLList ,wlList , psb , action ,shifts , kpData } = this.state;
         var patinfo = null;
         if(this.state.curRow){
             var {detail} = this.state.curRow;
@@ -240,11 +285,11 @@ class Index extends Component {
                              <Kp onRef={c=>this.child1=c}></Kp>
                          </div>
                          {hideR ? '' :
-                         <div id="tool-div"  style={{ width:"225px", height: "100%",paddingLeft: "1px",paddingRight: "1px" }}>
-                             <div className="box box-solid box-info img-tool2" style={{height: "56%",marginTop: "0px",marginBottom: "3px"}}>
+                         <div id="tool-div">
+                             <div className="box box-solid box-info img-tool2" >
                                  <div className="box-body">
-                                     <div className="img-tool-p" style={{ lineHeight: "2px",textAlign:"center"}}>
-                                         <button type="button" disabled={isEmptyCurNode} className="tool-btn" style={{marginTop: "18px",height: "40px",width: "93%"}} id="acquireCBCTButton">Acquire CBCT</button>
+                                     <div className="img-tool-p" >
+                                         <button type="button" disabled={isEmptyCurNode} className="tool-btn" id="acquireCBCTButton">Acquire CBCT</button>
                                      </div>
                                      <div className="img-tool-p flex flex-wrap align-start" style={{ lineHeight: "2px"}}>
                                          <button disabled={isEmptyCurNode} onClick={this.setBlend.bind(this,'primary')} className={`tool-btn  tool-btn1 ${psb=='primary' ? 'active' : ''}`} >Primary</button>
@@ -255,8 +300,8 @@ class Index extends Component {
                                          <button disabled={isEmptyCurNode} onClick={this.setAction.bind(this,'reset')} className={`tool-btn  tool-btn1 ${action == 'reset' ? 'active' : ''} `}>Reset</button>
                                          <button disabled={isEmptyCurNode} className="tool-btn  tool-btn1">W/L</button>
                                           <div className="wl-wigdet">
-                                             <input type="number" disabled={isEmptyCurNode} className="tool-number" id="wwidth" title="Window Width" style={{width: "46%"}} name="slider_window" value={this.state['slider_window'] || ''} onChange={this.fnChange.bind(this)} />
-                                             <input type="number" disabled={isEmptyCurNode} className="tool-number" id="wcenter"  title="Window Level" style={{width: "46%",float: "right"}} name="slider_level" value={this.state['slider_level'] || ''} onChange={this.fnChange.bind(this)} />
+                                             <input type="number" disabled={isEmptyCurNode} className="tool-number" id="wwidth" title="Window Width" style={{width: "46%"}} name="slider_window" value={kpData &&kpData['slider_window'] || '' } onChange={this.fnChange.bind(this)} />
+                                             <input type="number" disabled={isEmptyCurNode} className="tool-number" id="wcenter"  title="Window Level" style={{width: "46%",float: "right"}} name="slider_level" value={kpData &&kpData['slider_level'] || ''} onChange={this.fnChange.bind(this)} />
                                              <div className="dropdown drop-select-parent" id="AdjustWL">
                                                  <a onClick={this.showWLList.bind(this)} className="dropdown-toggle" data-toggle="dropdown"><img src="/static/images/off.png" style={{marginBottom: "-10px"}}/></a>
                                                  {showWLList ? <ul className="dropdown-menu">
@@ -267,37 +312,34 @@ class Index extends Component {
                                      </div>
                                  </div>
                              </div>
-                             <div className="box box-solid box-info img-tool2" style={{marginTop: "1px",height: "51%"}}>
+                             <div className="box box-solid box-info img-tool2" >
                                  <div className="box-body text-center">
-                                     <div className="reg-tool-p  " style={{paddingLeft: "1px" }}>
-                                         <button type="button" disabled className="tool-btn" id="manualReg" style={{width: "93%"}}>Start Auto Registration
+                                     <div className="reg-tool-p">
+                                         <button type="button" disabled={level!==2 || kpData['isLocked']} className="tool-btn" id="manualReg" >Start Auto Registration
                                          </button>
                                      </div>
 
                                      <div className="reg-tool-p reg-tool-p3 margin-t-10  ">
-                                         <div className="inner-div" style={{borderTopLeftRadius: "10px",borderTopRightRadius: "10px",paddingTop: "5px"}}>
+                                         <div className="inner-div"  >
                                              Couch Shift Result:
                                          </div>
-                                         <div className="inner-div">
-                                             X: <input type="number" className="operator-input" step="0.01"/> cm &nbsp;<button id="xPlus" className="operator-btn">+</button>&nbsp;<button id="xMinus" className="operator-btn">-</button>
-                                         </div>
-                                         <div className="inner-div">
-                                             Y: <input type="number" className="operator-input" step="0.01"/> cm &nbsp;<button id="yPlus" className="operator-btn">+</button>&nbsp;<button id="yMinus" className="operator-btn">-</button>
-                                         </div>
-                                         <div className="inner-div" style={{borderBottomLeftRadius: "10px",borderBottomRightRadius: "10px"}}>
-                                             Z: <input type="number" className="operator-input" step="0.01"/> cm &nbsp;<button id="zPlus" className="operator-btn">+</button>&nbsp;<button id="zMinus" className="operator-btn">-</button>
-                                         </div>
+                                         {Object.keys(shifts).map((k,index)=>
+                                             <div className="inner-div" key={index}>
+                                                 {k}: <input type="number" name={shifts[k].name} value={kpData && kpData[`slider_shift_${(k.toLowerCase())}`] || 0} onChange={this.fnChange.bind(this)}  disabled={level!==2 || kpData['isLocked'] } className="operator-input" step="0.01"/> cm &nbsp;
+                                                 <button id="xPlus" className="operator-btn" onClick={this.changeShift.bind(this,shifts[k],1)}>+</button>&nbsp;
+                                                 <button id="xMinus" className="operator-btn" onClick={this.changeShift.bind(this,shifts[k],0)}>-</button>
+                                             </div>
+                                         )}
                                      </div>
-                                     <div className="reg-tool-p" style={{paddingLeft: "1px",width: "93%"}}>
-                                         <button type="button" className="tool-btn tool-btn2" style={{width: "47%"}} id="save">Lock</button>
-                                         <button type="button" className="tool-btn tool-btn2" style={{width: "47%",marginLeft:"10px"}} id="printCouchShift">Print</button>
+                                     <div className="reg-tool-p" >
+                                         <button type="button" className="tool-btn tool-btn2" disabled={level!==2 || kpData['isLocked'] } style={{width: "47%"}} id="save" onClick={this.fnLock.bind(this)}>Lock</button>
+                                         <button type="button" className="tool-btn tool-btn2" disabled={level!==2 || !kpData['isLocked'] } style={{width: "47%",marginLeft:"10px"}} id="printCouchShift">Print</button>
                                      </div>
                                  </div>
                              </div>
                          </div>
                          }
                      </div>
-
 
                 </div>
             </DLayouta>

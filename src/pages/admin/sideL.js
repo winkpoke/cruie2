@@ -54,10 +54,17 @@ class SideL extends Component {
     async onSelect(selectedKeys, info){
         this.props.dispatch({type:'setData',payload:{key:'loading',value:true}})
         console.log('selected', selectedKeys, info);
-        var {dcmPath,level,path,key,pid} = info.node;
+        var {dcmPath,level,path,key,pid , detail:{shift}} = info.node;
         //查看store中是否有当前key, 如果有则拿store的 如果没有则请求
         if(info.selected){
             this.props.dispatch({type:'setData',payload:{key:'curNode',value:info.node}});
+            if(shift){
+                var {kpData} = this.props.app
+                kpData['slider_shift_x'] = shift['slider_shift_x']
+                kpData['slider_shift_y'] = shift['slider_shift_y']
+                kpData['slider_shift_z'] = shift['slider_shift_z']
+            }
+            this.props.dispatch({type:'setData',payload:{key:'kpData',value:kpData}});
 
             const {buffers} = this.props.app;
             if(key == this.props.app.currentKey) return;
@@ -78,12 +85,14 @@ class SideL extends Component {
                     const {treeData} = this.state;
                     var parent = treeData.find(item=>item.key == pid);
                     if(!buffers[pid]){
+                        console.log('没选primary')
                         this.getRawFile({dcmDir:parent.dcmPath,level:parent.level, key:pid });
                         //getRawFile({level,path ,key,pid });
                         //当primary 数据接受完毕再请求第二批数据
                         EventBus.addListener('recieveEnd', (res)=>{
+                            console.log('primary over')
                             this.props.dispatch({type:'setData',payload:{key:'loading',value:true}});
-                            if(res) this.getRawFile({level,path ,key,pid });
+                            this.getRawFile({level,path ,key,pid });
                         })
                     }else{
                         this.getRawFile({level,path ,key,pid });
@@ -95,12 +104,7 @@ class SideL extends Component {
         }
     };
     getRawFile(params){
-        if(socket.connected){
-            socket.emit('chunk',params)
-        }else{
-            socket = io()
-            socket.emit('chunk',params)
-        }
+        socket.emit('chunk',params)
     }
     startListenSocket(){
         //下面开始监听websocket
@@ -135,7 +139,7 @@ class SideL extends Component {
                 const {curNode} = this.props.app;
 
                 var timer = setTimeout(()=>{
-                     socket.close()
+                     //socket.close()
                     if(curNode.level == 0){//如果点击的是病人 直接渲染
                         //this.glRender({primary:msg.key});
                         EventBus.emit('updateGl',{primary:msg.key})

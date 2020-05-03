@@ -8,13 +8,17 @@ export default function reducer(state={
     action:"slice",//scale,pan,slice
     kpData:{
         slider_blend:0.5,
-        slider_window:18500,
-        slider_level:12000,
+        slider_window:2900,
+        slider_level:2800,
         pan:"transverse",
         slider_scale:1,
         slider_pan_x:0,
         slider_pan_y:0,
-        slider_slice:0
+        slider_slice:0,
+        slider_shift_x:0,
+        slider_shift_y:0,
+        slider_shift_z:0,
+        isLocked: false
     },
     options:{
         formData:{},

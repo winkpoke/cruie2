@@ -9,6 +9,9 @@ var Sch = new Schema({
     clinic:{type:String},
     role:{type:String},
     memo:{type:String},
-    detail:{type:Object},
+    detail:{
+        patinfo: {type:Array},
+        shift: {type:Object}
+    },
 });
 module.exports = mongoose.model(fileName,Sch);
