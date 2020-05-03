@@ -63,8 +63,8 @@ class SideL extends Component {
                 kpData['slider_shift_x'] = shift['slider_shift_x']
                 kpData['slider_shift_y'] = shift['slider_shift_y']
                 kpData['slider_shift_z'] = shift['slider_shift_z']
+                this.props.dispatch({type:'setData',payload:{key:'kpData',value:kpData}});
             }
-            this.props.dispatch({type:'setData',payload:{key:'kpData',value:kpData}});
 
             const {buffers} = this.props.app;
             if(key == this.props.app.currentKey) return;
