@@ -1,12 +1,9 @@
 import React, {Component} from 'react';
 import * as wasm from "hello-wasm-pack";
 import { start, GlCanvas, ViewType } from "kepler";
-import { Spin} from 'antd';
-import {get, post} from '@/utils/request'
-import io from 'socket.io-client';
+
 import Second from './second'
 import 'antd/es/spin/style/css';
-var socket;
 import {connect} from 'react-redux';
 import EventBus from '@/utils/eventBus';
 
@@ -25,6 +22,9 @@ class kp extends Component {
         this.glcanvas = null;
         this.second = new Second();
         this.fnGetPos = this.second.fnGetPos.bind(this);
+        if(props.onRef){//如果父组件传来该方法 则调用方法将子组件this指针传过去
+            props.onRef(this)
+        }
     }
     setGl(name,value ){
         const {kpData,tsc} = this.props.app;
@@ -67,16 +67,11 @@ class kp extends Component {
         const {name,value} = e.target;
         const obj = {};
         obj[name] = value;
-        //var glcanvas = this.getGlCanvas();
-        //console.log('name:',name,'| value:',value);
         this.setGl(name,value);
         console.log('====fnchange obj===',obj);
-        //this.setState(obj);
     }
-
     componentWillReceiveProps(nextProps){
-        //const {kpData} = this.props.app;
-        //this.setState({cWidth:w,cHeight:h,...kpData});
+
     }
     getWH(){
         const {showSideBar,showPatientInfo} = this.props.app;
@@ -104,8 +99,6 @@ class kp extends Component {
         document.addEventListener('DOMMouseScroll', (e)=>{console.log('DOMMouseScroll');e.preventDefault();return false}, false);
         document.addEventListener('mousewheel',(e)=>{this.second.fnScroll.call(this)},{ passive: false });
 
-        socket = io();
-
         this.glcanvas = GlCanvas.new("mycanvas", this.state.cWidth, this.state.cHeight, 12000, 15000);
         this.glcanvas.load_shaders();
         this.glcanvas.set_window(12000);
@@ -116,79 +109,16 @@ class kp extends Component {
         console.log(ViewType.SAGITTAL || 'ssss' );
         console.log('window:',this.glcanvas.window);
 
-        //this.startListenSocket();
         this.setState({inited:true})
 
         EventBus.addListener('updateGl', (res)=>{
             console.log('====updateGl====',res);
             this.glRender(res);
         });
-
-    }
-    startListenSocket(){
-        //下面开始监听websocket
-        var arr = [];
-        var i = 0;
-        console.log(new Date());
-        socket.on('chunk', (msg)=>{
-            arr.push(this.base64ToUint8Array(msg));
-            i++;
-            console.log('我收到管理员的chunk了:'+i);
+        EventBus.addListener('setGl', (res)=>{
+            console.log('====setGl====',res);
+            this.setGl(res);
         });
-
-        socket.on('chunk end',(msg)=>{
-            console.log('我收到管理员的chunk end 了:',msg, arr.length);
-            if(arr.length == msg.i){
-                var dataBuffer = (this.concatArrayBuffer(arr)).buffer;//这里是arrayBuffer格式
-                i = 0;
-                arr = [];
-                console.log('dataBuffer',dataBuffer);
-                console.log(new Date());
-                var array_view = new Uint16Array(dataBuffer);
-                console.log("start of transforming...");
-                array_view.forEach((element, index, array) => array[index] += 1000);
-                console.log("end of transforming...");
-                console.log("JS - Read file complished.");
-
-                // this.glcanvas.load_primary(dataBuffer, 512, 512, 133);
-                // // glcanvas.set_window(12000);
-                // // glcanvas.set_level(15000);
-                // // glcanvas.setup_geometry();
-                // this.glcanvas.render();
-                // this.props.dispatch({type:'setData',payload:{key:'loading',value:false}})
-                // return;
-
-                //接受到buffer后存起来 切换的时候不用再次去请求
-                const {buffers} = this.props.app;
-                buffers[msg.key] = dataBuffer;
-                this.props.dispatch({type:'setData',payload:{key:'buffers',value:buffers}});
-
-                const {curNode} = this.props.app;
-
-                var timer = setTimeout(()=>{
-                    if(curNode.level == 0){//如果点击的是病人 直接渲染
-                        this.glRender({primary:msg.key});
-                    }else{
-                        //如果点击的是cbct
-                        if(msg.level == 0){
-                            this.glRender({primary:msg.key});
-                            EventBus.emit('recieveEnd',true);
-                        }else if(msg.level == 2){
-                            this.glRender({primary:msg.pid,secondary:msg.key});
-                        }
-                    }
-                    clearInterval(timer);
-                },1000)
-            }
-        });
-        EventBus.addListener('updateGl', (res)=>{
-            console.log('====updateGl====',res);
-            this.glRender(res);
-        });
-        // EventBus.addListener('setGl', (res)=>{
-        //     console.log('====setGl====',res);
-        //     this.setGl(res.name,res.value,res['panXY']);
-        // });
     }
     glRender(obj){
         const {buffers} = this.props.app;

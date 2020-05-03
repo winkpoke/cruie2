@@ -28,7 +28,6 @@ class SideL extends Component {
             props.onRef(this)
         }
     }
-
     state={
         treeData:[],
         selectedKeys:[],
@@ -39,7 +38,6 @@ class SideL extends Component {
             getRes(res,data=>{
                 const handleIcon = (d)=>{
                     return  d.map(item=>{
-                        //item.icon = <SmileOutlined />;
                         item.icon = ({ selected }) => (selected ? <IconFont type="icon-baseline-check_box-px"/> : <IconFont type="icon-check-box-outline-bl" />);
                         if(item.children){
                             handleIcon(item.children);
@@ -129,14 +127,6 @@ class SideL extends Component {
                 console.log("end of transforming...");
                 console.log("JS - Read file complished.");
 
-                // this.glcanvas.load_primary(dataBuffer, 512, 512, 133);
-                // // glcanvas.set_window(12000);
-                // // glcanvas.set_level(15000);
-                // // glcanvas.setup_geometry();
-                // this.glcanvas.render();
-                // this.props.dispatch({type:'setData',payload:{key:'loading',value:false}})
-                // return;
-
                 //接受到buffer后存起来 切换的时候不用再次去请求
                 const {buffers} = this.props.app;
                 buffers[msg.key] = dataBuffer;
@@ -164,11 +154,6 @@ class SideL extends Component {
                 },1000)
             }
         });
-
-        // EventBus.addListener('setGl', (res)=>{
-        //     console.log('====setGl====',res);
-        //     this.setGl(res.name,res.value,res['panXY']);
-        // });
     }
     render() {
         const {treeData} = this.state;

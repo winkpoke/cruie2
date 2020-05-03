@@ -15,7 +15,8 @@ class Index extends Component {
 
     constructor(props, context) {
         super(props, context);
-        this.child = null;
+        this.child = null;// sideL
+        this.child1= null; // kp
     }
     state={
         tabbar:[
@@ -44,9 +45,9 @@ class Index extends Component {
         ],
         psb:"" //primary secondary blend
     };
-    onRef(ref){
-        this.child = ref
-    }
+   /* onRef(ref){
+        this.child1 = ref
+    }*/
     componentWillReceiveProps(nextProps){
         console.log('===nextProps:===',nextProps);
         //this.setState({curRow:nextProps.app.curRow});
@@ -61,6 +62,7 @@ class Index extends Component {
     componentDidMount(){
     }
     fnChange(e){
+        console.log(this.child1)
         const {kpData} = this.props.app;
         const {name,value} = e.target;
         kpData[name] = value;
@@ -71,7 +73,7 @@ class Index extends Component {
                 break
         }
         this.setState({...kpData});
-        this.props.dispatch({type:'setData',payload:{key:'kpData',value:kpData}})
+        this.child1.setGl(name,value)
     }
     showWLList(item){
         const {showWLList} = this.state;
@@ -80,9 +82,9 @@ class Index extends Component {
             const {kpData} = this.props.app;
             kpData['slider_window'] = item.sw;
             kpData['slider_level'] = item.sl;
-            this.props.dispatch({type:'setData',payload:{key:'kpData',value:kpData}});
-            EventBus.emit('setGl',{name:'slider_window',value:item.sw});
-            EventBus.emit('setGl',{name:'slider_level', value:item.sl});
+            this.setState({...kpData});
+            this.child1.setGl('slider_window',item.sw)
+            this.child1.setGl('slider_level',item.sl)
         }
     }
     setBlend(type){
@@ -99,7 +101,8 @@ class Index extends Component {
                 break;
         }
         this.setState({psb:type});
-        EventBus.emit('setGl',{name:'slider_blend', value:val});
+        // EventBus.emit('setGl',{name:'slider_blend', value:val});
+        this.child1.setGl('slider_blend',val)
     }
     setAction(action){
         const {kpData} = this.props.app;
@@ -234,7 +237,7 @@ class Index extends Component {
 
                      <div id="TSC3D" className="flex" style={{alignItems:"start"}}>
                          <div style={{background:"#1c1c1c"}}>
-                             <Kp></Kp>
+                             <Kp onRef={c=>this.child1=c}></Kp>
                          </div>
                          {hideR ? '' :
                          <div id="tool-div"  style={{ width:"225px", height: "100%",paddingLeft: "1px",paddingRight: "1px" }}>
@@ -253,7 +256,7 @@ class Index extends Component {
                                          <button disabled={isEmptyCurNode} className="tool-btn  tool-btn1">W/L</button>
                                           <div className="wl-wigdet">
                                              <input type="number" disabled={isEmptyCurNode} className="tool-number" id="wwidth" title="Window Width" style={{width: "46%"}} name="slider_window" value={this.state['slider_window'] || ''} onChange={this.fnChange.bind(this)} />
-                                             <input type="number" disabled={isEmptyCurNode} className="tool-number" id="wcenter"  title="Window Level" style={{width: "46%",float: "right"}} name="slider_window" value={this.state['slider_level'] || ''} onChange={this.fnChange.bind(this)} />
+                                             <input type="number" disabled={isEmptyCurNode} className="tool-number" id="wcenter"  title="Window Level" style={{width: "46%",float: "right"}} name="slider_level" value={this.state['slider_level'] || ''} onChange={this.fnChange.bind(this)} />
                                              <div className="dropdown drop-select-parent" id="AdjustWL">
                                                  <a onClick={this.showWLList.bind(this)} className="dropdown-toggle" data-toggle="dropdown"><img src="/static/images/off.png" style={{marginBottom: "-10px"}}/></a>
                                                  {showWLList ? <ul className="dropdown-menu">
@@ -269,7 +272,6 @@ class Index extends Component {
                                      <div className="reg-tool-p  " style={{paddingLeft: "1px" }}>
                                          <button type="button" disabled className="tool-btn" id="manualReg" style={{width: "93%"}}>Start Auto Registration
                                          </button>
-                                         {/*<button type="button" className="tool-btn" id="autoReg" style={{width: "47%",marginLeft:"10px"}}>Auto Reg</button>*/}
                                      </div>
 
                                      <div className="reg-tool-p reg-tool-p3 margin-t-10  ">
