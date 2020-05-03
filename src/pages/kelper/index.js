@@ -29,7 +29,7 @@ class kp extends Component {
     setGl(name,value ){
         const {kpData,tsc} = this.props.app;
         const obj = {};
-
+        let shift = this.glcanvas.get_shift();
         switch (name){
             case 'slider_blend':
                 this.glcanvas.set_blend(value);
@@ -54,6 +54,15 @@ class kp extends Component {
             case 'slider_slice':
                 this.glcanvas[`set_slice_${tsc}`](value);
                 break;
+            case 'slider_shift_x':
+                this.glcanvas.set_shift(value, shift[1], shift[2]);
+                break
+            case 'slider_shift_y':
+                this.glcanvas.set_shift(shift[0], value, shift[2]);
+                break
+            case 'slider_shift_z':
+                this.glcanvas.set_shift(shift[0], shift[1], value);
+                break
         }
         obj[name] = value;
         kpData[name] = value;

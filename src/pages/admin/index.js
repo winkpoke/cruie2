@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import DLayouta  from '@/components/dLayout1'
 import {SearchOutlined} from '@ant-design/icons';
+import { message } from 'antd';
 import _ from 'lodash';
 import '@/assets/css/cbct.css'
 import Kp from '../kelper/index'
@@ -9,6 +10,7 @@ import SideL from './sideL';
 import EventBus from '@/utils/eventBus';
 import {saveShifts} from "@/services/api";
 import kp from "../kelper/index";
+import {getRes} from "@/utils";
 @connect((store) => {
     return {app:store.app,};
 })
@@ -73,12 +75,6 @@ class Index extends Component {
         const {kpData} = this.props.app;
         const {name,value} = e.target;
         kpData[name] = value;
-        switch (name){
-            case 'slider_window':
-                break;
-            case 'slider_level':
-                break
-        }
         this.setState({kpData});
         this.child1.setGl(name,value)
     }
@@ -87,29 +83,15 @@ class Index extends Component {
         var name = item.name
         if(isIncrease > 0){
             kpData[name] = ( kpData[name] * 100 + 1 ) / 100
-            //kpData[name]+=0.01
             if(kpData[name] > 1) kpData[name] = 1
         }else{
-            //kpData[name]-=0.01
             kpData[name] = ( kpData[name] * 100 - 1 ) / 100
             if(kpData[name] < -1) kpData[name] = -1
         }
         this.setState({kpData})
 
-        let val = kpData[name]
-        let shift = this.child1.glcanvas.get_shift();
-        switch (item.c) {
-            case 'x':
-                this.child1.glcanvas.set_shift(val, shift[1], shift[2]);
-                break;
-            case 'y':
-                this.child1.glcanvas.set_shift(shift[0],val, shift[2]);
-                break;
-            case 'z':
-                this.child1.glcanvas.set_shift(shift[0], shift[1], val);
-        }
-
-        this.child1.glcanvas.render();
+        let value = kpData[name]
+        this.child1.setGl(name,value)
     }
     fnLock(){
         const {kpData} = this.state;
@@ -118,7 +100,11 @@ class Index extends Component {
         this.props.dispatch({type:'setData',payload:{key:'kpData',value:kpData}});
         var {curNode} = this.props.app
         const {slider_shift_x, slider_shift_y, slider_shift_z} = kpData
-        saveShifts(curNode.pid , {shifts: {slider_shift_x , slider_shift_y, slider_shift_z}} )
+        saveShifts(curNode.pid , {shifts: {slider_shift_x , slider_shift_y, slider_shift_z}} ).then(res=>{
+            getRes(res,data=>{
+                message.info('Registeration saved sucessful!')
+            })
+        })
     }
     showWLList(item){
         const {showWLList} = this.state;
