@@ -301,7 +301,7 @@ class Index extends Component {
                              <div className="box box-solid box-info img-tool2" >
                                  <div className="box-body text-center">
                                      <div className="reg-tool-p">
-                                         <button type="button" disabled={level!==2 || kpData['isLocked']} className="tool-btn" id="manualReg" >Start Auto Registration
+                                         <button type="button" disabled={level!==2 ||  (kpData && kpData['isLocked'] )} className="tool-btn" id="manualReg" >Start Auto Registration
                                          </button>
                                      </div>
 
@@ -318,8 +318,8 @@ class Index extends Component {
                                          )}
                                      </div>
                                      <div className="reg-tool-p" >
-                                         <button type="button" className="tool-btn tool-btn2" disabled={level!==2 || kpData['isLocked'] } style={{width: "47%"}} id="save" onClick={this.fnLock.bind(this)}>Lock</button>
-                                         <button type="button" className="tool-btn tool-btn2" disabled={level!==2 || !kpData['isLocked'] } style={{width: "47%",marginLeft:"10px"}} id="printCouchShift">Print</button>
+                                         <button type="button" className="tool-btn tool-btn2" disabled={level!==2 ||  (kpData && kpData['isLocked']) } style={{width: "47%"}} id="save" onClick={this.fnLock.bind(this)}>Lock</button>
+                                         <button type="button" className="tool-btn tool-btn2" disabled={level!==2 ||  (kpData && !kpData['isLocked']) } style={{width: "47%",marginLeft:"10px"}} id="printCouchShift">Print</button>
                                      </div>
                                  </div>
                              </div>
