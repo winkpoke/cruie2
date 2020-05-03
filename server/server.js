@@ -28,17 +28,18 @@ app.all('*', function(req, res, next) {
 
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-var socketGlobal;
-io.on('connection', (socket) => {
+require('./socketFuncs')(io)
+
+/*io.on('connection', (socket) => {
     console.log('a user connected');
-    //socket.disconnect(true);
+    socket.disconnect(true);
     //服务端关闭
     //setTimeout(() => socket.disconnect(true), 5000);
     socket.on('aaa',function (msg) {
         io.emit('chunk',msg);
         //console.log('接受chunk:',msg);
     });
-    socket.on('aaa end',function (msg) {
+    socket.on('aaa end',function () {
         io.emit('chunk end',msg);
         //console.log('接受chunk:',msg);
     });
@@ -51,9 +52,10 @@ io.on('connection', (socket) => {
         console.log('user disconnected');
         socket.disconnect(true);
     });
-});
+});*/
 
 app.use(function(req, res, next){
+
     // 获取请求头中的Authorization认证字符
     let token = req.get('token');
     //console.log('=================我是token:',token);

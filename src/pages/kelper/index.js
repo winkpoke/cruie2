@@ -9,6 +9,7 @@ import 'antd/es/spin/style/css';
 var socket;
 import {connect} from 'react-redux';
 import EventBus from '@/utils/eventBus';
+
 @connect((store) => {
     return {app:store.app};
 })
@@ -72,67 +73,40 @@ class kp extends Component {
         console.log('====fnchange obj===',obj);
         //this.setState(obj);
     }
-    concatArrayBuffer(arr){
-        var arr1 = [];
-        arr.map((arrayBuffer,index)=>{
-            arr1.push(Buffer.from(arrayBuffer));
-            return arrayBuffer
-        });
-        return Buffer.concat(arr1)
-    }
-    base64ToUint8Array(base64String) {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding)
-            .replace(/\-/g, '+')
-            .replace(/_/g, '/');
 
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-
-        for (let i = 0; i < rawData.length; ++i) {
-            outputArray[i] = rawData.charCodeAt(i);
-        }
-        return outputArray;
-    }
     componentWillReceiveProps(nextProps){
-        //如果侧边栏 和 病人信息都打开了 则隐藏最右侧菜单 操作
-        const {showSideBar,showPatientInfo} = nextProps.app;
-        var dWidth = document.documentElement.clientWidth;
-         if(showSideBar==false && showPatientInfo==false){//左侧都隐藏
-            var w = dWidth - 260;
-         }else if(showSideBar && !showPatientInfo){//左侧显示一个
-             var w = dWidth - 480;
-         }else if(!showSideBar && showPatientInfo){//左侧显示一个
-             var w = dWidth - 480;
-         }else if(showSideBar && showPatientInfo){//左侧都显示
-             var w = dWidth - 400
-         }
-         w = parseInt(w/3) * 3;
-         var h = parseInt(w/3)*2;
-        this.setState({cWidth:w,cHeight:h});
-        const {kpData} = this.props.app;
+        //const {kpData} = this.props.app;
         //this.setState({cWidth:w,cHeight:h,...kpData});
+    }
+    getWH(){
+        const {showSideBar,showPatientInfo} = this.props.app;
+        var dWidth = document.documentElement.clientWidth;
+        if(showSideBar==false && showPatientInfo==false){//左侧都隐藏
+            var w = dWidth - 260;
+        }else if(showSideBar && !showPatientInfo){//左侧显示一个
+            var w = dWidth - 480;
+        }else if(!showSideBar && showPatientInfo){//左侧显示一个
+            var w = dWidth - 480;
+        }else if(showSideBar && showPatientInfo){//左侧都显示
+            var w = dWidth - 400
+        }
+        w = parseInt(w/3) * 3;
+        var h = parseInt(w/3)*2;
+        this.setState({cWidth:w, cHeight:h})
     }
     componentWillMount(){
         const {kpData} = this.props.app;
         this.setState({...kpData});
         this.second.fnMounseDown.call(this,'sss');
+        this.getWH()
     }
     componentDidMount(){
         document.addEventListener('DOMMouseScroll', (e)=>{console.log('DOMMouseScroll');e.preventDefault();return false}, false);
         document.addEventListener('mousewheel',(e)=>{this.second.fnScroll.call(this)},{ passive: false });
-        if(socket){
-            socket.close()
-        }
-        socket = io();
-        var w1 = TSC3D.offsetWidth;
-        let canvas = document.getElementById("mycanvas");
-        //canvas.width = dWidth - 550;
-        //canvas.height = 600;
-        let w = canvas.clientWidth;
-        let h = canvas.clientHeight;
 
-        this.glcanvas = GlCanvas.new("mycanvas", w, h, 12000, 15000);
+        socket = io();
+
+        this.glcanvas = GlCanvas.new("mycanvas", this.state.cWidth, this.state.cHeight, 12000, 15000);
         this.glcanvas.load_shaders();
         this.glcanvas.set_window(12000);
         this.glcanvas.set_level(15000);
@@ -142,8 +116,14 @@ class kp extends Component {
         console.log(ViewType.SAGITTAL || 'ssss' );
         console.log('window:',this.glcanvas.window);
 
-        this.startListenSocket();
+        //this.startListenSocket();
         this.setState({inited:true})
+
+        EventBus.addListener('updateGl', (res)=>{
+            console.log('====updateGl====',res);
+            this.glRender(res);
+        });
+
     }
     startListenSocket(){
         //下面开始监听websocket
@@ -214,12 +194,12 @@ class kp extends Component {
         const {buffers} = this.props.app;
         var primaryKey = obj['primary'];
         if(primaryKey){
-            this.glcanvas.load_primary(buffers[primaryKey], 512, 512, 133);
+            this.glcanvas.load_primary(buffers[primaryKey], 1024,1024,3);
         }
 
         var secondaryKey = obj['secondary'];
         if(obj['secondary']){
-            this.glcanvas.load_secondary(buffers[secondaryKey],512, 512, 133);
+            this.glcanvas.load_secondary(buffers[secondaryKey], 1024,1024,3);
         }
 
         this.glcanvas.set_blend(0.5);
