@@ -2,14 +2,14 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import DLayouta  from '@/components/dLayout1'
 import {SearchOutlined} from '@ant-design/icons';
-import { message } from 'antd';
+import { message ,Slider,Row, Col } from 'antd';
 import _ from 'lodash';
 import '@/assets/css/cbct.css'
+import 'antd/es/slider/style/css';
 import Kp from '../kelper/index'
 import SideL from './sideL';
 import EventBus from '@/utils/eventBus';
 import {saveShifts} from "@/services/api";
-import kp from "../kelper/index";
 import {getRes} from "@/utils";
 @connect((store) => {
     return {app:store.app,};
@@ -118,21 +118,25 @@ class Index extends Component {
             this.child1.setGl('slider_level',item.sl)
         }
     }
-    setBlend(type){
-        var val;
-        switch (type){
-            case 'primary':
-                val = 0;
-                break;
-            case 'secondary':
-                val = 1;
-                break;
-            case 'blend':
-                val = 0.5;
-                break;
-        }
-        this.setState({psb:type});
+    setBlend(val){
+        console.log(val)
+        //var val;
+        // switch (type){
+        //     case 'primary':
+        //         val = 0;
+        //         break;
+        //     case 'secondary':
+        //         val = 1;
+        //         break;
+        //     case 'blend':
+        //         val = 0.5;
+        //         break;
+        // }
+        //this.setState({psb:type});
         // EventBus.emit('setGl',{name:'slider_blend', value:val});
+        const {kpData} = this.state;
+        kpData['slider_blend'] = val;
+        this.props.dispatch({type:'setData',payload:{key:'kpData',value:kpData}});
         this.child1.setGl('slider_blend',val)
     }
     setAction(action){
@@ -151,7 +155,7 @@ class Index extends Component {
     }
     render() {
         //const {kpData} = this.props.app;
-        const {showSideL,showPatientInfo,hideR ,showWLList ,wlList , psb , action ,shifts , kpData } = this.state;
+        const {showSideL,showPatientInfo,hideR ,showWLList ,wlList , action ,shifts , kpData } = this.state;
         var patinfo = null;
         if(this.state.curRow){
             var {detail} = this.state.curRow;
@@ -277,10 +281,20 @@ class Index extends Component {
                                      <div className="img-tool-p" >
                                          <button type="button" disabled={isEmptyCurNode} className="tool-btn" id="acquireCBCTButton">Acquire CBCT</button>
                                      </div>
+                                     <Row>
+                                         <Col span={12}>
+                                             <Slider
+                                                 class="slider"
+                                                 min={0}
+                                                 max={1}
+                                                 step={0.5}
+                                                 disabled={level!==2}
+                                                 onChange={this.setBlend.bind(this)}
+                                                 value={kpData && kpData['slider_blend']}
+                                             />
+                                         </Col>
+                                     </Row>
                                      <div className="img-tool-p flex flex-wrap align-start" style={{ lineHeight: "2px"}}>
-                                         <button disabled={isEmptyCurNode} onClick={this.setBlend.bind(this,'primary')} className={`tool-btn  tool-btn1 ${psb=='primary' ? 'active' : ''}`} >Primary</button>
-                                         <button disabled={level!==2} onClick={this.setBlend.bind(this,'secondary')} className={`tool-btn  tool-btn1 ${psb=='secondary' ? 'active' : ''}`}>Secondary</button>
-                                         <button disabled={level!==2} onClick={this.setBlend.bind(this,'blend')} className={`tool-btn  tool-btn1 ${psb=='blend' ? 'active' : ''}`}>Blend</button>
                                          <button disabled={isEmptyCurNode} onClick={this.setAction.bind(this,'scale')} className={`tool-btn  tool-btn1 ${action == 'scale' ? 'active' : ''} `}>Zoom</button>
                                          <button disabled={isEmptyCurNode} onClick={this.setAction.bind(this,'pan')} className={`tool-btn  tool-btn1 ${action == 'pan' ? 'active' : ''} `}>Pan</button>
                                          <button disabled={isEmptyCurNode} onClick={this.setAction.bind(this,'reset')} className={`tool-btn  tool-btn1 ${action == 'reset' ? 'active' : ''} `}>Reset</button>

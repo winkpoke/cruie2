@@ -68,9 +68,13 @@ module.exports = function(wss){
                 case 'chunk':
                     readFile(params,ws)
                     break
-                case 'test':
+                case 'aquire':
                     ws.send('server received' + params)
                     break
+                case 'autoRegisteration':
+                    ws.send('server received' + params)
+                    break
+
             }
         });
 
