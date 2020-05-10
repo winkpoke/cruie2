@@ -3,7 +3,7 @@ const path = require('path');
 const parseFile = require('./parseFile');
 var PatientModel = require('../../model/Patient');
 var FilPathModel = require('../../model/FilePath');
-
+var _ = require('lodash')
 
 /*读取dicom文件*/
 //var dirPath = path.resolve(__dirname,'../../../patients/李四/ct-20200408/dcm');
@@ -22,8 +22,9 @@ async function readDicom(dir) {
             const fileRow = await FilPathModel.find({path:dir}).exec();
             const {patientId} = fileRow[0];
             console.log('====patientId===',patientId);
-            const files = fs.readdirSync(dir);
+            var files = fs.readdirSync(dir);
             console.log('=====files len==',files.length);
+            files = _.without(files,'.DS_Store');
             files.forEach( async (item,index)=>{
                 var fullPath = path.join(dir, item);
                 const d = fs.readFileSync(fullPath);
