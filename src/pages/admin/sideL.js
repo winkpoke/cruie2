@@ -12,6 +12,11 @@ import { createFromIconfontCN } from '@ant-design/icons';
 import EventBus from '@/utils/eventBus';
 // var ws = io()
 
+import {Archive} from 'libarchive.js/main.js';
+
+Archive.init({
+    workerUrl: '/static/libarchive/worker-bundle.js'
+});
 // const WebSocket = require('ws');
 const ws = new WebSocket('ws://localhost:3003/a');
 
@@ -136,45 +141,67 @@ class SideL extends Component {
             }
         })
 
-        const chunkEnd = (msg) => {
+        const chunkEnd = async (msg) => {
             console.log('我收到管理员的chunk end 了:',msg, arr.length);
             if(arr.length == msg.i){
                 var dataBuffer = (concatArrayBuffer(arr)).buffer;//这里是arrayBuffer格式
-                i = 0;
-                arr = [];
-                console.log('dataBuffer',dataBuffer);
-                console.log(new Date());
-                var array_view = new Uint16Array(dataBuffer);
-                console.log("start of transforming...");
-                array_view.forEach((element, index, array) => array[index] += 1000);
-                console.log("end of transforming...");
-                console.log("JS - Read file complished.");
+                console.log(dataBuffer)
+                var blob = new Blob([dataBuffer], {type: 'application/octet-stream'});
+                 var file = new File([blob],'a.zip');
+                console.log('file:',file)
+                const archive = await Archive.open(file);
+                console.log('开始解压')
+                let obj = await archive.extractFiles();
+                console.log('解压结果:',obj)
 
-                //接受到buffer后存起来 切换的时候不用再次去请求
-                const {buffers} = this.props.app;
-                buffers[msg.key] = dataBuffer;
-                this.props.dispatch({type:'setData',payload:{key:'buffers',value:buffers}});
+                var rawFile = obj['data_dcm.raw']
+                console.log('rawFile:',rawFile,obj)
+                var reader = new FileReader();
+                reader.readAsArrayBuffer(rawFile);
+                reader.onload = function(e){
+                    let buffer = e.target.result  //此时是arraybuffer类型
+                    startHandleArrayBuffer(buffer)
+                }
 
-                const {curNode} = this.props.app;
+                const startHandleArrayBuffer = (dataBuffer)=>{
+                    i = 0;
+                    arr = [];
+                    console.log('dataBuffer',dataBuffer);
+                    console.log(new Date());
+                    var array_view = new Uint16Array(dataBuffer);
+                    console.log("start of transforming...");
+                    array_view.forEach((element, index, array) => array[index] += 1000);
+                    console.log("end of transforming...");
+                    console.log("JS - Read file complished.");
 
-                var timer = setTimeout(()=>{
-                    //ws.close()
-                    if(curNode.level == 0){//如果点击的是病人 直接渲染
-                        //this.glRender({primary:msg.key});
-                        EventBus.emit('updateGl',{primary:msg.key})
-                    }else{
-                        // 如果点击的是cbct
-                        if(msg.level == 0){
+                    //接受到buffer后存起来 切换的时候不用再次去请求
+                    const {buffers} = this.props.app;
+                    buffers[msg.key] = dataBuffer;
+                    this.props.dispatch({type:'setData',payload:{key:'buffers',value:buffers}});
+
+                    const {curNode} = this.props.app;
+
+                    var timer = setTimeout(()=>{
+                        //ws.close()
+                        if(curNode.level == 0){//如果点击的是病人 直接渲染
                             //this.glRender({primary:msg.key});
                             EventBus.emit('updateGl',{primary:msg.key})
-                            EventBus.emit('recieveEnd',true);
-                        }else if(msg.level == 2){
-                            //this.glRender({primary:msg.pid,secondary:msg.key});
-                            EventBus.emit('updateGl',{primary:msg.pid,secondary:msg.key})
+                        }else{
+                            // 如果点击的是cbct
+                            if(msg.level == 0){
+                                //this.glRender({primary:msg.key});
+                                EventBus.emit('updateGl',{primary:msg.key})
+                                EventBus.emit('recieveEnd',true);
+                            }else if(msg.level == 2){
+                                //this.glRender({primary:msg.pid,secondary:msg.key});
+                                EventBus.emit('updateGl',{primary:msg.pid,secondary:msg.key})
+                            }
                         }
-                    }
-                    clearInterval(timer);
-                },1000)
+                        clearInterval(timer);
+                    },1000)
+                }
+
+
             }
         }
 

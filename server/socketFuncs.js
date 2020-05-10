@@ -3,23 +3,29 @@ const fs = require('fs');
 const config = require('../config')
 const _ = require('lodash');
 var qs = require('qs');
+var pump = require('pump');
 
 const readFile = (params,ws) => {
     var {dcmDir,level , key,path:url,pid} = params;
     //res.setHeader('Transfer-Encoding', 'chunked');
     var rawPath;
     if(level == 0){//如果是病人
-        rawPath = path.resolve(dcmDir , '../dcmRaw/data_dcm.raw');
+        rawPath = path.resolve(dcmDir , '../dcmRaw/data_dcm.raw.zip');
     }else if(level ==2){//如果是cbct
         //const {path:url} = req.body;
         //获取cbct下面的raw文件
         const files = _.without( fs.readdirSync(url) , '.DS_Store' );
         console.log('====rawFile====',files);
-        rawPath = path.join(url ,'/', files[0]);
+        rawPath = path.join(url ,'/', files[1]);
     }
     //console.log( path.resolve(dcmDir , '../dcmRaw/data_dcm.raw') );
 
     var readStream = fs.createReadStream(rawPath);
+
+    // pump(source, dest, function(err) {
+    //     console.log('pipe finished', err)
+    // })
+
     var i = 0;
     readStream.on('data',function (chunk) {
         //console.log('===new buffer:===',chunk);

@@ -11,6 +11,14 @@ import SideL from './sideL';
 import EventBus from '@/utils/eventBus';
 import {saveShifts} from "@/services/api";
 import {getRes} from "@/utils";
+
+import {Archive} from 'libarchive.js/main.js';
+
+Archive.init({
+    workerUrl: '/static/libarchive/worker-bundle.js'
+});
+
+
 @connect((store) => {
     return {app:store.app,};
 })
@@ -119,21 +127,6 @@ class Index extends Component {
         }
     }
     setBlend(val){
-        console.log(val)
-        //var val;
-        // switch (type){
-        //     case 'primary':
-        //         val = 0;
-        //         break;
-        //     case 'secondary':
-        //         val = 1;
-        //         break;
-        //     case 'blend':
-        //         val = 0.5;
-        //         break;
-        // }
-        //this.setState({psb:type});
-        // EventBus.emit('setGl',{name:'slider_blend', value:val});
         const {kpData} = this.state;
         kpData['slider_blend'] = val;
         this.props.dispatch({type:'setData',payload:{key:'kpData',value:kpData}});
@@ -287,7 +280,7 @@ class Index extends Component {
                                                  class="slider"
                                                  min={0}
                                                  max={1}
-                                                 step={0.5}
+                                                 step={0.01}
                                                  disabled={level!==2}
                                                  onChange={this.setBlend.bind(this)}
                                                  value={kpData && kpData['slider_blend']}
