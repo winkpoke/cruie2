@@ -112,8 +112,10 @@ export default class Second extends Component{
                          break;
                      case 'scale':
                          var scaledY = transformdY * 10;
-                         console.log('放大缩小：',scaledY);
-                         _this.glcanvas[`set_scale_${tsc}`]( initialScale  + scaledY);
+                         var lastScale = initialScale  + scaledY
+                         console.log('放大缩小：',lastScale);
+                         if(lastScale<=0) lastScale = 0
+                         _this.glcanvas[`set_scale_${tsc}`]( lastScale );
                          break;
                  }
 
