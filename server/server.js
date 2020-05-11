@@ -9,6 +9,8 @@ const config = require('../config')
 let webpackConfig =  require('../build/webpack.wasm');
 let compiler = webpack(webpackConfig);
 var jwt = require('jsonwebtoken');
+const WebSocket = require('ws');
+
 app.use(middle(compiler));
 app.use(webpackHotMiddleware(compiler));
 app.use(bodyParser.json());
@@ -27,32 +29,9 @@ app.all('*', function(req, res, next) {
 });
 
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
-require('./socketFuncs')(io)
-
-/*io.on('connection', (socket) => {
-    console.log('a user connected');
-    socket.disconnect(true);
-    //服务端关闭
-    //setTimeout(() => socket.disconnect(true), 5000);
-    socket.on('aaa',function (msg) {
-        io.emit('chunk',msg);
-        //console.log('接受chunk:',msg);
-    });
-    socket.on('aaa end',function () {
-        io.emit('chunk end',msg);
-        //console.log('接受chunk:',msg);
-    });
-
-    socket.on('chat message', function(msg){
-        io.emit('chat message', msg);
-        console.log('来自客户端:message: ' + msg);
-    });
-    socket.on('disconnect', function(){
-        console.log('user disconnected');
-        socket.disconnect(true);
-    });
-});*/
+const wss = new WebSocket.Server({ server });
+// const io = require('socket.io')(server);
+require('./socketFuncs')(wss)
 
 app.use(function(req, res, next){
 

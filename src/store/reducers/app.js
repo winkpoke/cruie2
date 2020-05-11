@@ -7,7 +7,7 @@ export default function reducer(state={
     tsc:"", // transverse sagittal coronal
     action:"slice",//scale,pan,slice
     kpData:{
-        slider_blend:0.5,
+        slider_blend:0,
         slider_window:2900,
         slider_level:2800,
         pan:"transverse",

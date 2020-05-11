@@ -4,12 +4,22 @@
 import React, {Component} from 'react';
 import {Tree} from 'antd';
 import {connect} from 'react-redux';
-import io from 'socket.io-client';
+import _ from 'lodash'
+// import io from 'ws.io-client';
 //import EventBus from
 import Toast from '@/components/toast'
 import { createFromIconfontCN } from '@ant-design/icons';
 import EventBus from '@/utils/eventBus';
-var socket = io()
+// var ws = io()
+
+import {Archive} from 'libarchive.js/main.js';
+
+Archive.init({
+    workerUrl: '/static/libarchive/worker-bundle.js'
+});
+// const WebSocket = require('ws');
+const ws = new WebSocket('ws://localhost:3003/a');
+
 const IconFont = createFromIconfontCN({
     scriptUrl: '//at.alicdn.com/t/font_1763058_xbrna35m9w.js',
 });
@@ -104,60 +114,144 @@ class SideL extends Component {
         }
     };
     getRawFile(params){
-        socket.emit('chunk',params)
+        params['type'] = 'chunk';
+        console.log('open')
+        ws.send(JSON.stringify(params))
     }
     startListenSocket(){
         //下面开始监听websocket
         var arr = [];
         var i = 0;
         console.log(new Date());
-        socket.on('chunk', (msg)=>{
-            arr.push( base64ToUint8Array(msg));
-            i++;
-            console.log('我收到管理员的chunk了:'+i);
-        });
+        ws.addEventListener('message', (event) => {
+            var obj = JSON.parse(event.data)
+            if(_.isObject(obj)) {
+                var type = obj.type;
+                var data = obj.data
+                switch (type) {
+                    case 'chunk':
+                        arr.push(data);
+                        i++;
+                        console.log('我收到管理员的chunk了:'+i);
+                        break;
+                    case 'chunk end':
+                        chunkEnd(data)
+                        break;
+                }
+            }
+        })
 
-        socket.on('chunk end',(msg)=>{
+        const chunkEnd = async (msg) => {
             console.log('我收到管理员的chunk end 了:',msg, arr.length);
             if(arr.length == msg.i){
                 var dataBuffer = (concatArrayBuffer(arr)).buffer;//这里是arrayBuffer格式
-                i = 0;
-                arr = [];
-                console.log('dataBuffer',dataBuffer);
-                console.log(new Date());
-                var array_view = new Uint16Array(dataBuffer);
-                console.log("start of transforming...");
-                array_view.forEach((element, index, array) => array[index] += 1000);
-                console.log("end of transforming...");
-                console.log("JS - Read file complished.");
+                console.log(dataBuffer)
+                var blob = new Blob([dataBuffer], {type: 'application/octet-stream'});
+                 var file = new File([blob],'a.zip');
+                console.log('file:',file)
+                const archive = await Archive.open(file);
+                console.log('开始解压')
+                let obj = await archive.extractFiles();
+                console.log('解压结果:',obj)
 
-                //接受到buffer后存起来 切换的时候不用再次去请求
-                const {buffers} = this.props.app;
-                buffers[msg.key] = dataBuffer;
-                this.props.dispatch({type:'setData',payload:{key:'buffers',value:buffers}});
+                var rawFile = obj['data_dcm.raw']
+                console.log('rawFile:',rawFile,obj)
+                var reader = new FileReader();
+                reader.readAsArrayBuffer(rawFile);
+                reader.onload = function(e){
+                    let buffer = e.target.result  //此时是arraybuffer类型
+                    startHandleArrayBuffer(buffer)
+                }
 
-                const {curNode} = this.props.app;
+                const startHandleArrayBuffer = (dataBuffer)=>{
+                    i = 0;
+                    arr = [];
+                    console.log('dataBuffer',dataBuffer);
+                    console.log(new Date());
+                    var array_view = new Uint16Array(dataBuffer);
+                    console.log("start of transforming...");
+                    array_view.forEach((element, index, array) => array[index] += 1000);
+                    console.log("end of transforming...");
+                    console.log("JS - Read file complished.");
 
-                var timer = setTimeout(()=>{
-                     //socket.close()
-                    if(curNode.level == 0){//如果点击的是病人 直接渲染
-                        //this.glRender({primary:msg.key});
-                        EventBus.emit('updateGl',{primary:msg.key})
-                    }else{
-                        //如果点击的是cbct
-                        if(msg.level == 0){
+                    //接受到buffer后存起来 切换的时候不用再次去请求
+                    const {buffers} = this.props.app;
+                    buffers[msg.key] = dataBuffer;
+                    this.props.dispatch({type:'setData',payload:{key:'buffers',value:buffers}});
+
+                    const {curNode} = this.props.app;
+
+                    var timer = setTimeout(()=>{
+                        //ws.close()
+                        if(curNode.level == 0){//如果点击的是病人 直接渲染
                             //this.glRender({primary:msg.key});
                             EventBus.emit('updateGl',{primary:msg.key})
-                            EventBus.emit('recieveEnd',true);
-                        }else if(msg.level == 2){
-                            //this.glRender({primary:msg.pid,secondary:msg.key});
-                            EventBus.emit('updateGl',{primary:msg.pid,secondary:msg.key})
+                        }else{
+                            // 如果点击的是cbct
+                            if(msg.level == 0){
+                                //this.glRender({primary:msg.key});
+                                EventBus.emit('updateGl',{primary:msg.key})
+                                EventBus.emit('recieveEnd',true);
+                            }else if(msg.level == 2){
+                                //this.glRender({primary:msg.pid,secondary:msg.key});
+                                EventBus.emit('updateGl',{primary:msg.pid,secondary:msg.key})
+                            }
                         }
-                    }
-                    clearInterval(timer);
-                },1000)
+                        clearInterval(timer);
+                    },1000)
+                }
+
+
             }
-        });
+        }
+
+        // ws.on('chunk', (msg)=>{
+        //     arr.push( base64ToUint8Array(msg));
+        //     i++;
+        //     console.log('我收到管理员的chunk了:'+i);
+        // });
+
+        // ws.on('chunk end',(msg)=>{
+        //     console.log('我收到管理员的chunk end 了:',msg, arr.length);
+        //     if(arr.length == msg.i){
+        //         var dataBuffer = (concatArrayBuffer(arr)).buffer;//这里是arrayBuffer格式
+        //         i = 0;
+        //         arr = [];
+        //         console.log('dataBuffer',dataBuffer);
+        //         console.log(new Date());
+        //         var array_view = new Uint16Array(dataBuffer);
+        //         console.log("start of transforming...");
+        //         array_view.forEach((element, index, array) => array[index] += 1000);
+        //         console.log("end of transforming...");
+        //         console.log("JS - Read file complished.");
+        //
+        //         //接受到buffer后存起来 切换的时候不用再次去请求
+        //         const {buffers} = this.props.app;
+        //         buffers[msg.key] = dataBuffer;
+        //         this.props.dispatch({type:'setData',payload:{key:'buffers',value:buffers}});
+        //
+        //         const {curNode} = this.props.app;
+        //
+        //         var timer = setTimeout(()=>{
+        //              //ws.close()
+        //             if(curNode.level == 0){//如果点击的是病人 直接渲染
+        //                 //this.glRender({primary:msg.key});
+        //                 EventBus.emit('updateGl',{primary:msg.key})
+        //             }else{
+        //                 //如果点击的是cbct
+        //                 if(msg.level == 0){
+        //                     //this.glRender({primary:msg.key});
+        //                     EventBus.emit('updateGl',{primary:msg.key})
+        //                     EventBus.emit('recieveEnd',true);
+        //                 }else if(msg.level == 2){
+        //                     //this.glRender({primary:msg.pid,secondary:msg.key});
+        //                     EventBus.emit('updateGl',{primary:msg.pid,secondary:msg.key})
+        //                 }
+        //             }
+        //             clearInterval(timer);
+        //         },1000)
+        //     }
+        // });
     }
     render() {
         const {treeData} = this.state;
