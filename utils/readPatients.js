@@ -26,6 +26,22 @@ var split = '/';
             }else if(name.startsWith('cb') || name.startsWith('reg') ){
                 type = 'cbct';
                 level = 2;
+                console.log('cbct fullpath:', fullpath)
+                const pump = require('pump');
+                const compressing = require('compressing');
+
+                var files = fs.readdirSync(fullpath);
+                files = _.without(files,'.DS_Store');
+                var source = path.resolve(fullpath,files[0]);
+                const target = path.resolve(fullpath,'data_dcm.raw.zip');
+                compressing.zip.compressFile(source, target)
+                    .then(() => {
+                        console.log('compress success:'+fullpath);
+                    })
+                    .catch(err => {
+                        console.error(err);
+                    });
+
             }else if(name == 'dcm'){
                 type = 'dcm';
                 level = 2;

@@ -15,15 +15,15 @@ async function readDicom(dir) {
     fs.writeFileSync(data_dcm_raw,'');
 
     //根据当前dir 获取病人行
-    console.log('===dir===',dir);
+    // console.log('===dir===',dir);
     try{
         const num = await FilPathModel.countDocuments({path:dir}).exec();
         if(num > 0){
             const fileRow = await FilPathModel.find({path:dir}).exec();
             const {patientId} = fileRow[0];
-            console.log('====patientId===',patientId);
+            // console.log('====patientId===',patientId);
             var files = fs.readdirSync(dir);
-            console.log('=====files len==',files.length);
+            // console.log('=====files len==',files.length);
             files = _.without(files,'.DS_Store');
             files.forEach( async (item,index)=>{
                 var fullPath = path.join(dir, item);
@@ -95,8 +95,6 @@ async function getAllPixelArraybuffer(dir)
             }
             a.push(buffer);
         }
-        console.log("All pixels: ", a);
-
         return a;
     }catch (e){
         return [];
@@ -107,11 +105,10 @@ async function getAllPixelArraybuffer(dir)
 
 async function fnWriteFile(fullpath) {
     const arrayBuffer = await getAllPixelArraybuffer(fullpath);
-    console.log('arrayBufer:',arrayBuffer,'| fullpath:',fullpath);
+    // console.log('arrayBufer:',arrayBuffer,'| fullpath:',fullpath);
     var dirName = path.basename(fullpath);
     console.log('===writeFile===',dirName);
     if(!arrayBuffer){
-        console.log('==arrayBuffer==',arrayBuffer);
         return;
     }
 
@@ -125,6 +122,17 @@ async function fnWriteFile(fullpath) {
             if(index == arrayBuffer.length -1){
                 fs.closeSync(fd);
                 console.log("操作完毕，关闭文件:"+data_dcm_raw,fd);
+
+                const compressing = require('compressing');
+                const target = path.resolve(fullpath,'../dcmRaw/data_dcm.raw.zip');
+                //const target = path.resolve(fullpath,'data_dcm.raw.gz');
+                compressing.zip.compressFile(data_dcm_raw, target)
+                    .then(() => {
+                        console.log('compress success:'+fullpath);
+                    })
+                    .catch(err => {
+                        console.error(err);
+                    });
             }
         });
     }
