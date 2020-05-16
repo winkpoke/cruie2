@@ -8,9 +8,7 @@ var exec = require('child_process').exec;
 const rDicom = require('./rDicom');
 const Patient = require('./PatientModelOpt/patient');
 const FilePath = require('./PatientModelOpt/filePath');
-
 const _ = require('lodash');
-
 var patientNames = [];
 var split = '/';
 /*新增path*/
@@ -26,7 +24,7 @@ var split = '/';
             }else if(name.startsWith('cb') || name.startsWith('reg') ){
                 type = 'cbct';
                 level = 2;
-                console.log('cbct fullpath:', fullpath)
+                //console.log('cbct fullpath:', fullpath)
                 const pump = require('pump');
                 const compressing = require('compressing');
 

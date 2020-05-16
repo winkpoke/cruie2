@@ -10,7 +10,7 @@ var Sch = new Schema({
     role:{type:String},
     memo:{type:String},
     detail:{
-        patinfo: {type:Array},
+        patinfo: {type:Object},
         shift: {type:Object}
     },
 });

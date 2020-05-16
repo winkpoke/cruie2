@@ -35,7 +35,7 @@ async function parseFile(file) {
                 dataSet = {};
                 var decoder = new TextDecoder("utf-8");
                 var encodedString = decoder.decode(arrayBuffer);
-                console.log("file length:" + encodedString.length);
+               // console.log("file length:" + encodedString.length);
                 var lines = encodedString.split('\n', 30);
                 var foundField = {  "ObjectType":false,
                     "NDims":false,

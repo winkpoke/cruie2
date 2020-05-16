@@ -101,12 +101,7 @@ class kp extends Component {
 
         w =  parseInt(w/3) * 3 ;
         var h =  w*1.5;
-        // if(h + 50 > document.documentElement.clientHeight ) {
-        //     h = parseInt(( document.documentElement.clientHeight - 50 )/2)
-        //     w = h * 1.5
-        // }
 
-        document.title = w +'|' + h + '|'+ document.documentElement.clientHeight
         this.setState({cWidth:w, cHeight:h})
         if(this.glcanvas){
             this.glcanvas.set_canvas_dim(w, h);

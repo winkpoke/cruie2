@@ -27,10 +27,10 @@ Patient.add = function (data) {
                 resolve(data);
             }
         }).catch(err=>{
-            console.log('err111:',err)
+            //console.log('err111:',err)
         })
     }).catch(err=>{
-        console.log('err222',err)
+        //console.log('err222',err)
     })
 };
 

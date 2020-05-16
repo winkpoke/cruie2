@@ -4,7 +4,7 @@ const parseFile = require('./parseFile');
 var PatientModel = require('../../model/Patient');
 var FilPathModel = require('../../model/FilePath');
 var _ = require('lodash')
-
+var {DicomObject, CTImage, CTVolume} = require('./dic')
 /*读取dicom文件*/
 //var dirPath = path.resolve(__dirname,'../../../patients/李四/ct-20200408/dcm');
 async function readDicom(dir) {
@@ -15,47 +15,45 @@ async function readDicom(dir) {
     fs.writeFileSync(data_dcm_raw,'');
 
     //根据当前dir 获取病人行
-    // console.log('===dir===',dir);
     try{
         const num = await FilPathModel.countDocuments({path:dir}).exec();
         if(num > 0){
-            const fileRow = await FilPathModel.find({path:dir}).exec();
+            const fileRow =await  FilPathModel.find({path:dir}).exec();
             const {patientId} = fileRow[0];
-            // console.log('====patientId===',patientId);
             var files = fs.readdirSync(dir);
-            // console.log('=====files len==',files.length);
             files = _.without(files,'.DS_Store');
-            files.forEach( async (item,index)=>{
-                var fullPath = path.join(dir, item);
-                const d = fs.readFileSync(fullPath);
-                allP.push(parseFile(d));
-                if(index == 0){//获取第一张图片信息
-                    var image = await parseFile(d);
-                    //console.log(image);
-                    const {rows,columns,patinfo} = image[1];
-                    PatientModel.findByIdAndUpdate(patientId,{detail: {rows,columns,patinfo}},(err,doc)=>{
-                        if(err){
-                            console.log('===err===',err);
-                            throw err;
+            var len = files.length
+
+            async function g1() {
+                var arr = []
+                for(var i=0;i<len;i++){
+                    var fullPath = path.join(dir, files[i]);
+                    const d = fs.readFileSync(fullPath);
+                    var dcm = DicomObject.from_array_buffer(d);
+                    arr.push(dcm.PixelData)
+                    if(i==len-1){
+                        // todo 病人信息待完善 读取病人名字 修改目录名称
+                        var patinfo = {name:'alice', rows: dcm.Rows, columns: dcm.Columns,window:dcm.WindowWidth, level:dcm.WindowCenter}
+                        try{
+                          await PatientModel.findByIdAndUpdate(patientId,{detail: {patinfo}})
+                        }catch (e){
+                            console.log(e)
                         }
-                        //console.log(doc)
-                    })
+                        return arr
+                    }
                 }
-            });
-            return await Promise.all(allP).catch(e=>{
-                console.log('==sdfsdf==')
-            });
+            }
+            return await g1()
         }
     }catch (e){
         console.log('===err===',e)
     }
-
 }
 
 async function getAllPixelArraybuffer(dir)
 {
     try{
-        var imagestack = await readDicom(dir);
+        var imagestack =await readDicom(dir);
         if(!imagestack){
             console.log('==imagestack==',imagestack);
             return;
@@ -64,7 +62,7 @@ async function getAllPixelArraybuffer(dir)
         var t = "other type";
         for (var i = 0; i < imagestack.length; i++)
         {
-            var b = imagestack[i][1].getPixelData;
+            var b = imagestack[i];
 
             var c=[];
             for( var j in b )
@@ -110,7 +108,7 @@ async function fnWriteFile(fullpath) {
     if(!arrayBuffer){
         return;
     }
-
+    // return
     if(dirName == 'dcm'){
         var data_dcm_raw = path.resolve(fullpath,'../dcmRaw/data_dcm.raw');
         console.log(data_dcm_raw,fs.existsSync(data_dcm_raw))
@@ -124,7 +122,6 @@ async function fnWriteFile(fullpath) {
 
                 const compressing = require('compressing');
                 const target = path.resolve(fullpath,'../dcmRaw/data_dcm.raw.zip');
-                //const target = path.resolve(fullpath,'data_dcm.raw.gz');
                 compressing.zip.compressFile(data_dcm_raw, target)
                     .then(() => {
                         console.log('compress success:'+fullpath);
