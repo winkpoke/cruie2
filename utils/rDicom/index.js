@@ -22,18 +22,33 @@ async function readDicom(dir) {
             const {patientId} = fileRow[0];
             var files = fs.readdirSync(dir);
             files = _.without(files,'.DS_Store');
-            var len = files.length
-
+            var len = files.length;
+            let volume = new CTVolume;
             async function g1() {
                 var arr = []
                 for(var i=0;i<len;i++){
                     var fullPath = path.join(dir, files[i]);
                     const d = fs.readFileSync(fullPath);
                     var dcm = DicomObject.from_array_buffer(d);
+                    let image = undefined;
+                    if (dcm) {
+                        image = CTImage.from_dicom_object(dcm);
+                    }
+                    if (image) {
+                        volume.add_slice(image);
+                    }
                     arr.push(dcm.PixelData)
                     if(i==len-1){
                         // todo 病人信息待完善 读取病人名字 修改目录名称
-                        var patinfo = {name:'alice', rows: dcm.Rows, columns: dcm.Columns,window:dcm.WindowWidth, level:dcm.WindowCenter}
+                        var patinfo = {
+                            name:'alice',
+                            rows: dcm.Rows,
+                            columns: dcm.Columns,
+                            window:dcm.WindowWidth,
+                            level:dcm.WindowCenter,
+                            numSlices: volume.numSlices,
+                            spacing: volume.spacing
+                        }
                         try{
                           await PatientModel.findByIdAndUpdate(patientId,{detail: {patinfo}})
                         }catch (e){

@@ -100,8 +100,7 @@ class kp extends Component {
         }
 
         w =  parseInt(w/3) * 3 ;
-        var h =  w*1.5;
-
+        var h = parseInt(w/3)*2;
         this.setState({cWidth:w, cHeight:h})
         if(this.glcanvas){
             this.glcanvas.set_canvas_dim(w, h);
@@ -142,16 +141,20 @@ class kp extends Component {
         });
     }
     glRender(obj){
-        const {buffers} = this.props.app;
+        const {buffers,curNode:{detail:{patinfo}}} = this.props.app;
+        const {columns,rows,window,level,numSlices,spacing} = patinfo
         var primaryKey = obj['primary'];
         if(primaryKey){
-            this.glcanvas.load_primary(buffers[primaryKey], 1024,1024,3, 1.98, 1.98, 5.0);
+            this.glcanvas.load_primary(buffers[primaryKey], columns,rows,numSlices, spacing[0], spacing[1], spacing[2]);
         }
 
         var secondaryKey = obj['secondary'];
         if(obj['secondary']){
-            this.glcanvas.load_secondary(buffers[secondaryKey],  1024,1024,3, 1.98, 1.98, 5.0);
+            this.glcanvas.load_secondary(buffers[secondaryKey], columns,rows,numSlices, spacing[0], spacing[1], spacing[2]);
         }
+        this.glcanvas.set_window(window);
+        this.glcanvas.set_level(level);
+
         this.glcanvas.setup_geometry();
         this.glcanvas.set_blend(0.5);
         this.glcanvas.render();
