@@ -4,21 +4,20 @@
 import React, {Component} from 'react';
 import {Tree} from 'antd';
 import {connect} from 'react-redux';
-import _ from 'lodash'
-// import io from 'ws.io-client';
+// import io from 'this.ws.io-client';
 //import EventBus from
-import Toast from '@/components/toast'
 import { createFromIconfontCN } from '@ant-design/icons';
 import EventBus from '@/utils/eventBus';
-// var ws = io()
+// var this.ws = io()
 
 import {Archive} from 'libarchive.js/main.js';
 
 Archive.init({
     workerUrl: '/static/libarchive/worker-bundle.js'
 });
-// const WebSocket = require('ws');
-const ws = new WebSocket('ws://localhost:3003/a');
+// const WebSocket = require('this.ws');
+// const this.ws = new WebSocket('ws://localhost:3003/chunk');
+// this.ws.binaryType = 'arraybuffer';
 
 const IconFont = createFromIconfontCN({
     scriptUrl: '//at.alicdn.com/t/font_1763058_xbrna35m9w.js',
@@ -27,6 +26,7 @@ const IconFont = createFromIconfontCN({
 import {getPatientList} from "@/services/api";
 import {getRes} from "@/utils";
 import {base64ToUint8Array, concatArrayBuffer} from "@/utils/utils";
+import {usedTime} from "../../utils/utils";
 
 @connect((store) => {
     return {app:store.app,};
@@ -43,6 +43,14 @@ class SideL extends Component {
         selectedKeys:[],
         checkedKeys:[],
     };
+
+    connect(){
+        this.ws = new WebSocket('ws://localhost:3003/chunk');
+        this.ws.binaryType = 'arraybuffer'
+        this.ws.onclose= (e)=>{
+            console.log('关闭',e)
+        }
+    }
     componentDidMount(){
         getPatientList().then(res=>{
             getRes(res,data=>{
@@ -62,11 +70,11 @@ class SideL extends Component {
         })
     }
     async onSelect(selectedKeys, info){
-        this.props.dispatch({type:'setData',payload:{key:'loading',value:true}})
-        console.log('selected', selectedKeys, info);
-        var {dcmPath,level,path,key,pid , detail:{shift}} = info.node;
         //查看store中是否有当前key, 如果有则拿store的 如果没有则请求
         if(info.selected){
+            const {buffers} = this.props.app;
+            var {dcmPath,level,path,key,pid , detail:{shift}} = info.node;
+
             this.props.dispatch({type:'setData',payload:{key:'curNode',value:info.node}});
             if(shift){
                 var {kpData} = this.props.app
@@ -76,9 +84,9 @@ class SideL extends Component {
                 this.props.dispatch({type:'setData',payload:{key:'kpData',value:kpData}});
             }
 
-            const {buffers} = this.props.app;
             if(key == this.props.app.currentKey) return;
-
+            this.props.dispatch({type:'setData',payload:{key:'loading',value:true}})
+            this.connect()
             if(buffers[key]){
                 //病人
                 //拿了store的需要通知重新渲染
@@ -95,9 +103,7 @@ class SideL extends Component {
                     const {treeData} = this.state;
                     var parent = treeData.find(item=>item.key == pid);
                     if(!buffers[pid]){
-                        console.log('没选primary')
                         this.getRawFile({dcmDir:parent.dcmPath,level:parent.level, key:pid });
-                        //getRawFile({level,path ,key,pid });
                         //当primary 数据接受完毕再请求第二批数据
                         EventBus.addListener('recieveEnd', (res)=>{
                             console.log('primary over')
@@ -109,43 +115,47 @@ class SideL extends Component {
                     }
                 }
             }
-            //this.props.dispatch({type:'currentKey',value:key});
+            this.props.dispatch({type:'setData',payload:{key:'currentKey',value:key}});
             this.startListenSocket()
         }
     };
     getRawFile(params){
+        console.log('getRawFile')
         params['type'] = 'chunk';
-        console.log('open')
-        ws.send(JSON.stringify(params))
+        if(this.ws.readyState == 3){
+            this.connect()
+            this.ws.addEventListener('open',  (evt) => {
+                this.ws.send(JSON.stringify(params))
+                this.startListenSocket()
+            })
+        }else{
+            this.ws.addEventListener('open',  (evt) => {
+                this.ws.send(JSON.stringify(params))
+            })
+        }
     }
     startListenSocket(){
         //下面开始监听websocket
         var arr = [];
         var i = 0;
-        console.log(new Date());
-        ws.addEventListener('message', (event) => {
-            var obj = JSON.parse(event.data)
-            if(_.isObject(obj)) {
-                var type = obj.type;
-                var data = obj.data
-                switch (type) {
-                    case 'chunk':
-                        arr.push(data);
-                        i++;
-                        console.log('我收到管理员的chunk了:'+i);
-                        break;
-                    case 'chunk end':
-                        chunkEnd(data)
-                        break;
-                }
+        var startTime = new Date();
+        this.ws.addEventListener('message', (event) => {
+            var data = event.data
+            if( data.constructor == String){
+                var msg = JSON.parse(data)
+                chunkEnd(msg)
+                this.ws.close()
+            }else {
+                arr.push(data);
+                i++;
+                console.log('我收到管理员的chunk了:'+i);
             }
-        })
+        });
 
         const chunkEnd = async (msg) => {
             console.log('我收到管理员的chunk end 了:',msg, arr.length);
             if(arr.length == msg.i){
                 var dataBuffer = (concatArrayBuffer(arr)).buffer;//这里是arrayBuffer格式
-                console.log(dataBuffer)
                 var blob = new Blob([dataBuffer], {type: 'application/octet-stream'});
                  var file = new File([blob],'a.zip');
                 console.log('file:',file)
@@ -166,8 +176,8 @@ class SideL extends Component {
                 const startHandleArrayBuffer = (dataBuffer)=>{
                     i = 0;
                     arr = [];
-                    console.log('dataBuffer',dataBuffer);
-                    console.log(new Date());
+                    var endTime = new Date();
+                    console.log( usedTime(startTime, endTime))
                     var array_view = new Uint16Array(dataBuffer);
                     console.log("start of transforming...");
                     array_view.forEach((element, index, array) => array[index] += 1000);
@@ -182,10 +192,10 @@ class SideL extends Component {
                     const {curNode} = this.props.app;
 
                     var timer = setTimeout(()=>{
-                        //ws.close()
                         if(curNode.level == 0){//如果点击的是病人 直接渲染
                             //this.glRender({primary:msg.key});
                             EventBus.emit('updateGl',{primary:msg.key})
+                            //
                         }else{
                             // 如果点击的是cbct
                             if(msg.level == 0){
@@ -200,58 +210,8 @@ class SideL extends Component {
                         clearInterval(timer);
                     },1000)
                 }
-
-
             }
         }
-
-        // ws.on('chunk', (msg)=>{
-        //     arr.push( base64ToUint8Array(msg));
-        //     i++;
-        //     console.log('我收到管理员的chunk了:'+i);
-        // });
-
-        // ws.on('chunk end',(msg)=>{
-        //     console.log('我收到管理员的chunk end 了:',msg, arr.length);
-        //     if(arr.length == msg.i){
-        //         var dataBuffer = (concatArrayBuffer(arr)).buffer;//这里是arrayBuffer格式
-        //         i = 0;
-        //         arr = [];
-        //         console.log('dataBuffer',dataBuffer);
-        //         console.log(new Date());
-        //         var array_view = new Uint16Array(dataBuffer);
-        //         console.log("start of transforming...");
-        //         array_view.forEach((element, index, array) => array[index] += 1000);
-        //         console.log("end of transforming...");
-        //         console.log("JS - Read file complished.");
-        //
-        //         //接受到buffer后存起来 切换的时候不用再次去请求
-        //         const {buffers} = this.props.app;
-        //         buffers[msg.key] = dataBuffer;
-        //         this.props.dispatch({type:'setData',payload:{key:'buffers',value:buffers}});
-        //
-        //         const {curNode} = this.props.app;
-        //
-        //         var timer = setTimeout(()=>{
-        //              //ws.close()
-        //             if(curNode.level == 0){//如果点击的是病人 直接渲染
-        //                 //this.glRender({primary:msg.key});
-        //                 EventBus.emit('updateGl',{primary:msg.key})
-        //             }else{
-        //                 //如果点击的是cbct
-        //                 if(msg.level == 0){
-        //                     //this.glRender({primary:msg.key});
-        //                     EventBus.emit('updateGl',{primary:msg.key})
-        //                     EventBus.emit('recieveEnd',true);
-        //                 }else if(msg.level == 2){
-        //                     //this.glRender({primary:msg.pid,secondary:msg.key});
-        //                     EventBus.emit('updateGl',{primary:msg.pid,secondary:msg.key})
-        //                 }
-        //             }
-        //             clearInterval(timer);
-        //         },1000)
-        //     }
-        // });
     }
     render() {
         const {treeData} = this.state;

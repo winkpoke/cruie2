@@ -51,6 +51,8 @@ var concatArrayBuffer = (arr)=>{
     return Buffer.concat(arr1)
 }
 
+
+
 module.exports = {
     signtoken:signtoken,
     verifytoken:verifytoken,

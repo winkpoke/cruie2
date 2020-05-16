@@ -138,7 +138,7 @@ class kp extends Component {
 
         var secondaryKey = obj['secondary'];
         if(obj['secondary']){
-            this.glcanvas.load_secondary(buffers[secondaryKey], 1024,1024,3, 1.98, 1.98, 5.0);
+            this.glcanvas.load_secondary(buffers[secondaryKey],  1024,1024,3, 1.98, 1.98, 5.0);
         }
         this.glcanvas.setup_geometry();
         this.glcanvas.set_blend(0.5);

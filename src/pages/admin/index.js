@@ -146,6 +146,9 @@ class Index extends Component {
         this.props.dispatch({type:'setData',payload:{key:'showPatientInfo',value:show}});
         this.setState({showPatientInfo:show});
     }
+    startWs(type){
+        console.log(111,type)
+    }
     render() {
         //const {kpData} = this.props.app;
         const {showSideL,showPatientInfo,hideR ,showWLList ,wlList , action ,shifts , kpData } = this.state;
@@ -272,7 +275,7 @@ class Index extends Component {
                              <div className="box box-solid box-info img-tool2" >
                                  <div className="box-body">
                                      <div className="img-tool-p" >
-                                         <button type="button" disabled={isEmptyCurNode} className="tool-btn" id="acquireCBCTButton">Acquire CBCT</button>
+                                         <button type="button" disabled={isEmptyCurNode} className="tool-btn" id="acquireCBCTButton" onClick={this.startWs.bind(this,'aquire')}>Acquire CBCT</button>
                                      </div>
                                      <Row>
                                          <Col span={12}>
@@ -308,7 +311,7 @@ class Index extends Component {
                              <div className="box box-solid box-info img-tool2" >
                                  <div className="box-body text-center">
                                      <div className="reg-tool-p">
-                                         <button type="button" disabled={level!==2 ||  (kpData && kpData['isLocked'] )} className="tool-btn" id="manualReg" >Start Auto Registration
+                                         <button type="button" disabled={level!==2 ||  (kpData && kpData['isLocked'] )} className="tool-btn" id="manualReg" onClick={this.startWs.bind(this,'auto')}>Start Auto Registration
                                          </button>
                                      </div>
 

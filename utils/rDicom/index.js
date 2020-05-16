@@ -100,7 +100,6 @@ async function getAllPixelArraybuffer(dir)
         return [];
         console.log(e)
     }
-
 }
 
 async function fnWriteFile(fullpath) {
