@@ -58,10 +58,6 @@ module.exports = function(wss){
         }
         let url = req.url;
         console.log('====url====:',url);
-        // ws.on('message', function incoming(message) {
-        //     console.log('received: %s', message);
-        //     ws.send('server received' + message);
-        // });
 
         /*客户端开始拿raw 数据*/
         ws.on('message',function (params) {

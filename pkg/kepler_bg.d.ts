@@ -8,6 +8,7 @@ export function __wbg_set_glcanvas_window(a: number, b: number): void;
 export function __wbg_get_glcanvas_level(a: number): number;
 export function __wbg_set_glcanvas_level(a: number, b: number): void;
 export function glcanvas_new(a: number, b: number, c: number, d: number, e: number, f: number): number;
+export function glcanvas_set_canvas_dim(a: number, b: number, c: number): void;
 export function glcanvas_set_shift(a: number, b: number, c: number, d: number): void;
 export function glcanvas_get_shift(a: number): number;
 export function glcanvas_set_window(a: number, b: number): void;

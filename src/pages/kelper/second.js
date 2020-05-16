@@ -128,6 +128,9 @@ export default class Second extends Component{
         }
     }
     fnScroll(){
+        const {buffers} = this.props.app
+
+        if(_.isEmpty(buffers)) return
         var ev = window.event;
         const {tsc} = this.fnGetPos(ev.clientX,ev.clientY);
         switch(tsc){

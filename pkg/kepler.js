@@ -261,6 +261,13 @@ export class GlCanvas {
         return GlCanvas.__wrap(ret);
     }
     /**
+    * @param {number} w
+    * @param {number} h
+    */
+    set_canvas_dim(w, h) {
+        wasm.glcanvas_set_canvas_dim(this.ptr, w, h);
+    }
+    /**
     * @param {number} s0
     * @param {number} s1
     * @param {number} s2

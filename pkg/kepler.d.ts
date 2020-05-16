@@ -23,6 +23,11 @@ export class GlCanvas {
 */
   static new(canvas_id: string, width: number, height: number, win: number, level: number): GlCanvas;
 /**
+* @param {number} w 
+* @param {number} h 
+*/
+  set_canvas_dim(w: number, h: number): void;
+/**
 * @param {number} s0 
 * @param {number} s1 
 * @param {number} s2 

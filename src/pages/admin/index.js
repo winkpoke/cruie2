@@ -39,6 +39,7 @@ class Index extends Component {
         hideR:false,
         curRow:null, //当前选中node
         showWLList:false,
+        wlSelected: false,
         wlList:[
             {sw:40,sl:40,label:'STROKE'},
             {sw:80,sl:40,label:'BRAIN'},
@@ -72,9 +73,9 @@ class Index extends Component {
         const {showSideBar,showPatientInfo,action,kpData,curRow} = nextProps.app;
         //如果左侧都展开了 右侧隐藏
         if(showSideBar && showPatientInfo){
-            this.setState({hideR:true,action,kpData,curRow})
+            this.setState({action,kpData,curRow})
         }else{
-            this.setState({hideR:false,action,kpData,curRow})
+            this.setState({action,kpData,curRow})
         }
     }
     componentDidMount(){
@@ -135,16 +136,30 @@ class Index extends Component {
     setAction(action){
         const {kpData} = this.props.app;
         this.props.dispatch({type:'setData',payload:{key:'action',value:action}});
+        if(action !=='wl'){
+            this.setState({wlSelected: false})
+        }else{
+            this.setState({wlSelected: true})
+        }
+
     }
     toggleSideL(){
         var show = !this.state.showSideL;
         this.setState({showSideL:show});
         this.props.dispatch({type:'setData',payload:{key:'showSideBar',value:show}});
+        var timer = setTimeout(()=>{
+            this.child1.getWH()
+            clearInterval(timer)
+        })
     }
     togglePatientInfo(){
         var show = !this.state.showPatientInfo;
         this.props.dispatch({type:'setData',payload:{key:'showPatientInfo',value:show}});
         this.setState({showPatientInfo:show});
+        var timer = setTimeout(()=>{
+            this.child1.getWH()
+            clearInterval(timer)
+        })
     }
     connect1(type){
         this.ws1 = new WebSocket('ws://localhost:3003/'+type);
@@ -165,7 +180,7 @@ class Index extends Component {
     }
     render() {
         //const {kpData} = this.props.app;
-        const {showSideL,showPatientInfo,hideR ,showWLList ,wlList , action ,shifts , kpData } = this.state;
+        const {showSideL,showPatientInfo,hideR ,showWLList ,wlList , action ,shifts , kpData ,wlSelected } = this.state;
         var patinfo = null;
         if(this.state.curRow){
             var {detail} = this.state.curRow;
@@ -308,10 +323,10 @@ class Index extends Component {
                                          <button disabled={isEmptyCurNode} onClick={this.setAction.bind(this,'scale')} className={`tool-btn  tool-btn1 ${action == 'scale' ? 'active' : ''} `}>Zoom</button>
                                          <button disabled={isEmptyCurNode} onClick={this.setAction.bind(this,'pan')} className={`tool-btn  tool-btn1 ${action == 'pan' ? 'active' : ''} `}>Pan</button>
                                          <button disabled={isEmptyCurNode} onClick={this.setAction.bind(this,'reset')} className={`tool-btn  tool-btn1 ${action == 'reset' ? 'active' : ''} `}>Reset</button>
-                                         <button disabled={isEmptyCurNode} className="tool-btn  tool-btn1">W/L</button>
+                                         <button disabled={isEmptyCurNode} className={`tool-btn  tool-btn1 ${action == 'wl' ? 'active' : ''} `} onClick={this.setAction.bind(this,'wl')}>W/L</button>
                                           <div className="wl-wigdet">
-                                             <input type="number" disabled={isEmptyCurNode} className="tool-number" id="wwidth" title="Window Width" style={{width: "46%"}} name="slider_window" value={kpData &&kpData['slider_window'] || '' } onChange={this.fnChange.bind(this)} />
-                                             <input type="number" disabled={isEmptyCurNode} className="tool-number" id="wcenter"  title="Window Level" style={{width: "46%",float: "right"}} name="slider_level" value={kpData &&kpData['slider_level'] || ''} onChange={this.fnChange.bind(this)} />
+                                             <input type="number" disabled={isEmptyCurNode || !wlSelected} className="tool-number" id="wwidth" title="Window Width" style={{width: "46%"}} name="slider_window" value={kpData &&kpData['slider_window'] || '' } onChange={this.fnChange.bind(this)} />
+                                             <input type="number" disabled={isEmptyCurNode || !wlSelected} className="tool-number" id="wcenter"  title="Window Level" style={{width: "46%",float: "right"}} name="slider_level" value={kpData &&kpData['slider_level'] || ''} onChange={this.fnChange.bind(this)} />
                                              <div className="dropdown drop-select-parent" id="AdjustWL">
                                                  <a onClick={this.showWLList.bind(this)} className="dropdown-toggle" data-toggle="dropdown"><img src="/static/images/off.png" style={{marginBottom: "-10px"}}/></a>
                                                  {showWLList ? <ul className="dropdown-menu">
