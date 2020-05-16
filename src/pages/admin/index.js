@@ -142,6 +142,11 @@ class Index extends Component {
             this.setState({wlSelected: true})
         }
 
+        if(action == 'reset'){
+            this.child1.setGl('slider_scale',1);
+            this.child1.setGl('slider_pan_x',0);
+            this.child1.setGl('slider_pan_y',0);
+        }
     }
     toggleSideL(){
         var show = !this.state.showSideL;

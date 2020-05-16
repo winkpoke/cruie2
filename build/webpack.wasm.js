@@ -39,10 +39,7 @@ const plugins = [
     new CopyWebpackPlugin(['index.html']),
     new CopyWebpackPlugin([
         { from: resolve('static'), to: resolve('dist/static') ,ignore: ['*.raw','*.dicom'] }
-    ]),
-    new webpack.DefinePlugin({
-        PRODUCTION: JSON.stringify(false),
-    })
+    ])
 ];
 
 //查看打包 分析报告 npm run build --report
