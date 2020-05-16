@@ -146,8 +146,22 @@ class Index extends Component {
         this.props.dispatch({type:'setData',payload:{key:'showPatientInfo',value:show}});
         this.setState({showPatientInfo:show});
     }
+    connect1(type){
+        this.ws1 = new WebSocket('ws://localhost:3003/'+type);
+        this.ws1.addEventListener('open',  (evt) =>{
+            if(type == 'aquire') {
+                this.ws1.send(JSON.stringify({type:'aquire'}))
+            }else {
+                this.ws1.send(JSON.stringify({type:'autoRegisteration'}))
+            }
+        })
+        this.ws1.addEventListener('message',function (evt) {
+            console.log(evt)
+        })
+    }
     startWs(type){
-        console.log(111,type)
+        if(this.ws1) this.ws1.close()
+        this.connect1(type)
     }
     render() {
         //const {kpData} = this.props.app;
@@ -311,7 +325,7 @@ class Index extends Component {
                              <div className="box box-solid box-info img-tool2" >
                                  <div className="box-body text-center">
                                      <div className="reg-tool-p">
-                                         <button type="button" disabled={level!==2 ||  (kpData && kpData['isLocked'] )} className="tool-btn" id="manualReg" onClick={this.startWs.bind(this,'auto')}>Start Auto Registration
+                                         <button type="button" disabled={level!==2 ||  (kpData && kpData['isLocked'] )} className="tool-btn" id="manualReg" onClick={this.startWs.bind(this,'autoRegisteration')}>Start Auto Registration
                                          </button>
                                      </div>
 

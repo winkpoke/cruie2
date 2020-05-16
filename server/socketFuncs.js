@@ -54,7 +54,7 @@ module.exports = function(wss){
 
         console.log('=====当前连接人数=====:', list.length, client);
         if(list.length > 1) {
-            ws.close()
+            //ws.close()
         }
         let url = req.url;
         console.log('====url====:',url);
@@ -66,11 +66,11 @@ module.exports = function(wss){
         /*客户端开始拿raw 数据*/
         ws.on('message',function (params) {
             console.log('接收到了客户端的参数:',params,url)
-            params = JSON.parse(params)
+            var data = JSON.parse(params)
 
             switch (url) {
                 case '/chunk':
-                    readFile(params,ws)
+                    readFile(data,ws)
                     break
                 case '/aquire':
                     ws.send('server received' + params)
@@ -91,7 +91,7 @@ module.exports = function(wss){
         });
 
         ws.on('close', function (e) {
-            _.pull(list, ws);
+            //_.pull(list, ws);
             // ws.close()
             console.log('在线人数' + list.length);
         })
