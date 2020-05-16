@@ -143,6 +143,8 @@ class SideL extends Component {
             var data = event.data
             if( data.constructor == String){
                 var msg = JSON.parse(data)
+                var endTime = new Date();
+                console.log( usedTime(startTime, endTime))
                 chunkEnd(msg)
                 this.ws.close()
             }else {
@@ -176,8 +178,7 @@ class SideL extends Component {
                 const startHandleArrayBuffer = (dataBuffer)=>{
                     i = 0;
                     arr = [];
-                    var endTime = new Date();
-                    console.log( usedTime(startTime, endTime))
+
                     var array_view = new Uint16Array(dataBuffer);
                     console.log("start of transforming...");
                     array_view.forEach((element, index, array) => array[index] += 1000);
