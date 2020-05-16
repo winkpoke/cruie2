@@ -167,7 +167,7 @@ class Index extends Component {
         })
     }
     connect1(type){
-        this.ws1 = new WebSocket('ws://localhost:3003/'+type);
+        this.ws1 = new WebSocket('ws://curie.astystore.com/'+type);
         this.ws1.addEventListener('open',  (evt) =>{
             if(type == 'aquire') {
                 this.ws1.send(JSON.stringify({type:'aquire'}))

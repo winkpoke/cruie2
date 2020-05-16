@@ -45,7 +45,7 @@ class SideL extends Component {
     };
 
     connect(){
-        this.ws = new WebSocket('ws://localhost:3003/chunk');
+        this.ws = new WebSocket('ws://curie.astystore.com/chunk');
         this.ws.binaryType = 'arraybuffer'
         this.ws.onclose= (e)=>{
             console.log('关闭',e)
