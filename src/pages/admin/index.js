@@ -17,7 +17,7 @@ import {Archive} from 'libarchive.js/main.js';
 Archive.init({
     workerUrl: '/static/libarchive/worker-bundle.js'
 });
-
+var config = require('../../../config/index')
 
 @connect((store) => {
     return {app:store.app,};
@@ -29,6 +29,7 @@ class Index extends Component {
         super(props, context);
         this.child = null;// sideL
         this.child1= null; // kp
+        this.host = props.location.search.indexOf('dev') > 0 ? config.host  : config.prdHost
     }
     state={
         tabbar:[
@@ -167,7 +168,7 @@ class Index extends Component {
         })
     }
     connect1(type){
-        this.ws1 = new WebSocket('ws://curie.astystore.com/'+type);
+        this.ws1 = new WebSocket(`ws://${this.host}/acquireAuto`);
         this.ws1.addEventListener('open',  (evt) =>{
             if(type == 'aquire') {
                 this.ws1.send(JSON.stringify({type:'aquire'}))

@@ -4,6 +4,7 @@
 import React, {Component} from 'react';
 import {Tree} from 'antd';
 import {connect} from 'react-redux';
+import {Route, Link, Redirect, withRouter} from "react-router-dom";
 // import io from 'this.ws.io-client';
 //import EventBus from
 import { createFromIconfontCN } from '@ant-design/icons';
@@ -27,16 +28,18 @@ import {getPatientList} from "@/services/api";
 import {getRes} from "@/utils";
 import {base64ToUint8Array, concatArrayBuffer} from "@/utils/utils";
 import {usedTime} from "../../utils/utils";
-
+var config = require('../../../config/index')
 @connect((store) => {
     return {app:store.app,};
 })
 class SideL extends Component {
     constructor(props, context) {
+        console.log('===aaa=====',props)
         super(props, context);
         if(props.onRef){//如果父组件传来该方法 则调用方法将子组件this指针传过去
             props.onRef(this)
         }
+        this.host = props.location.search.indexOf('dev') > 0 ? config.host  : config.prdHost
     }
     state={
         treeData:[],
@@ -45,7 +48,7 @@ class SideL extends Component {
     };
 
     connect(){
-        this.ws = new WebSocket('ws://curie.astystore.com/chunk');
+        this.ws = new WebSocket(`ws://${this.host}/chunk`);
         this.ws.binaryType = 'arraybuffer'
         this.ws.onclose= (e)=>{
             console.log('关闭',e)
@@ -230,4 +233,4 @@ class SideL extends Component {
     }
 }
 
-export default SideL;
+export default withRouter(SideL);
