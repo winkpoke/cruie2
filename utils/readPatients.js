@@ -69,8 +69,10 @@ var split = '/';
 }
 
 function readFileList(dir, filesList = []) {
+    var dirPath = path.resolve(__dirname,'../../patients');
+    patientNames = _.without(fs.readdirSync(dirPath),'.DS_Store');
     const files = fs.readdirSync(dir);
-    const curDirName = path.basename(dir);
+    // const curDirName = path.basename(dir);
     files.forEach(async (item, index) => {
         var fullPath = path.join(dir, item);
         if(fullPath.indexOf('\\')>0){
@@ -87,12 +89,11 @@ function readFileList(dir, filesList = []) {
     });
     return filesList;
 }
-
 /************************start reading folders***********************************************************/
 
 var dirPath = path.resolve(__dirname,'../../patients');
 
-const startRead = (dirPath)=>{
+const startRead = (dirPath=dirPath)=>{
     //读取第一层目录 将病人入库
     const files = fs.readdirSync(dirPath);
     patientNames = _.without(files,'.DS_Store');
@@ -133,10 +134,11 @@ process.on('unhandledRejection', (reason, p) => {
 });
 
 //开始读病人目录
-startRead(dirPath);
+//startRead(dirPath);
 module.exports={
     startRead,
-    rDicom
+    rDicom,
+    readFileList
 };
 
 
