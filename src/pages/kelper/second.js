@@ -114,7 +114,7 @@ export default class Second extends Component{
                          var scaledY = transformdY * 10;
                          var lastScale = initialScale  + scaledY
                          console.log('放大缩小：',lastScale);
-                         if(lastScale<=0) lastScale = 0
+                         if(lastScale<=0.5) lastScale = 0.5
                          _this.glcanvas[`set_scale_${tsc}`]( lastScale );
                          break;
                  }
@@ -150,7 +150,7 @@ export default class Second extends Component{
             var ev = window.event;
             if(ev.wheelDelta){//IE/Opera/Chrome
                 var last = init + (ev.wheelDelta / 120 * 0.01);
-                if(last < 0.5) last = 0.5;
+                if(last < 0) last = 0;
                 if(last > 1) last = 1;
 
                 console.log('last:',last,' | wheelDelta:',ev.wheelDelta);
