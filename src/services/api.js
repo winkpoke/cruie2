@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../utils/axiosSetting';
 
 export const accountLogin = (params) => axios.post(`${window.reqPrefix}/user/login`,params);
 export const logout = () => axios.post(`${window.reqPrefix}/user/logout`);

@@ -2,6 +2,7 @@ import axios from 'axios'
 import store from '../store'
 import history from '@/utils/history'
 import Toast from '@/components/toast'
+import helper from "./helper";
 
 axios.defaults.withCredentials = true
 axios.defaults.timeout = 10000
@@ -57,7 +58,9 @@ axios.interceptors.response.use(
          */
         const res = response.data;
         if (response.status === 401 || res.status === 40101) {
-             history.push('/login');
+            helper.delCookie('token')
+            sessionStorage.clear();
+            // history.push('/login');
              return Promise.reject('error')
         }
         if (response.status !== 200 && res.status !== 200) {
@@ -82,8 +85,9 @@ axios.interceptors.response.use(
 
         const info = response.data;
         if (status === 401 || info.status === 40101) {
+            helper.delCookie('token')
             sessionStorage.clear();
-            history.push('/login');
+            return location.reload()
         }
         if(text){
             //message.error(`${status}:${text}`)
@@ -91,3 +95,4 @@ axios.interceptors.response.use(
         return Promise.reject(error)
     }
 )
+export default axios

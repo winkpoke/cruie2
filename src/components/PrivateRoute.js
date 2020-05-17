@@ -12,7 +12,7 @@ class PrivateRoute extends React.Component{
          if(!isAuthenticated){
             const {history} = this.props;
             setTimeout(() => {
-                history.replace("/login");
+                // history.replace("/login");
             }, 1000)
         }
     }

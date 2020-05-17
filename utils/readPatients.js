@@ -43,7 +43,7 @@ var split = '/';
             }else if(name == 'dcm'){
                 type = 'dcm';
                 level = 2;
-            } else {
+            } else if(name !='dcmRaw'){
                 type = 'cname';
                 level = 0
             }
@@ -68,10 +68,13 @@ var split = '/';
     });
 }
 
-function readFileList(dir, filesList = []) {
+function readFileList(dir,filesList=[], watchDir) {
     var dirPath = path.resolve(__dirname,'../../patients');
     patientNames = _.without(fs.readdirSync(dirPath),'.DS_Store');
-    const files = fs.readdirSync(dir);
+    var files = fs.readdirSync(dir);
+    if(watchDir){
+        files = watchDir
+    }
     // const curDirName = path.basename(dir);
     files.forEach(async (item, index) => {
         var fullPath = path.join(dir, item);
@@ -84,7 +87,7 @@ function readFileList(dir, filesList = []) {
             //如果是目录 则路径入库
             var children = _.without(fs.readdirSync(fullPath),'dcm');
             addFilePath(patientName,fullPath , path.basename(dir) , children);
-            readFileList(path.join(dir, item), filesList); //递归读取文件
+            readFileList(path.join(dir, item),filesList); //递归读取文件
         }
     });
     return filesList;
@@ -93,7 +96,7 @@ function readFileList(dir, filesList = []) {
 
 var dirPath = path.resolve(__dirname,'../../patients');
 
-const startRead = (dirPath=dirPath)=>{
+const startRead = (dirPath)=>{
     //读取第一层目录 将病人入库
     const files = fs.readdirSync(dirPath);
     patientNames = _.without(files,'.DS_Store');

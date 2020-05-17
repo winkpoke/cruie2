@@ -49,7 +49,11 @@ const wss = new WebSocket.Server({ server,perMessageDeflate: {
     // should not be compressed.
 } });
 // const io = require('socket.io')(server);
-require('./socketFuncs')(wss)
+wss.on('connection',function (ws,req) {
+    require('./socketFuncs')(ws,req)
+    require('../utils/watchFile')(ws,req)
+})
+
 
 app.use(function(req, res, next){
 
@@ -65,7 +69,7 @@ app.use(function(req, res, next){
     }else{
          jwt.verify(authorization, config.jwtsecret, function (err, decode) {
             if (err) {  //  认证出错
-                res.status(403).send('认证无效,请重新登录:'+err.message);
+                res.status(401).json({msg:'认证无效,请重新登录:'+err.message});
             } else {
                 next();
             }

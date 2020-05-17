@@ -45,14 +45,13 @@ const readFile = (params,ws) => {
 }
 
 
-module.exports = function(wss){
+module.exports = function(ws,req){
     let list = [];
-    wss.on('connection', (ws, req, client) => {
         // const url = require('url');
         // const pathname = url.parse(req.url).pathname;
         list.push(ws);
 
-        console.log('=====当前连接人数=====:', list.length, client);
+        console.log('=====当前连接人数=====:', list.length);
         if(list.length > 1) {
             //ws.close()
         }
@@ -71,6 +70,9 @@ module.exports = function(wss){
                 case '/acquireAuto':
                     ws.send('server received' + params)
                     break
+                case '/newPatient':
+                    console.log('new Patient')
+                    ws.send(params)
             }
         });
 
@@ -88,5 +90,5 @@ module.exports = function(wss){
             // ws.close()
             console.log('在线人数' + list.length);
         })
-    })
+        //require('../utils/watchFile')(ws)
 }

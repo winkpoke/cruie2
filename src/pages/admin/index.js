@@ -30,6 +30,13 @@ class Index extends Component {
         this.child = null;// sideL
         this.child1= null; // kp
         this.host = props.location.search.indexOf('dev') > 0 ? config.host  : config.prdHost
+        this.ws1 = new WebSocket(`ws://${this.host}/acquireAuto`);
+        this.ws1.addEventListener('message',function (evt) {
+            console.log(evt)
+            if(evt.data.indexOf('newPatient')>0){
+                message.info('New patient data coming,please reload browser')
+            }
+        })
     }
     state={
         tabbar:[
@@ -147,6 +154,7 @@ class Index extends Component {
             this.child1.setGl('slider_scale',1);
             this.child1.setGl('slider_pan_x',0);
             this.child1.setGl('slider_pan_y',0);
+            this.child1.setGl('slider_slice',0);
         }
     }
     toggleSideL(){
@@ -168,20 +176,16 @@ class Index extends Component {
         })
     }
     connect1(type){
-        this.ws1 = new WebSocket(`ws://${this.host}/acquireAuto`);
-        this.ws1.addEventListener('open',  (evt) =>{
+        if(this.ws1.readyState == 1){
             if(type == 'aquire') {
                 this.ws1.send(JSON.stringify({type:'aquire'}))
             }else {
                 this.ws1.send(JSON.stringify({type:'autoRegisteration'}))
             }
-        })
-        this.ws1.addEventListener('message',function (evt) {
-            console.log(evt)
-        })
+        }
     }
     startWs(type){
-        if(this.ws1) this.ws1.close()
+        //if(this.ws1) this.ws1.close()
         this.connect1(type)
     }
     render() {

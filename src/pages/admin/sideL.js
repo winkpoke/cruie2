@@ -149,7 +149,7 @@ class SideL extends Component {
                 var endTime = new Date();
                 console.log( usedTime(startTime, endTime))
                 chunkEnd(msg)
-                this.ws.close()
+                // this.ws.close()
             }else {
                 arr.push(data);
                 i++;
