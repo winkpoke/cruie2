@@ -62,17 +62,16 @@ module.exports = function(ws,req){
         ws.on('message',function (params) {
             console.log('接收到了客户端的参数:',params,url)
             var data = JSON.parse(params)
-
-            switch (url) {
-                case '/chunk':
+            console.log(data)
+            switch (data.type) {
+                case 'chunk':
                     readFile(data,ws)
                     break
-                case '/acquireAuto':
-                    ws.send('server received' + params)
-                    break
-                case '/newPatient':
-                    console.log('new Patient')
-                    ws.send(params)
+                case 'aquire':
+                    ws.send(JSON.stringify({msg: 'server received' + params}))
+                    break;
+                case 'autoRegisteration':
+                    ws.send(JSON.stringify({msg: 'server received' + params}))
             }
         });
 

@@ -30,13 +30,22 @@ class Index extends Component {
         this.child = null;// sideL
         this.child1= null; // kp
         this.host = props.location.search.indexOf('dev') > 0 ? config.host  : config.prdHost
-        this.ws1 = new WebSocket(`ws://${this.host}/acquireAuto`);
-        this.ws1.addEventListener('message',function (evt) {
-            console.log(evt)
-            if(evt.data.indexOf('newPatient')>0){
-                message.info('New patient data coming,please reload browser')
+        if(!window.ws) {
+            window.ws = new WebSocket(`ws://${this.host}`);
+            window.ws.addEventListener('message',  (evt)=> {
+                console.log(evt)
+                if(evt.data.constructor == ArrayBuffer || JSON.parse(evt.data).type =='end') {
+                }else {
+                    if( evt.data.indexOf('newPatient')>0){
+                        message.info('New patient data coming,please reload browser')
+                    }
+                }
+            })
+            window.ws.binaryType = 'arraybuffer'
+            window.ws.onclose= (e)=>{
+                console.log('关闭',e)
             }
-        })
+        }
     }
     state={
         tabbar:[
@@ -181,16 +190,16 @@ class Index extends Component {
         })
     }
     connect1(type){
-        if(this.ws1.readyState == 1){
+        if(window.ws.readyState == 1){
             if(type == 'aquire') {
-                this.ws1.send(JSON.stringify({type:'aquire'}))
+                window.ws.send(JSON.stringify({type:'aquire'}))
             }else {
-                this.ws1.send(JSON.stringify({type:'autoRegisteration'}))
+                window.ws.send(JSON.stringify({type:'autoRegisteration'}))
             }
         }
     }
     startWs(type){
-        //if(this.ws1) this.ws1.close()
+        //if(window.ws) window.ws.close()
         this.connect1(type)
     }
     render() {
