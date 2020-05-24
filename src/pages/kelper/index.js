@@ -6,7 +6,7 @@ import Second from './second'
 import 'antd/es/spin/style/css';
 import {connect} from 'react-redux';
 import EventBus from '@/utils/eventBus';
-
+import Draggable, {DraggableCore} from 'react-draggable'; // Both at th
 @connect((store) => {
     return {app:store.app};
 })
@@ -15,7 +15,17 @@ class kp extends Component {
     state={
         cWidth:945,
         cHeight:630,
-        inited:false
+        inited:false,
+
+        activeDrags: 0,
+        deltaPosition: [
+            {x: 0, y: 0},
+            {x: 0, y: 0},
+            {x: 0, y: 0}
+        ],
+        controlledPosition: {
+            x: -400, y: 200
+        }
     };
     constructor(props, context) {
         super(props, context);
@@ -160,15 +170,114 @@ class kp extends Component {
         this.glcanvas.render();
         this.props.dispatch({type:'setData',payload:{key:'loading',value:false}});
     }
+    handleDrag = (e, ui) => {
+        if(this.props.app.action !== 'pan') return
+        const {deltaPosition} = this.state;
+        const {node} = ui
+        if(node.id=='cmask-l'){
+            const {x,y} = deltaPosition[0]
+            deltaPosition[0] = {
+                x: x + ui.deltaX,
+                y: y + ui.deltaY,
+            }
+
+            if(this.props.app.action == 'pan'){
+                this.glcanvas[`set_pan_transverse_x`](deltaPosition[0].x / (this.state.cHeight/2));
+                this.glcanvas[`set_pan_transverse_y`](-deltaPosition[0].y / (this.state.cHeight/2));
+                this.setState({deltaPosition});
+            }
+        }else if(node.id=='cmask-rt'){
+            const {x,y} = deltaPosition[1]
+            deltaPosition[1] = {
+                x: x + ui.deltaX,
+                y: y + ui.deltaY,
+            }
+
+            if(this.props.app.action == 'pan'){
+                this.glcanvas[`set_pan_sagittal_x`](deltaPosition[1].x / (this.state.cHeight/3));
+                this.glcanvas[`set_pan_sagittal_y`](-deltaPosition[1].y / (this.state.cHeight/3));
+                this.setState({deltaPosition});
+            }
+        }else if(node.id =='cmask-rb') {
+            const {x,y} = deltaPosition[2]
+            deltaPosition[2] = {
+                x: x + ui.deltaX,
+                y: y + ui.deltaY,
+            }
+
+            if(this.props.app.action == 'pan'){
+                this.glcanvas[`set_pan_coronal_x`](deltaPosition[2].x / (this.state.cHeight/3));
+                this.glcanvas[`set_pan_coronal_y`](-deltaPosition[2].y / (this.state.cHeight/3));
+                this.setState({deltaPosition});
+            }
+        }
+        this.glcanvas.render();
+
+    };
+
+    onStart = (e,ui) => {
+        console.log(e)
+        const {node} = ui;
+        var tsc;
+        switch (node.id){
+            case 'cmask-l':
+                tsc = 'transverse'
+                break
+            case 'cmask-rt':
+                tsc = 'sagittal'
+                break
+            case 'cmask-rb':
+                tsc = 'coronal'
+                break
+        }
+        this.setState({tsc})
+        this.props.dispatch({type:'setData',payload:{key:'tsc',value:tsc}});
+        this.setState({
+            activeDrags: ++this.state.activeDrags,
+            initialSScale: this.glcanvas.get_scale_transverse()
+        });
+    };
+
+    onStop = () => {
+        this.setState({activeDrags: --this.state.activeDrags});
+    };
     render() {
-        const {cWidth,cHeight,slider_blend,slider_window,slider_level,pan,slider_scale,slider_pan_x,slider_pan_y,slider_slice} = this.state;
+        const dragHandlers = {onStart: this.onStart, onStop: this.onStop};
+        const {cWidth,cHeight,slider_blend,slider_window,slider_level,pan,slider_scale,slider_pan_x,slider_pan_y,slider_slice,
+            deltaPosition, controlledPosition
+        } = this.state;
         return (
-                <div className="kelper page">
-                    <canvas ref="canvas" id="mycanvas" className={this.props.app.action} width={cWidth} height={cHeight}
-                            onMouseDown={this.second.fnMounseDown.bind(this)}
+                <div className="kelper page" >
+                    <canvas ref="canvas" id="mycanvas" width={cWidth} height={cHeight}
+                            className={this.props.app.action}
+                            onMouseDown={ this.props.app.action == 'scale' ? this.second.fnMounseDown.bind(this) : null}
                             onScroll={this.second.fnScroll.bind(this)}
                     >
                     </canvas>
+                    {this.props.app.action == 'pan' ?
+                        <div className="canvasMask">
+                            <Draggable  onDrag={this.handleDrag} {...dragHandlers} >
+                                <div className={`l ${this.props.app.action}`} id="cmask-l" style={{width: cHeight+'px'}} onMouseDown={this.fnMouseDown}>
+                                    left
+                                    <div>x: {deltaPosition[0].x.toFixed(0)}, y: {deltaPosition[0].y.toFixed(0)}</div>
+                                </div>
+                            </Draggable>
+
+                            <Draggable  onDrag={this.handleDrag} {...dragHandlers}>
+                                <div className={`rt ${this.props.app.action}`} id="cmask-rt" style={{width: cHeight/2+'px', height: cHeight/2+'px'}}>
+                                    right top
+                                    <div>x: {deltaPosition[1].x.toFixed(0)}, y: {deltaPosition[1].y.toFixed(0)}</div>
+                                </div>
+                            </Draggable>
+
+                            <Draggable  onDrag={this.handleDrag} {...dragHandlers}>
+                                <div className={`rb ${this.props.app.action}`} id="cmask-rb" style={{width: cHeight/2+'px',height: cHeight/2+'px'}}>
+                                    right bottom
+                                    <div>x: {deltaPosition[2].x.toFixed(0)}, y: {deltaPosition[2].y.toFixed(0)}</div>
+                                </div>
+                            </Draggable>
+                        </div>
+                        : ''}
                 </div>
         );
     }

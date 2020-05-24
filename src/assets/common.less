@@ -21,6 +21,7 @@
 @body-bg-color: #EEEFF3;
 @basepx: 1px;
 @shu-color: #D8D8D8;
+body{overflow:hidden}
 //常用边距
 .gapping(@counter, @i: 0) when (@i <=@counter) {
   .margin-@{i} {
@@ -104,3 +105,13 @@ hr {
 .orderDetail span{padding-right:60px;}
 li{list-style: none}
 ul{padding-left:0}
+.kelper{position: relative}
+.canvasMask {
+  position: absolute;
+  top:0;
+  width:100%;
+  height:100%;
+  .l{ height: 100%;  position: absolute }
+  .rt, .rb{height: 50%; position: absolute;right:0}
+  .rb {top: 50%}
+}

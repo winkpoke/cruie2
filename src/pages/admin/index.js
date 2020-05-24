@@ -155,6 +155,11 @@ class Index extends Component {
             this.child1.setGl('slider_pan_x',0);
             this.child1.setGl('slider_pan_y',0);
             this.child1.setGl('slider_slice',0);
+            this.child1.setState({deltaPosition: [
+                {x: 0, y: 0},
+                {x: 0, y: 0},
+                {x: 0, y: 0}
+            ]})
         }
     }
     toggleSideL(){

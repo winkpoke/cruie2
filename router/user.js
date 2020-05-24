@@ -5,6 +5,10 @@ const router = express.Router();
 var User = require('../model/User');
 var jwt = require('express-jwt');
 const config = require('../config');
+const path = require('path');
+
+var fs = require('fs');
+var pdf = require('html-pdf');
 
 /*用户注册*/
 router.post('/signup',function (req,res) {
@@ -97,8 +101,29 @@ router.get('/protected',
     });
 
 /*获取当前用户*/
-router.get('/getUser', function (req, res) {
-    res.send('hello, ' + req.body.username)
+router.get('/getPdf', function (req, res) {
+    var template = path.resolve(__dirname, '../static/pdf-template.html')
+    var filename = template.replace('.html', '.pdf')
+
+    var templateHtml = fs.readFileSync(template, 'utf8')
+
+    var image = path.join('file://', __dirname, '../static/image.png')
+    templateHtml = templateHtml.replace('{{image}}', image)
+
+    var options = {
+        width: '50mm',
+        height: '90mm',
+        "phantomPath": "./node_modules/phantomjs/bin/phantomjs",
+    }
+    pdf.create(templateHtml,options).toBuffer(function(err, buffer){
+        res.set({
+            "Content-type":"application/octet-stream",
+            "Content-Disposition":"attachment;filename=test_2.pdf"
+        });
+        res.send(buffer)
+        console.log('This is a buffer:', Buffer.isBuffer(buffer));
+    });
+
 });
 
 router.get('/:name', function (req, res) {
