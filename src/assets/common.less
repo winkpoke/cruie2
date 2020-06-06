@@ -21,7 +21,10 @@
 @body-bg-color: #EEEFF3;
 @basepx: 1px;
 @shu-color: #D8D8D8;
-body{overflow:hidden}
+body{overflow:hidden; background: #fff}
+input, button {
+  border: none;
+}
 //常用边距
 .gapping(@counter, @i: 0) when (@i <=@counter) {
   .margin-@{i} {
@@ -98,7 +101,7 @@ hr {
 }
 .bg-white{background:#fff}
 .color-white{color:#fff}
-
+.flex{display: flex}
 .padding-l-20{padding:20px}
 .flex{display: flex;align-items: center}
 .just-space-between{justify-content: space-between}

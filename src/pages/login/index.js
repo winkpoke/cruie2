@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import {connect} from 'react-redux';
 import io from 'socket.io-client';
 
@@ -10,7 +10,12 @@ import {accountLogin} from "@/services/api";
 import {getRes} from "@/utils";
 import schema from 'async-validator';
 
-import '@/assets/css/style.css'
+import { Layout, Menu , Divider, Input, Checkbox} from 'antd';
+const { Header, Content, Footer } = Layout;
+import 'antd/es/layout/style/css';
+import 'antd/es/divider/style/css';
+import 'antd/es/input/style/css';
+import '@/assets/page.less'
 
 var descriptor = {
     username: {
@@ -82,74 +87,94 @@ class Index extends Component {
         if(this.state.isAuthenticated){
             history.push('/admin')
         }
-
-        // const socket = io();
-        // socket.emit('chat message', '你好..');
-        //
-        // socket.emit('say to someone', '你好 say..');
-        //
-        // socket.on('chat message', function(msg){
-        //      console.log('我收到管理员的回复了:'+msg);
-        // });
-        // socket.on('hi', function(msg){
-        //     console.log('我收到管理员的回复了hi:'+msg);
-        // });
-        //
-        // socket.on('connect', function(){
-        //     console.log('connect');
-        //     //客户端关闭
-        //     setTimeout(() => socket.close(), 5000);
-        // });
-        // socket.on('event', function(data){});
-        // socket.on('disconnect', function(){
-        //     console.log('dis connect')
-        // });
     }
 
     render() {
-
         const {error} = this.state;
         return (
-            <div className="wrapper" style={{height: "auto",minHeight: "100%"}}>
-                <header className="main-header">
-                    <span className="logo">CURIE</span>
-                    <nav className="navbar" role="navigation"></nav>
-                </header>
-                <div className="w3layouts">
-                    <div className="signin-agile">
-                        <form id="loginForm" method="post">
+            <Layout className="layout login-page">
+                <Header style={{height: "50px"}}>
+                    <div className="logo" >CURIE</div>
+                    {/*<Menu theme="dark" mode="horizontal" className="header-menu" defaultSelectedKeys={['2']} style={{height: "50px"}}>*/}
+                    {/*    <Menu.Item key="1" className="menuItem">nav 1</Menu.Item>*/}
+                    {/*    <Menu.Item key="2" className="menuItem">nav 2</Menu.Item>*/}
+                    {/*    <Menu.Item key="3" className="menuItem">nav 3</Menu.Item>*/}
+                    {/*</Menu>*/}
+                </Header>
+                <Content className="flex alignStart">
+                    <form method="post" className="loginForm">
                             <ul>
-                                <li style={{fontWeight: 'bold'}}>
+                                <li className='login-title'>
                                     Sign In CURIE
                                 </li>
                                 <li>
-                                    <input type="text" name="username" value={this.state.username} onChange={this.changeInput.bind(this)} style={{width: "91%"}} className="name" placeholder="UserName" />
+                                    <Input type="text" name="username" value={this.state.username} onChange={this.changeInput.bind(this)} className="name" placeholder="UserName" />
                                     <p className="error">{error['username']}</p>
                                 </li>
                                 <li>
-                                    <input type="password" name="password" value={this.state.password} style={{width:"91%"}} onChange={this.changeInput.bind(this)}  className="password" placeholder="password" />
+                                    <Input type="password" name="password" value={this.state.password} onChange={this.changeInput.bind(this)}  className="password" placeholder="password" />
                                     <p className="error">{error['password']}</p>
                                 </li>
                                 <li>
-                                    <input type="checkbox" name="remember" value={this.state.remember}  onChange={this.changeInput.bind(this)}  id="brand1"/> Remember me
+                                    <Checkbox className="checker" type="checkbox" name="remember" checked={this.state.remember}  onChange={this.changeInput.bind(this)}> Remember me </Checkbox>
+                                </li>
+                                <li className="submit-row">
+                                    <Input className="submit-btn" type="submit" onClick={ this.handleSubmit.bind(this)} value="Sign In"/>
                                 </li>
                                 <li>
-                                    <input className="submit-btn" type="submit" onClick={ this.handleSubmit.bind(this)} value="Sign In" style={{width: '91%'}}/>
-                                </li>
-                                <li style={{color: '#AFB2AB'}}>
-                                    Have problem? <span style={{borderBottom: "1px solid"}}>Contact Us.</span>
+                                    Have problem? <Link to={'/contact'} style={{borderBottom: "1px solid"}}>Contact Us.</Link>
                                 </li>
                             </ul>
                         </form>
-                    </div>
-                    <div className="mid-line"></div>
-                    <div className="signup-agileinfo" style={{paddingTop: "150px"}}>
+                    <Divider type="vertical" className="login-divider" />
+                    <div className="section">
                         <h3>CURIE System</h3>
                         <p>Guide Better. Treat Better.</p>
                     </div>
-                    <div className="clear"></div>
-                </div>
-            </div>
+                </Content>
+
+            {/*<div className="wrapper login-page">*/}
+            {/*    <header className="main-header">*/}
+            {/*        <span className="logo">CURIE</span>*/}
+            {/*        <nav className="navbar" role="navigation"></nav>*/}
+            {/*    </header>*/}
+            {/*    <div className="w3layouts">*/}
+            {/*        <div className="signin-agile">*/}
+            {/*            <form id="loginForm" method="post">*/}
+            {/*                <ul>*/}
+            {/*                    <li>*/}
+            {/*                        Sign In CURIE*/}
+            {/*                    </li>*/}
+            {/*                    <li>*/}
+            {/*                        <input type="text" name="username" value={this.state.username} onChange={this.changeInput.bind(this)} className="name" placeholder="UserName" />*/}
+            {/*                        <p className="error">{error['username']}</p>*/}
+            {/*                    </li>*/}
+            {/*                    <li>*/}
+            {/*                        <input type="password" name="password" value={this.state.password} onChange={this.changeInput.bind(this)}  className="password" placeholder="password" />*/}
+            {/*                        <p className="error">{error['password']}</p>*/}
+            {/*                    </li>*/}
+            {/*                    <li>*/}
+            {/*                        <input type="checkbox" name="remember" value={this.state.remember}  onChange={this.changeInput.bind(this)}  id="brand1"/> Remember me*/}
+            {/*                    </li>*/}
+            {/*                    <li>*/}
+            {/*                        <input className="submit-btn" type="submit" onClick={ this.handleSubmit.bind(this)} value="Sign In"/>*/}
+            {/*                    </li>*/}
+            {/*                    <li>*/}
+            {/*                        Have problem? <span style={{borderBottom: "1px solid"}}>Contact Us.</span>*/}
+            {/*                    </li>*/}
+            {/*                </ul>*/}
+            {/*            </form>*/}
+            {/*        </div>*/}
+            {/*        <div className="mid-line"></div>*/}
+            {/*        <div className="signup-agileinfo">*/}
+            {/*            <h3>CURIE System</h3>*/}
+            {/*            <p>Guide Better. Treat Better.</p>*/}
+            {/*        </div>*/}
+            {/*        <div className="clear"></div>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
+
+            </Layout>
         );
     }
 }
@@ -157,7 +182,6 @@ class Index extends Component {
 function mapStateToProps(state) {
     return {};
 }
-//const IndexForm = Form.create({ name: 'normal_login' })(Index);
 
 export default connect(
     mapStateToProps,
