@@ -215,6 +215,7 @@ pre {
 .navbar {
     border: 0;
     background-color: #1C1C1C;
+    border-bottom: 1px solid #292929;
     color: #2D6D4B;
     padding-left: 10px;
     padding-right: 25px;
@@ -694,6 +695,7 @@ body.modal-open,
 /*Vertical Navigation*/
 .cl-sidebar {
     background: #1C1C1C;
+    border-right: 1px solid #292929;
     position: absolute;
     width: 10%;
 }
@@ -934,9 +936,8 @@ body.modal-open,
 }
 .box {
     position: relative;
-    background: #1C1C1C;
     border-top: 2px solid #c1c1c1;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -1041,19 +1042,32 @@ body.modal-open,
     width: 98%;
 }
 .inner-div{
-    padding: 2px 10px 2px 10px;
+    padding: 2px 0px 2px 0px;
     /*border-top-left-radius: 0;*/
     /*border-top-right-radius: 0;*/
     /*border-bottom-right-radius: 3px;*/
     /*border-bottom-left-radius: 3px;*/
     /*border: 1px solid #05e3f3;*/
-    height: 30px;
+    height: 26px;
     /*margin-left: 3px;*/
     /*width: 98%;*/
+    line-height: 26px;
     background-color: #292929;
+    margin-bottom: 10px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.inner-div input {
+    text-align: center;
+    width: 54px;
+    height: 26px;
+    line-height: 26px;
+    margin: 0 5px;
 }
 .inner-div button{
-    width: 10%;
+    width: 24px;
     padding:0
 }
 #cl-wrapper.fixed-menu .menu-space {
@@ -1238,7 +1252,7 @@ body {
     width: 100%;
     position: absolute;
     height: 98%;
-    background-color: #292929;
+    background-color: #1c1c1c;
 }
 .cl-sidebar {
     display: table-cell;
@@ -6049,7 +6063,7 @@ ul.timeline li > .date {
     background: #292929;
     color: #2D6D4B;
     height:40px;
-    margin-top:5px;
+    margin-top:8px;
     width:30%;
     box-sizing: border-box;
 }
@@ -6064,7 +6078,7 @@ ul.timeline li > .date {
     border: 1px solid #7d7d7d;
     color: #2D6D4B;
     outline: none;
-    font-size: 14px;
+    font-size: 12px;
     /*margin-top: 18px;*/
 }
 .operator-btn {
@@ -6081,7 +6095,6 @@ ul.timeline li > .date {
 }
 .img-tool2 {
     height: 52%;
-    background: #1C1C1C;
 }
 .drop-select-wl {
     color: #FAFCF2;
@@ -6102,6 +6115,7 @@ ul.timeline li > .date {
     text-align: center;
     height: 15px;
 }
+.drop-select-parent a{color: #1c1c1c}
 .reg-tool-p2{
     padding-left: 1px;
     line-height: 30px;
@@ -6110,6 +6124,9 @@ ul.timeline li > .date {
 .reg-tool-p3{
     /*padding-left: 1px;*/
     /*width: 93%;*/
+    background: #292929;
+    padding: 15px;
+    border-radius: 10px;
     color: #FAFCF2;
 }
 .tool-btn3 {

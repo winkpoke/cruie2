@@ -73,13 +73,85 @@ button[disabled],input[disabled]{
 .scale{cursor: crosshair}//上下箭头
 .slice{cursor: ns-resize}
 #tool-div{
-  width:225px;
   .box{
     box-sizing: border-box;
-    padding: 0 5px;
+    padding: 0 16px 20px;
+    border-left: 1px solid #292929;
+    &:first-child{border-bottom: 1px solid #292929}
   }
   .flex{
     justify-content: space-between;
   }
 }
 .ant-message{z-index: 1200!important;}
+.ant-slider{height: 40px;}
+.ant-slider-disabled .ant-slider-handle, .ant-slider-disabled .ant-slider-dot {
+  background: #FCFAF2;
+}
+.text-left {text-align: left}
+#TSC3D{justify-content: space-around}
+.icon-wrapper {
+  position: relative;
+  margin-top: 8px;
+  padding: 0px 30px 0 36px;
+  height: 40px;
+  button[disabled] {
+    background: #999;
+    color: #666
+  }
+}
+.ant-slider-disabled .ant-slider-handle, .ant-slider-disabled .ant-slider-dot {
+  background-color: #999!important;
+  background: url("./images/slider-1.png") 0 50% no-repeat;
+  background-size: contain;
+}
+.ant-slider-track{height: 40px!important; display: none!important; background: #2d6d4b!important;}
+.ant-slider-handle, .ant-slider-disabled .ant-slider-dot {
+  margin-top: 0!important;
+  height: 40px!important;
+  border-radius: 5px!important;
+  border: 0!important;
+  background-color: #2d6d4b!important;
+  background: url("./images/slider-2.png") 0 50% no-repeat;
+  background-size: contain;
+  &:focus {
+    box-shadow: none!important;
+  }
+}
+.ant-slider-step{height: 40px!important;}
+.ant-slider{margin: 0!important; padding: 0!important;}
+.ant-slider-rail{
+  border-radius: 5px!important;
+  background: #292929!important;
+  height: 40px!important;
+}
+.ant-slider-disabled .ant-slider-rail{
+  background: #999!important;
+  height: 40px!important;
+}
+.ant-slider:hover .ant-slider-rail {
+  background: #292929;
+}
+
+
+
+.icon-wrapper button {
+  height: 40px;
+  border-radius: 6px;
+  background: #292929;
+  color: #2d6d4b;
+  position: absolute;
+  top: 0;
+  font-size: 12px;
+}
+.icon-wrapper .icon-wrapper-active {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.icon-wrapper button:first-child {
+  left: 0;
+}
+
+.icon-wrapper button:last-child {
+  right: 0;
+}

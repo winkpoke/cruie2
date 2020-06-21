@@ -77,7 +77,6 @@ app.use(function(req, res, next){
     }
 });
 
-console.log(config)
 
 const userRouter = require('../router/user');
 const patientRouter = require('../router/patient');

@@ -29,6 +29,9 @@ import {getRes} from "@/utils";
 import {base64ToUint8Array, concatArrayBuffer} from "@/utils/utils";
 import {usedTime} from "../../utils/utils";
 var config = require('../../../config/index')
+
+var i = 0;
+var arr = [];
 @connect((store) => {
     return {app:store.app,};
 })
@@ -48,13 +51,13 @@ class SideL extends Component {
     };
 
     connect(){
-        // if(!window.ws){
-        //     window.ws = new WebSocket(`ws://${this.host}`);
-        //     window.ws.binaryType = 'arraybuffer'
-        //     window.ws.onclose= (e)=>{
-        //         console.log('关闭',e)
-        //     }
-        // }
+        if(!window.ws){
+            window.ws = new WebSocket(`ws://${this.host}`);
+            window.ws.binaryType = 'arraybuffer'
+            window.ws.onclose= (e)=>{
+                console.log('关闭',e)
+            }
+        }
     }
     componentDidMount(){
         getPatientList().then(res=>{
@@ -75,6 +78,7 @@ class SideL extends Component {
         })
     }
     async onSelect(selectedKeys, info){
+        arr = []
         //查看store中是否有当前key, 如果有则拿store的 如果没有则请求
         if(info.selected){
             const {buffers} = this.props.app;
@@ -121,26 +125,23 @@ class SideL extends Component {
                 }
             }
             this.props.dispatch({type:'setData',payload:{key:'currentKey',value:key}});
-            this.startListenSocket()
+            // this.startListenSocket()
         }
     };
     getRawFile(params){
-        console.log('getRawFile')
+        i = 0;
+        arr = [];
         params['type'] = 'chunk';
-        if(window.ws.readyState == 3){
-            this.connect()
-            window.ws.addEventListener('open',  (evt) => {
-                window.ws.send(JSON.stringify(params))
-                this.startListenSocket()
-            })
-        }else{
+        if(!window.ws) this.connect()
+
+        setTimeout(()=>{
             window.ws.send(JSON.stringify(params))
-        }
+            this.startListenSocket()
+        },2000)
     }
     startListenSocket(){
+        if(!window.ws) this.connect()
         //下面开始监听websocket
-        var arr = [];
-        var i = 0;
         var startTime = new Date();
         window.ws.addEventListener('message', (event) => {
             var data = event.data
@@ -150,7 +151,8 @@ class SideL extends Component {
                 var endTime = new Date();
                 console.log( usedTime(startTime, endTime))
                 this.chunkEnd(msg,arr,i)
-                // window.ws.close()
+                ws.close()
+                window.ws = null
             }else {
                 arr.push(data);
                 i++;
@@ -161,7 +163,7 @@ class SideL extends Component {
 
     }
     chunkEnd = async (msg,arr, i) => {
-    console.log('我收到管理员的chunk end 了:',msg, arr.length);
+    console.log('我收到管理员的chunk end 了:',msg, 'arr len:', arr.length);
     if(arr.length == msg.i){
         var dataBuffer = (concatArrayBuffer(arr)).buffer;//这里是arrayBuffer格式
         var blob = new Blob([dataBuffer], {type: 'application/octet-stream'});

@@ -11,7 +11,7 @@ import SideL from './sideL';
 import EventBus from '@/utils/eventBus';
 import {saveShifts} from "@/services/api";
 import {getRes} from "@/utils";
-
+import { FrownOutlined, SmileOutlined } from '@ant-design/icons';
 import {Archive} from 'libarchive.js/main.js';
 
 Archive.init({
@@ -30,22 +30,7 @@ class Index extends Component {
         this.child = null;// sideL
         this.child1= null; // kp
         this.host = props.location.search.indexOf('dev') > 0 ? config.host  : config.prdHost
-        if(!window.ws) {
-            window.ws = new WebSocket(`ws://${this.host}`);
-            window.ws.addEventListener('message',  (evt)=> {
-                console.log(evt)
-                if(evt.data.constructor == ArrayBuffer || JSON.parse(evt.data).type =='end') {
-                }else {
-                    if( evt.data.indexOf('newPatient')>0){
-                        message.info('New patient data coming,please reload browser')
-                    }
-                }
-            })
-            window.ws.binaryType = 'arraybuffer'
-            window.ws.onclose= (e)=>{
-                console.log('关闭',e)
-            }
-        }
+        this.connect()
     }
     state={
         tabbar:[
@@ -84,6 +69,24 @@ class Index extends Component {
         this.child1 = ref
     }*/
 
+    connect() {
+        if(!window.ws) {
+            window.ws = new WebSocket(`ws://${this.host}`);
+            window.ws.addEventListener('message',  (evt)=> {
+                console.log(evt)
+                if(evt.data.constructor == ArrayBuffer || JSON.parse(evt.data).type =='end') {
+                }else {
+                    if( evt.data.indexOf('newPatient')>0){
+                        message.info('New patient data coming,please reload browser')
+                    }
+                }
+            })
+            window.ws.binaryType = 'arraybuffer'
+            window.ws.onclose= (e)=>{
+                console.log('关闭',e)
+            }
+        }
+    }
     componentWillReceiveProps(nextProps){
         console.log('===nextProps:===',nextProps);
         //this.setState({curRow:nextProps.app.curRow});
@@ -190,13 +193,18 @@ class Index extends Component {
         })
     }
     connect1(type){
-        if(window.ws.readyState == 1){
+        if(!window.ws){
+            this.connect()
+        }
+
+        setTimeout(()=>{
             if(type == 'aquire') {
                 window.ws.send(JSON.stringify({type:'aquire'}))
             }else {
                 window.ws.send(JSON.stringify({type:'autoRegisteration'}))
             }
-        }
+        },1000)
+
     }
     startWs(type){
         //if(window.ws) window.ws.close()
@@ -218,7 +226,7 @@ class Index extends Component {
         return (
             <DLayouta tabbar={this.state.tabbar} className="admin-kelper">
                 {/*左侧开始*/}
-                {showSideL ? <div className="cl-sidebar" data-position="right" id="leftMenu" style={{"background":"#292929"}}>
+                {showSideL ? <div className="cl-sidebar" data-position="right" id="leftMenu">
                     <div className="patientlist cl-navblock" style={{"height":"100%"}}>
                         <SideL onRef={c=>this.child=c}/>
                     </div>
@@ -325,24 +333,26 @@ class Index extends Component {
                          </div>
                          {hideR ? '' :
                          <div id="tool-div">
-                             <div className="box box-solid box-info img-tool2" >
+                             <div className="box box-solid box-info box-upper img-tool2" >
                                  <div className="box-body">
                                      <div className="img-tool-p" >
                                          <button type="button" disabled={isEmptyCurNode} className="tool-btn" id="acquireCBCTButton" onClick={this.startWs.bind(this,'aquire')}>Acquire CBCT</button>
                                      </div>
-                                     <Row>
-                                         <Col span={12}>
-                                             <Slider
-                                                 class="slider"
-                                                 min={0}
-                                                 max={1}
-                                                 step={0.01}
-                                                 disabled={level!==2}
-                                                 onChange={this.setBlend.bind(this)}
-                                                 value={kpData && kpData['slider_blend']}
-                                             />
-                                         </Col>
-                                     </Row>
+                                     <div className="slider-box">
+                                         <div className="icon-wrapper">
+                                             <button disabled={level!==2}>P</button>
+                                                 <Slider
+                                                             className="slider"
+                                                             min={0}
+                                                             max={1}
+                                                             step={0.01}
+                                                             disabled={level!==2}
+                                                             onChange={this.setBlend.bind(this)}
+                                                             value={kpData && kpData['slider_blend']}
+                                                         />
+                                             <button disabled={level!==2}>S</button>
+                                         </div>
+                                     </div>
                                      <div className="img-tool-p flex flex-wrap align-start" style={{ lineHeight: "2px"}}>
                                          <button disabled={isEmptyCurNode} onClick={this.setAction.bind(this,'scale')} className={`tool-btn  tool-btn1 ${action == 'scale' ? 'active' : ''} `}>Zoom</button>
                                          <button disabled={isEmptyCurNode} onClick={this.setAction.bind(this,'pan')} className={`tool-btn  tool-btn1 ${action == 'pan' ? 'active' : ''} `}>Pan</button>
@@ -369,12 +379,13 @@ class Index extends Component {
                                      </div>
 
                                      <div className="reg-tool-p reg-tool-p3 margin-t-10  ">
-                                         <div className="inner-div"  >
+                                         <div className="inner-div text-left"  >
                                              Couch Shift Result:
                                          </div>
                                          {Object.keys(shifts).map((k,index)=>
                                              <div className="inner-div" key={index}>
-                                                 {k}: <input type="number" name={shifts[k].name} value={kpData && kpData[`slider_shift_${(k.toLowerCase())}`] || 0} onChange={this.fnChange.bind(this)}  disabled={level!==2 || (kpData&&kpData['isLocked']) } className="operator-input" step="0.01"/> cm &nbsp;
+                                                 <span>{k.toUpperCase()}:</span> <input type="number" name={shifts[k].name} value={kpData && kpData[`slider_shift_${(k.toLowerCase())}`] || 0} onChange={this.fnChange.bind(this)}  disabled={level!==2 || (kpData&&kpData['isLocked']) } className="operator-input" step="0.01"/>
+                                                 <span>  cm  &nbsp;</span>
                                                  <button id="xPlus" className="operator-btn" onClick={this.changeShift.bind(this,shifts[k],1)}>+</button>&nbsp;
                                                  <button id="xMinus" className="operator-btn" onClick={this.changeShift.bind(this,shifts[k],0)}>-</button>
                                              </div>

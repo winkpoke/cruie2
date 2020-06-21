@@ -34,6 +34,7 @@ const readFile = (params,ws) => {
         ws.send(chunk)
     });
     readStream.on('end',function () {
+        console.log('i:', i)
         // ws.send('chunk end', {i,level,key,pid});
         var obj = {type:'end',i,level,key,pid}
 
