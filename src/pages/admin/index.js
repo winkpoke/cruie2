@@ -262,7 +262,7 @@ class Index extends Component {
                                  <h3 className="box-title">
                                      Patient Info
                                      <a id="show-list" style={{float: "right",color: "#FCFAF2"}} onClick={this.togglePatientInfo.bind(this)}>
-                                         <img src="/static/images/show-patient.png" style={{width: "17px",height:"25px",marginTop: "-9px"}} id="show-patient2" title="Show Patient List"/>
+                                         <img src="/static/images/show-patient.png" style={{width: "17px",height:"25px"}} id="show-patient2" title="Show Patient List"/>
                                      </a>
                                  </h3>
                              </div>

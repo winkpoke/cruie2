@@ -105,7 +105,7 @@ class kp extends Component {
             var w = dWidth - 420;
             console.log(2)
         }else if(showSideBar && showPatientInfo){//左侧都显示
-            var w = dWidth - 400 - 212
+            var w = dWidth - 400 - 292
             console.log(3)
         }
 
